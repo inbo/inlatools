@@ -4,6 +4,7 @@
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export
+#' @include s3_classes.R
 setMethod(
   f = "residuals",
   signature = signature(object = "inla"),
