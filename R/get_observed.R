@@ -1,5 +1,5 @@
 #' get the observed values from the model object
-#' @inheritParams fitted
+#' @param object the INLA model
 #' @export
 #' @importFrom assertthat assert_that is.string
 get_observed <- function(object) {
@@ -9,14 +9,22 @@ get_observed <- function(object) {
   object$.args$data[, response, drop = TRUE]
 }
 
-#' get the mean of the fitted values from the model object
+#' Calculate the residuals from an INLA model
+#' @inheritParams stats::fitted
+#' @rdname fitted
+#' @importFrom methods setMethod
 #' @export
-#' @param object the INLA model
-#' @importFrom assertthat assert_that
-fitted <- function(object) {
-  assert_that(inherits(object, "inla"))
-  if (nrow(object$summary.fitted.values) == 0) {
-    stop("no fitted values in object")
+#' @include s3_classes.R
+setMethod(
+  f = "fitted",
+  signature = signature(object = "inla"),
+  definition = function(
+    object,
+    ...
+  ) {
+    if (nrow(object$summary.fitted.values) == 0) {
+      stop("no fitted values in object")
+    }
+    object$summary.fitted.values[, "mean"]
   }
-  object$summary.fitted.values[, "mean"]
-}
+)

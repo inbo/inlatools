@@ -1,5 +1,5 @@
 #' Use simulations to test for overdispersion or underdispersion
-#' @inheritParams fitted
+#' @inheritParams get_observed
 #' @param nsim the number of simulation
 #' @param plot display a plot of of the simulated values
 #' @export

@@ -1,6 +1,6 @@
 #' Calculate the residuals from an INLA model
 #' @inheritParams stats::residuals.glm
-#' @inheritParams fitted
+#' @inheritParams get_observed
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export

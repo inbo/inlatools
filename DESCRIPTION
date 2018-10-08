@@ -24,8 +24,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
 Collate:
-    'get_observed.R'
     's3_classes.R'
+    'get_observed.R'
     'residuals.R'
     'test_dispersion.R'
 URL: https://github.com/inbo/inlatools
