@@ -2,6 +2,8 @@
 
 export(get_observed)
 exportClasses(inla)
+exportMethods(residuals)
 importFrom(assertthat,assert_that)
 importFrom(assertthat,is.string)
+importFrom(methods,setMethod)
 importFrom(methods,setOldClass)
