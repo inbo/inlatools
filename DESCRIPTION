@@ -10,7 +10,7 @@ Authors@R: c(
   person(
     family = "Research Institute for Nature and Forest",
     role = c("cph", "fnd"), email = "info@inbo.be"))
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.4.0)
 Imports:
   assertthat,
   ggplot2,
