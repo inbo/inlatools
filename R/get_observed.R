@@ -1,10 +1,22 @@
 #' get the observed values from the model object
-#' @param model the INLA model
+#' @inheritParams fitted
 #' @export
 #' @importFrom assertthat assert_that is.string
-get_observed <- function(model) {
-  assert_that(inherits(model, "inla"))
-  response <- as.character(model$.args$formula[2])
+get_observed <- function(object) {
+  assert_that(inherits(object, "inla"))
+  response <- as.character(object$.args$formula[2])
   assert_that(is.string(response))
-  model$.args$data[, response, drop = TRUE]
+  object$.args$data[, response, drop = TRUE]
+}
+
+#' get the mean of the fitted values from the model object
+#' @export
+#' @param object the INLA model
+#' @importFrom assertthat assert_that
+fitted <- function(object) {
+  assert_that(inherits(object, "inla"))
+  if (nrow(object$summary.fitted.values) == 0) {
+    stop("no fitted values in object")
+  }
+  object$summary.fitted.values[, "mean"]
 }

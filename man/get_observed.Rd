@@ -4,10 +4,10 @@
 \alias{get_observed}
 \title{get the observed values from the model object}
 \usage{
-get_observed(model)
+get_observed(object)
 }
 \arguments{
-\item{model}{the INLA model}
+\item{object}{the INLA model}
 }
 \description{
 get the observed values from the model object

@@ -1,6 +1,6 @@
 #' Calculate the residuals from an INLA model
-#' @param object the INLA object
 #' @inheritParams stats::residuals.glm
+#' @inheritParams fitted
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export
@@ -19,11 +19,8 @@ setMethod(
     if (length(object$.args$family) > 1) {
       stop("Only single responses are handled")
     }
-    if (nrow(object$summary.fitted.values) == 0) {
-      stop("no fitted values in object")
-    }
-    fitted <- object$summary.fitted.values[, "mean"]
     observed <- get_observed(object)
+    fitted <- fitted(object)
     if (object$.args$family == "poisson") {
       (observed - fitted) / sqrt(fitted)
     } else {

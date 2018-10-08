@@ -9,7 +9,8 @@
   "working", "response", "partial"), ...)
 }
 \arguments{
-\item{object}{the INLA object}
+\item{object}{an object of class \code{glm}, typically the result of
+    a call to \code{\link{glm}}.}
 
 \item{type}{the type of residuals which should be returned.
     The alternatives are: \code{"deviance"} (default), \code{"pearson"},
