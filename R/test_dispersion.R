@@ -38,7 +38,7 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
     family = object$.args$family
   )
 
-  if (isFALSE(plot)) {
+  if (!isTRUE(plot)) {
     return(invisible(list(data = dispersion_data, model = dispersion_model)))
   }
   p <- ggplot(data.frame(dispersion = dispersion_model), aes(x = dispersion)) +
