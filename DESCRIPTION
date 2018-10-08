@@ -1,0 +1,16 @@
+Package: inlatools
+Title: Diagnostic tools for INLA models
+Description: Several functions which can be useful to choose sensible priors and diagnose the fitted model.
+Version: 0.0.0.9000
+Authors@R: c(
+  person(
+    "Thierry", "Onkelinx", role = c("aut", "cre"), 
+    email = "thierry.onkelinx@inbo.be", 
+    comment = c(ORCID = "0000-0001-8804-4216")),
+  person(
+    family = "Research Institute for Nature and Forest",
+    role = c("cph", "fnd"), email = "info@inbo.be"))
+Depends: R (>= 3.5.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
