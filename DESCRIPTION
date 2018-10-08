@@ -11,6 +11,13 @@ Authors@R: c(
     family = "Research Institute for Nature and Forest",
     role = c("cph", "fnd"), email = "info@inbo.be"))
 Depends: R (>= 3.5.0)
+Enhances: 
+  INLA
+Imports:
+  methods
+Remotes:
+  github::inbo/INLA
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.1.0
