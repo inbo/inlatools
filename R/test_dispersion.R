@@ -18,18 +18,17 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
 
   observed <- get_observed(object)
   fitted <- fitted(object)
-  dispersion_data <- dispersion(
-    observed = observed,
-    fitted = fitted,
-    variance = fitted
-  )
   samples <- inla.posterior.sample(n = nsim, result = object) #nolint
   relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
-  samples <- map_dfc(samples, "latent")[relevant, ]
+  eta <- map_dfc(samples, "latent")[relevant, ]
   if (object$.args$family == "poisson") {
-    samples <- exp(samples)
+    dispersion_data <- dispersion(
+      observed = observed,
+      fitted = fitted,
+      variance = fitted
+    )
     dispersion_model <- apply(
-      samples,
+      exp(eta),
       2,
       function(x) {
         dispersion(observed = observed, fitted = x, variance = x)
@@ -42,6 +41,7 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
   if (!isTRUE(plot)) {
     return(invisible(list(data = dispersion_data, model = dispersion_model)))
   }
+
   p <- ggplot(data.frame(dispersion = dispersion_model), aes(x = dispersion)) +
     geom_density() +
     geom_vline(xintercept = dispersion_data, linetype = 2) +
