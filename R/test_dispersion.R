@@ -23,7 +23,7 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
     fitted = fitted,
     variance = fitted
   )
-  samples <- inla.posterior.sample(n = nsim, result = object)
+  samples <- inla.posterior.sample(n = nsim, result = object) #nolint
   relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
   samples <- map_dfc(samples, "latent")[relevant, ]
   if (object$.args$family == "poisson") {
@@ -64,5 +64,5 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
 #' @param variance the variance of the fitted values
 #' @export
 dispersion <- function(observed, fitted, variance) {
-  sum((observed - fitted) ^ 2 / variance)
+  sum( (observed - fitted) ^ 2 / variance)
 }

@@ -22,9 +22,9 @@ setMethod(
     object,
     ...
   ) {
-    if (nrow(object$summary.fitted.values) == 0) {
+    if (nrow(object$summary.fitted.values) == 0) { #nolint
       stop("no fitted values in object")
     }
-    object$summary.fitted.values[, "mean"]
+    object$summary.fitted.values[, "mean"] #nolint
   }
 )
