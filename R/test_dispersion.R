@@ -17,26 +17,27 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
   }
 
   observed <- get_observed(object)
+  fitted <- fitted(object)
   dispersion_data <- dispersion(
-    fitted = fitted(object),
     observed = observed,
-    family = object$.args$family
+    fitted = fitted,
+    variance = fitted
   )
   samples <- inla.posterior.sample(n = nsim, result = object)
   relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
   samples <- map_dfc(samples, "latent")[relevant, ]
   if (object$.args$family == "poisson") {
     samples <- exp(samples)
+    dispersion_model <- apply(
+      samples,
+      2,
+      function(x) {
+        dispersion(observed = observed, fitted = x, variance = x)
+      }
+    )
   } else {
     stop(object$.args$family, " is not yet handled")
   }
-  dispersion_model <- apply(
-    samples,
-    2,
-    dispersion,
-    observed = observed,
-    family = object$.args$family
-  )
 
   if (!isTRUE(plot)) {
     return(invisible(list(data = dispersion_data, model = dispersion_model)))
@@ -56,7 +57,12 @@ test_dispersion <- function(object, nsim = 1000, plot = TRUE) {
   )
 }
 
-dispersion <- function(fitted, observed, family = "poisson") {
-  family = match.arg(family)
-  sum((observed - fitted) / sqrt(fitted))
+#' Calculate a measure for dispersion
+#' The measure is calculated as the sum of the squared Pearson residuals
+#' @param observed the observed values
+#' @param fitted the fitted values
+#' @param variance the variance of the fitted values
+#' @export
+dispersion <- function(observed, fitted, variance) {
+  sum((observed - fitted) ^ 2 / variance)
 }
