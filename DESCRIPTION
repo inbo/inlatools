@@ -13,10 +13,13 @@ Authors@R: c(
 Depends: R (>= 3.4.0)
 Imports:
   assertthat,
+  dplyr,
   ggplot2,
   INLA,
   methods,
-  purrr
+  purrr,
+  rlang,
+  tidyr
 Remotes:
   github::inbo/INLA
 License: GPL-3
@@ -28,5 +31,6 @@ Collate:
     'get_observed.R'
     'residuals.R'
     'test_dispersion.R'
+    'test_distribution.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues

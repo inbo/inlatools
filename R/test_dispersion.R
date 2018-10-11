@@ -19,7 +19,7 @@ setGeneric(
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes geom_density geom_vline ggtitle
+#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline ggtitle
 #' @include s3_classes.R
 setMethod(
   f = "test_dispersion",
@@ -58,7 +58,10 @@ setMethod(
       return(invisible(list(data = dispersion_data, model = dispersion_model)))
     }
 
-    p <- ggplot(data.frame(dispersion = dispersion_model), aes(x = dispersion)) +
+    p <- ggplot(
+      data.frame(dispersion = dispersion_model),
+      aes_string(x = "dispersion")
+    ) +
       geom_density() +
       geom_vline(xintercept = dispersion_data, linetype = 2) +
       ggtitle(
