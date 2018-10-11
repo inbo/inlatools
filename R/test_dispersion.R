@@ -33,21 +33,24 @@ setMethod(
     }
 
     observed <- get_observed(object)
-    fitted <- fitted(object)
+    mu <- fitted(object)
     samples <- inla.posterior.sample(n = nsim, result = object) #nolint
     relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
     eta <- map_dfc(samples, "latent")[relevant, ]
     if (object$.args$family == "poisson") {
       dispersion_data <- dispersion(
         observed = observed,
-        fitted = fitted,
-        variance = fitted
+        fitted = mu,
+        variance = mu
       )
       dispersion_model <- apply(
-        exp(eta),
+        matrix(
+          rpois(nsim * length(mu), lambda = mu),
+          ncol = nsim
+        ),
         2,
         function(x) {
-          dispersion(observed = observed, fitted = x, variance = x)
+          dispersion(observed = x, fitted = mu, variance = mu)
         }
       )
     } else {
@@ -78,11 +81,11 @@ setMethod(
 )
 
 #' Calculate a measure for dispersion
-#' The measure is calculated as the sum of the squared Pearson residuals
+#' The measure is calculated as the average of the squared Pearson residuals
 #' @param observed the observed values
 #' @param fitted the fitted values
 #' @param variance the variance of the fitted values
 #' @export
 dispersion <- function(observed, fitted, variance) {
-  sum( (observed - fitted) ^ 2 / variance)
+  mean( (observed - fitted) ^ 2 / variance)
 }

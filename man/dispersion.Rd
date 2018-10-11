@@ -3,7 +3,7 @@
 \name{dispersion}
 \alias{dispersion}
 \title{Calculate a measure for dispersion
-The measure is calculated as the sum of the squared Pearson residuals}
+The measure is calculated as the average of the squared Pearson residuals}
 \usage{
 dispersion(observed, fitted, variance)
 }
@@ -16,5 +16,5 @@ dispersion(observed, fitted, variance)
 }
 \description{
 Calculate a measure for dispersion
-The measure is calculated as the sum of the squared Pearson residuals
+The measure is calculated as the average of the squared Pearson residuals
 }
