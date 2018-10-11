@@ -11,6 +11,6 @@ cache: packages
 r_packages:
   - lintr
 after_script:
-  - test $TRAVIS_R_VERSION_STRING = release \
-    && R CMD INSTALL $PKG_TARBALL \
-    && Rscript -e 'lintr::lint_package()'
+  if: test $TRAVIS_R_VERSION_STRING = release
+    - R CMD INSTALL $PKG_TARBALL
+    - Rscript -e 'lintr::lint_package()'
