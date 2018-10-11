@@ -75,15 +75,15 @@ setMethod(
 
     p <- ecdf %>%
       mutate(
-        median = .data$median / .data$ecdf,
-        lcl = .data$lcl / .data$ecdf,
-        ucl = .data$ucl / .data$ecdf
+        median = .data$ecdf / .data$median,
+        lcl = .data$ecdf / .data$lcl,
+        ucl = .data$ecdf / .data$ucl
       ) %>%
       ggplot(aes_string(x = "x", y = "median", ymin = "lcl", ymax = "ucl")) +
       geom_hline(yintercept = 1, linetype = 2) +
       geom_ribbon(alpha = 0.1) +
       geom_line() +
-      ylab("sampled ecdf / observed ecdf")
+      ylab("observed / expected")
     print(p)
 
     return(
