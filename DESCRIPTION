@@ -34,3 +34,6 @@ Collate:
     'test_distribution.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

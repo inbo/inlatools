@@ -1,0 +1,80 @@
+---
+title: "Check the distribution of a model"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Check the distribution of a model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+set.seed(20181011)
+```
+
+## Generate data
+
+```{r}
+intercept <- 1
+slope <- 0.5
+sigma_random <- 0.5
+n_random <- 20
+zero_inflation <- 0.2
+```
+
+
+```{r}
+library(dplyr)
+re_random <- rnorm(n_random, mean = 0, sd = sigma_random)
+expand.grid(
+  x = seq(-1, 1, length = 11),
+  id = seq_len(n_random)
+) %>%
+  mutate(
+    eta = intercept + slope * x + re_random[id],
+    poisson = rpois(n(), lambda = exp(eta)),
+    zipoisson = rbinom(n(), size = 1, prob = 1 - zero_inflation) * poisson
+  ) -> dataset
+```
+
+## Fit the model
+
+```{r}
+library(INLA)
+poisson_model <- inla(
+  poisson ~ x + f(id, model = "iid"), family = "poisson", 
+  data = dataset, 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+zipoisson_model <- inla(
+  zipoisson ~ x + f(id, model = "iid"), family = "poisson", 
+  data = dataset, 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+ztpoisson_model <- inla(
+  poisson ~ x + f(id, model = "iid"), family = "poisson", 
+  data = filter(dataset, poisson >= 1), 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+```
+
+## Test the distribution
+
+```{r fig.cap = "Distribution test for the Poisson response"}
+library(inlatools)
+test_distribution(poisson_model)
+```
+
+```{r fig.cap = "Distribution test for the zero-inflated Poisson response"}
+test_distribution(zipoisson_model)
+```
+```{r fig.cap = "Distribution test for the zero-truncated Poisson response"}
+test_distribution(ztpoisson_model)
+```
