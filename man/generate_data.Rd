@@ -5,7 +5,7 @@
 \title{Generate dummy data with several distribution}
 \usage{
 generate_data(a = 0, sigma_random = 0.5, n_random = 20,
-  n_replicate = 10, nb_size = 0.1, b_size = 5)
+  n_replicate = 10, nb_size = 1, b_size = 5, zero_inflation = 0.5)
 }
 \arguments{
 \item{a}{the intercept of the latent variable}
@@ -19,6 +19,21 @@ generate_data(a = 0, sigma_random = 0.5, n_random = 20,
 \item{nb_size}{the size parameter of the negative binomial distribution. Passed to the \code{size} parameter of \code{\link[stats]{rnbinom}}}
 
 \item{b_size}{the size parameter of the binomial distribution. Passed to the \code{size} parameter of \code{\link[stats]{rbinom}}}
+
+\item{zero_inflation}{the probability the the observed value stems for the a point mass in zero}
+}
+\value{
+A \code{data.frame}
+\itemize{
+\item \code{ìd} the id of the random effect
+\item \code{eta} the latent variable
+\item \code{zero_inflation} use the point mass in zero
+\item \code{poisson} the Poisson distributed variable
+\item \code{zipoisson} the zero-inflated Poisson distributed variable
+\item \code{negbin} the negative binomial distributed variable
+\item \code{zinegbin} the zero-inflated negative binomial distributed variable
+\item \code{binom} the binomial distributed variable
+}
 }
 \description{
 All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i} with \eqn{b_i = N(0, \sigma_r)}

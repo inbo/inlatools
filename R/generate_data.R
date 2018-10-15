@@ -11,6 +11,17 @@
 #' @param n_replicate the number of observation per random effect level
 #' @param nb_size the size parameter of the negative binomial distribution. Passed to the `size` parameter of \code{\link[stats]{rnbinom}}
 #' @param b_size the size parameter of the binomial distribution. Passed to the `size` parameter of `\link[stats]{rbinom}`
+#' @param zero_inflation the probability the the observed value stems for the a point mass in zero
+#' @return A `data.frame`
+#'
+#' - `ìd` the id of the random effect
+#' - `eta` the latent variable
+#' - `zero_inflation` use the point mass in zero
+#' - `poisson` the Poisson distributed variable
+#' - `zipoisson` the zero-inflated Poisson distributed variable
+#' - `negbin` the negative binomial distributed variable
+#' - `zinegbin` the zero-inflated negative binomial distributed variable
+#' - `binom` the binomial distributed variable
 #' @importFrom assertthat assert_that is.number is.count
 #' @importFrom dplyr %>% mutate n
 #' @importFrom rlang .data
@@ -21,8 +32,9 @@ generate_data <- function(
   sigma_random = 0.5,
   n_random = 20,
   n_replicate = 10,
-  nb_size = 0.1,
-  b_size = 5
+  nb_size = 1,
+  b_size = 5,
+  zero_inflation = 0.5
 ) {
   assert_that(is.number(a))
   assert_that(
@@ -43,8 +55,12 @@ generate_data <- function(
   ) %>%
     mutate(
       eta = a + re_random[.data$id],
+      zero_inflation = rbinom(n(), size = 1, prob = zero_inflation) %>%
+        as.logical(),
       poisson = rpois(n(), lambda = exp(.data$eta)),
+      zipoisson = ifelse(.data$zero_inflation, 0, .data$poisson),
       negbin = rnbinom(n(), size = nb_size, mu = exp(.data$eta)),
+      zinegbin = ifelse(.data$zero_inflation, 0, .data$negbin),
       binom = rbinom(n(), size = b_size, prob = plogis(.data$eta))
     )
 }

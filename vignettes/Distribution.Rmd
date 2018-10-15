@@ -12,7 +12,8 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
+library(knitr)
+opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
@@ -22,59 +23,69 @@ set.seed(20181011)
 ## Generate data
 
 ```{r}
-intercept <- 1
-slope <- 0.5
-sigma_random <- 0.5
-n_random <- 20
-zero_inflation <- 0.2
+library(inlatools)
+dataset <- generate_data()
 ```
 
-
-```{r}
-library(dplyr)
-re_random <- rnorm(n_random, mean = 0, sd = sigma_random)
-expand.grid(
-  x = seq(-1, 1, length = 11),
-  id = seq_len(n_random)
-) %>%
-  mutate(
-    eta = intercept + slope * x + re_random[id],
-    poisson = rpois(n(), lambda = exp(eta)),
-    zipoisson = rbinom(n(), size = 1, prob = 1 - zero_inflation) * poisson
-  ) -> dataset
-```
 
 ## Fit the model
 
 ```{r}
+library(dplyr)
+library(purrr)
 library(INLA)
-poisson_model <- inla(
-  poisson ~ x + f(id, model = "iid"), family = "poisson", 
-  data = dataset, 
-  control.compute = list(config = TRUE, waic = TRUE)
-)
-zipoisson_model <- inla(
-  zipoisson ~ x + f(id, model = "iid"), family = "poisson", 
-  data = dataset, 
-  control.compute = list(config = TRUE, waic = TRUE)
-)
-ztpoisson_model <- inla(
-  poisson ~ x + f(id, model = "iid"), family = "poisson", 
-  data = filter(dataset, poisson >= 1), 
-  control.compute = list(config = TRUE, waic = TRUE)
-)
+expand.grid(
+  variable = c("poisson", "zipoisson", "negbin", "zinegbin", "binom"),
+  family = c("poisson", "nbinomial"),
+  stringsAsFactors = FALSE
+) %>%
+  mutate(
+    formula = paste(variable, "~ 1 + f(id, model = \"iid\")") %>%
+      map(as.formula),
+    model = map2(
+      formula, 
+      family, 
+      function(.x, .y, data) {
+        inla(
+          .x, 
+          family = .y, 
+          data = data, 
+          control.compute = list(config = TRUE)
+        )
+      },
+      data = dataset
+    )
+  ) -> combinations
 ```
 
 ## Test the distribution
 
-```{r fig.cap = "Distribution test for the Poisson response"}
-library(inlatools)
-test_distribution(poisson_model)
+```{r echo = FALSE, results = "asis"}
+combinations %>%
+  inner_join(
+    data.frame(
+      variable = c("poisson", "zipoisson", "negbin", "zinegbin", "binom"),
+      long = c(
+        "Poisson", "zeroinflated Poisson", "negative binomial", 
+        "zeroinflated negative binomial", "binomial"
+      ),
+      stringsAsFactors = FALSE
+    ),
+    by = "variable"
+  ) %>%
+  transmute(
+    rmd = sprintf(
+"```{r fig.cap = 'Distribution test for a %s variable fit with %s family'}
+test_distribution(combinations$model[[%i]])
+```",
+      long,
+      family,
+      seq_along(family)
+    )
+  ) %>%
+  pull(rmd) %>%
+  paste(collapse = "\n\n") -> rmd
+knit(text = rmd, quiet = TRUE) %>%
+  cat()
 ```
 
-```{r fig.cap = "Distribution test for the zero-inflated Poisson response"}
-test_distribution(zipoisson_model)
-```
-```{r fig.cap = "Distribution test for the zero-truncated Poisson response"}
-test_distribution(ztpoisson_model)
-```
