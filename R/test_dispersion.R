@@ -75,7 +75,9 @@ setMethod(
       )
     print(p)
     return(
-      invisible(list(data = dispersion_data, model = dispersion_model, plot = p))
+      invisible(
+        list(data = dispersion_data, model = dispersion_model, plot = p)
+      )
     )
   }
 )
