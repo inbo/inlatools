@@ -34,9 +34,6 @@ setMethod(
 
     observed <- get_observed(object)
     mu <- fitted(object)
-    samples <- inla.posterior.sample(n = nsim, result = object) #nolint
-    relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
-    eta <- map_dfc(samples, "latent")[relevant, ]
     if (object$.args$family == "poisson") {
       dispersion_data <- dispersion(
         observed = observed,
