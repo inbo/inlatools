@@ -55,6 +55,19 @@ setMethod(
       ) %>%
         gather("run", "x") %>%
         count(.data$run, .data$x) -> n_sampled
+    } else if (object$.args$family == "zeroinflatedpoisson1") {
+      relevant <- grep("zero-inflated poisson_1", names(samples[[1]]$hyperpar))
+      mutate_all(
+        exp(eta),
+        function(lambda, prob_zero) {
+          n <- length(lambda)
+          rbinom(n = n, size = 1, prob = 1 - prob_zero) *
+            rpois(n = n, lambda = lambda)
+        },
+        prob_zero = unlist(map_dfc(samples, "hyperpar")[relevant, ])
+      ) %>%
+        gather("run", "x") %>%
+        count(.data$run, .data$x) -> n_sampled
     } else {
       stop(object$.args$family, " is not yet handled")
     }
