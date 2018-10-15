@@ -25,6 +25,7 @@ Remotes:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 Collate:
     's3_classes.R'
@@ -34,6 +35,7 @@ Collate:
     'test_distribution.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
-Suggests: knitr,
-    rmarkdown
+Suggests: 
+  knitr,
+  rmarkdown
 VignetteBuilder: knitr
