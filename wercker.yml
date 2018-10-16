@@ -3,7 +3,10 @@ build:
   steps:
     - jimhester/r-dependencies
     - jimhester/r-check
-    - jimhester/r-lint
+    - script:
+        name: install-lintr
+        code: Rscript -e 'devtools::install_github("jimhester/lintr")'
+    - inbobmk/r-lint
 
 build-dev:
   box: rocker/tidyverse:devel
