@@ -10,18 +10,17 @@
 #' @importFrom methods setGeneric
 setGeneric(
   name = "fast_distribution_check",
-  def = function(object, nsim = 1000, plot = TRUE){
+  def = function(object, nsim = 1000){
     standardGeneric("fast_distribution_check") # nocov
   }
 )
 
 #' @rdname fast_distribution_check
 #' @importFrom methods setMethod new
-#' @importFrom assertthat assert_that is.flag is.count
+#' @importFrom assertthat assert_that is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab geom_text
-#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join filter
+#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
@@ -29,9 +28,8 @@ setGeneric(
 setMethod(
   f = "fast_distribution_check",
   signature = signature(object = "inla"),
-  definition = function(object, nsim = 1000, plot = TRUE) {
+  definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
-    assert_that(is.flag(plot))
 
     if (length(object$.args$family) > 1) {
       stop("Only single responses are handled")
@@ -89,29 +87,7 @@ setMethod(
         ,
         by = "x"
       ) -> ecdf
-
-
-    if (!isTRUE(plot)) {
-      return(invisible(list(ecdf = ecdf)))
-    }
-
-    p <- ecdf %>%
-      filter(.data$lcl <= 0.999) %>%
-      mutate(
-        median = .data$ecdf / .data$median,
-        lcl = .data$ecdf / .data$lcl,
-        ucl = .data$ecdf / .data$ucl
-      ) %>%
-      ggplot(aes_string(x = "x", y = "median", ymin = "lcl", ymax = "ucl")) +
-      geom_hline(yintercept = 1, linetype = 2) +
-      geom_ribbon(alpha = 0.1) +
-      geom_line() +
-      geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
-      ylab("observed / expected")
-    print(p)
-
-    return(
-      invisible(list(ecdf = ecdf, plot = p))
-    )
+    class(ecdf) <- c("distribution_check", class(ecdf))
+    return(ecdf)
   }
 )

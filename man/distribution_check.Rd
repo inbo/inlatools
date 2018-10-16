@@ -6,16 +6,14 @@
 \alias{distribution_check,inla-method}
 \title{Use simulations to compare the observed distribution with the modelled distribution}
 \usage{
-distribution_check(object, nsim = 1000, plot = TRUE)
+distribution_check(object, nsim = 1000)
 
-\S4method{distribution_check}{inla}(object, nsim = 1000, plot = TRUE)
+\S4method{distribution_check}{inla}(object, nsim = 1000)
 }
 \arguments{
 \item{object}{the INLA model}
 
 \item{nsim}{the number of simulation}
-
-\item{plot}{display a plot of of the simulated values}
 }
 \description{
 Use simulations to compare the observed distribution with the modelled distribution

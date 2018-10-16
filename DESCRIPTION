@@ -34,6 +34,7 @@ Collate:
     'fast_distribution_check.R'
     'generate_data.R'
     'get_observed.R'
+    'plot_distribution_check.R'
     'residuals.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues

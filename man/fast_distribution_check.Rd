@@ -6,17 +6,14 @@
 \alias{fast_distribution_check,inla-method}
 \title{Use simulations to compare the observed distribution with the modelled distribution}
 \usage{
-fast_distribution_check(object, nsim = 1000, plot = TRUE)
+fast_distribution_check(object, nsim = 1000)
 
-\S4method{fast_distribution_check}{inla}(object, nsim = 1000,
-  plot = TRUE)
+\S4method{fast_distribution_check}{inla}(object, nsim = 1000)
 }
 \arguments{
 \item{object}{the INLA model}
 
 \item{nsim}{the number of simulation}
-
-\item{plot}{display a plot of of the simulated values}
 }
 \description{
 This check uses the fitted values and thus ignores the uncertainty on the predictions

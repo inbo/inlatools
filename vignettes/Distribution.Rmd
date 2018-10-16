@@ -77,7 +77,7 @@ combinations %>%
   transmute(
     rmd = sprintf(
 "```{r fig.cap = 'Distribution check for a %s variable fit with %s family'}
-fast_distribution_check(combinations$model[[%i]])
+plot(fast_distribution_check(combinations$model[[%i]]))
 ```",
       long,
       family,

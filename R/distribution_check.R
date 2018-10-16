@@ -8,7 +8,7 @@
 #' @importFrom methods setGeneric
 setGeneric(
   name = "distribution_check",
-  def = function(object, nsim = 1000, plot = TRUE){
+  def = function(object, nsim = 1000){
     standardGeneric("distribution_check") # nocov
   }
 )
@@ -27,7 +27,7 @@ setGeneric(
 setMethod(
   f = "distribution_check",
   signature = signature(object = "inla"),
-  definition = function(object, nsim = 1000, plot = TRUE) {
+  definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
     assert_that(is.flag(plot))
 
@@ -97,29 +97,7 @@ setMethod(
         ,
         by = "x"
       ) -> ecdf
-
-
-    if (!isTRUE(plot)) {
-      return(invisible(list(ecdf = ecdf)))
-    }
-
-    p <- ecdf %>%
-      filter(.data$lcl <= 0.999) %>%
-      mutate(
-        median = .data$ecdf / .data$median,
-        lcl = .data$ecdf / .data$lcl,
-        ucl = .data$ecdf / .data$ucl
-      ) %>%
-      ggplot(aes_string(x = "x", y = "median", ymin = "lcl", ymax = "ucl")) +
-      geom_hline(yintercept = 1, linetype = 2) +
-      geom_ribbon(alpha = 0.1) +
-      geom_line() +
-      geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
-      ylab("observed / expected")
-    print(p)
-
-    return(
-      invisible(list(ecdf = ecdf, plot = p))
-    )
+    class(ecdf) <- c("distribution_check", class(ecdf))
+    return(ecdf)
   }
 )
