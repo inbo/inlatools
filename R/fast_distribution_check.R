@@ -52,6 +52,14 @@ setMethod(
         x = rnbinom(n = n_mu * nsim, mu = mu, size = size)
       ) %>%
         count(.data$run, .data$x) -> n_sampled
+    } else if (object$.args$family == "gpoisson") {
+      relevant <- grep("Overdispersion", rownames(object$summary.hyperpar))
+      phi <- object$summary.hyperpar[relevant, "mean"]
+      data.frame(
+        run = rep(seq_len(nsim), n_mu),
+        x = as.vector(rgpoisson(n = nsim, mu = mu, phi = phi))
+      ) %>%
+        count(.data$run, .data$x) -> n_sampled
     } else if (object$.args$family == "zeroinflatedpoisson1") {
       relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
       zero <- object$summary.hyperpar[relevant, "mean"]
@@ -91,3 +99,56 @@ setMethod(
     return(ecdf)
   }
 )
+
+#' The generalised Poisson distribution
+#' @param y a vector of positive integers for which to calculate the density
+#' @param mu a vector of averages for which to calculate the density
+#' @param phi a single overdispersion parameter
+#' @return a matrix with the density for each combination of `y` (rows) and `mu` (cols)
+#' @noRd
+#' @importFrom assertthat assert_that is.number
+dgpoisson <- function(y, mu, phi) {
+  assert_that(
+    is.integer(y),
+    all(y >= 0)
+  )
+  assert_that(
+    is.numeric(mu),
+    all(mu > 0)
+  )
+  assert_that(
+    is.number(phi),
+    phi > 0
+  )
+
+  a <- outer(phi * y, mu, "+")
+  b <- 1 + phi
+  d <- exp(
+    matrix(log(mu), nrow = length(y), ncol = length(mu), byrow = TRUE) +
+    (y - 1) * log(a) - y * log(b) - lfactorial(y) - a / b
+  )
+  return(d)
+}
+
+#' @noRd
+#' @inheritParams dgpoisson
+#' @param n the number of simulated values
+#' @importFrom assertthat assert_that is.number is.count
+rgpoisson <- function(n, mu, phi) {
+  assert_that(is.count(n))
+  assert_that(
+    is.numeric(mu),
+    all(mu > 0)
+  )
+  assert_that(
+    is.number(phi),
+    phi > 0
+  )
+
+  s <- sqrt(max(mu) * (1 + phi) ^ 2)
+  low <- as.integer(max(0, min(mu) - 20 * s))
+  high <- as.integer(max(mu) + 20 * s)
+  prob <- dgpoisson(y = low:high, mu, phi)
+  y <- apply(prob, 2, sample, x = low:high, replace = TRUE, size = n)
+  return(y)
+}

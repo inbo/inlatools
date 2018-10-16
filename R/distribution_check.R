@@ -16,7 +16,7 @@ setGeneric(
 #' @rdname distribution_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
-#' @importFrom INLA inla.posterior.sample
+#' @importFrom INLA inla.posterior.sample inla.hyperpar.sample
 #' @importFrom purrr map_dfc
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab geom_text
 #' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join filter
@@ -48,8 +48,7 @@ setMethod(
         "size for the nbinomial observations",
         names(samples[[1]]$hyperpar)
       )
-      size <- map_dfc(samples, "hyperpar")[relevant, ] %>%
-        unlist()
+      size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant]
       mutate_all(
         exp(eta),
         function(mu) {
@@ -57,6 +56,24 @@ setMethod(
         }
       ) %>%
         gather("run", "x") %>%
+        count(.data$run, .data$x) -> n_sampled
+    } else if (object$.args$family == "gpoisson") {
+      relevant <- grep(
+        "Overdispersion",
+        names(samples[[1]]$hyperpar)
+      )
+      phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant]
+      mu <- exp(eta)
+      sapply(
+        seq_len(nsim),
+        function(i) {
+          rgpoisson(n = 1, mu = mu[, i, drop = TRUE], phi = phi[i])
+        }
+      ) -> n_sampled
+      data.frame(
+        run = rep(seq_len(nsim), each = nrow(mu)),
+        x = as.vector(n_sampled)
+      ) %>%
         count(.data$run, .data$x) -> n_sampled
     } else if (object$.args$family == "zeroinflatedpoisson1") {
       relevant <- grep("zero-inflated poisson_1", names(samples[[1]]$hyperpar))
@@ -67,7 +84,7 @@ setMethod(
           rbinom(n = n, size = 1, prob = 1 - prob_zero) *
             rpois(n = n, lambda = lambda)
         },
-        prob_zero = unlist(map_dfc(samples, "hyperpar")[relevant, ])
+        prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant]
       ) %>%
         gather("run", "x") %>%
         count(.data$run, .data$x) -> n_sampled
