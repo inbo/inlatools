@@ -49,15 +49,15 @@ binom_model <- inla(
 ## Test the dispersion
 
 ```{r fig.cap = "Dispersion of the Poisson response"}
-test_dispersion(poisson_model)
+dispersion_check(poisson_model)
 ```
 
 ```{r, fig.cap = "Dispersion for the negative binomial response"}
-test_dispersion(negbin_model)
+dispersion_check(negbin_model)
 ```
 
 ```{r, fig.cap = "Dispersion for the negative binomial response"}
-test_dispersion(binom_model)
+dispersion_check(binom_model)
 ```
 
 ## Simulation study
@@ -73,7 +73,7 @@ dispersion_poisson <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- test_dispersion(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
   mean(D$data > D$model)
 }
 
@@ -84,7 +84,7 @@ dispersion_negbin <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- test_dispersion(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
   mean(D$data > D$model)
 }
 
@@ -95,7 +95,7 @@ dispersion_binom <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- test_dispersion(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
   mean(D$data > D$model)
 }
 

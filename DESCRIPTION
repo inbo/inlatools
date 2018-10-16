@@ -29,12 +29,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 Collate:
     's3_classes.R'
+    'dispersion_check.R'
+    'distribution_check.R'
     'fast_distribution_check.R'
     'generate_data.R'
     'get_observed.R'
     'residuals.R'
-    'test_dispersion.R'
-    'test_distribution.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
 Suggests: 

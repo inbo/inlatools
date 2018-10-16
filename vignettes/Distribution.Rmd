@@ -50,6 +50,7 @@ expand.grid(
           .x, 
           family = .y, 
           data = data, 
+          control.predictor = list(compute = TRUE),
           control.compute = list(config = TRUE)
         )
       },
@@ -75,8 +76,8 @@ combinations %>%
   ) %>%
   transmute(
     rmd = sprintf(
-"```{r fig.cap = 'Distribution test for a %s variable fit with %s family'}
-test_distribution(combinations$model[[%i]])
+"```{r fig.cap = 'Distribution check for a %s variable fit with %s family'}
+fast_distribution_check(combinations$model[[%i]])
 ```",
       long,
       family,

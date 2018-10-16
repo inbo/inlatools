@@ -1,20 +1,20 @@
-#' Use simulations to test for overdispersion or underdispersion
+#' Use simulations to check for overdispersion or underdispersion
 #' @inheritParams get_observed
 #' @param nsim the number of simulation
 #' @param plot display a plot of of the simulated values
-#' @name test_dispersion
-#' @rdname test_dispersion
-#' @exportMethod test_dispersion
+#' @name dispersion_check
+#' @rdname dispersion_check
+#' @exportMethod dispersion_check
 #' @docType methods
 #' @importFrom methods setGeneric
 setGeneric(
-  name = "test_dispersion",
+  name = "dispersion_check",
   def = function(object, nsim = 1000, plot = TRUE){
-    standardGeneric("test_dispersion") # nocov
+    standardGeneric("dispersion_check") # nocov
   }
 )
 
-#' @rdname test_dispersion
+#' @rdname dispersion_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
@@ -22,7 +22,7 @@ setGeneric(
 #' @importFrom ggplot2 ggplot aes_string geom_density geom_vline ggtitle
 #' @include s3_classes.R
 setMethod(
-  f = "test_dispersion",
+  f = "dispersion_check",
   signature = signature(object = "inla"),
   definition = function(object, nsim = 1000, plot = TRUE) {
     assert_that(is.count(nsim))

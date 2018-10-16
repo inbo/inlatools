@@ -2,7 +2,7 @@
 #'
 #' This check uses the fitted values and thus ignores the uncertainty on the predictions
 #' @inheritParams get_observed
-#' @inheritParams test_dispersion
+#' @inheritParams dispersion_check
 #' @name fast_distribution_check
 #' @rdname fast_distribution_check
 #' @exportMethod fast_distribution_check

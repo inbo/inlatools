@@ -1,19 +1,19 @@
 #' Use simulations to compare the observed distribution with the modelled distribution
 #' @inheritParams get_observed
-#' @inheritParams test_dispersion
-#' @name test_distribution
-#' @rdname test_distribution
-#' @exportMethod test_distribution
+#' @inheritParams dispersion_check
+#' @name distribution_check
+#' @rdname distribution_check
+#' @exportMethod distribution_check
 #' @docType methods
 #' @importFrom methods setGeneric
 setGeneric(
-  name = "test_distribution",
+  name = "distribution_check",
   def = function(object, nsim = 1000, plot = TRUE){
-    standardGeneric("test_distribution") # nocov
+    standardGeneric("distribution_check") # nocov
   }
 )
 
-#' @rdname test_distribution
+#' @rdname distribution_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
@@ -25,7 +25,7 @@ setGeneric(
 #' @importFrom stats quantile rpois rnbinom
 #' @include s3_classes.R
 setMethod(
-  f = "test_distribution",
+  f = "distribution_check",
   signature = signature(object = "inla"),
   definition = function(object, nsim = 1000, plot = TRUE) {
     assert_that(is.count(nsim))
