@@ -86,5 +86,5 @@ setMethod(
 #' @param variance the variance of the fitted values
 #' @export
 dispersion <- function(observed, fitted, variance) {
-  mean( (observed - fitted) ^ 2 / variance)
+  mean((observed - fitted) ^ 2 / variance)
 }

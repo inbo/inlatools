@@ -4,7 +4,8 @@
 \name{distribution_check}
 \alias{distribution_check}
 \alias{distribution_check,inla-method}
-\title{Use simulations to compare the observed distribution with the modelled distribution}
+\title{Use simulations to compare the observed distribution with the modelled
+distribution}
 \usage{
 distribution_check(object, nsim = 1000)
 
@@ -16,5 +17,6 @@ distribution_check(object, nsim = 1000)
 \item{nsim}{the number of simulation}
 }
 \description{
-Use simulations to compare the observed distribution with the modelled distribution
+Use simulations to compare the observed distribution with the modelled
+distribution
 }

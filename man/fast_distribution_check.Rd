@@ -4,7 +4,8 @@
 \name{fast_distribution_check}
 \alias{fast_distribution_check}
 \alias{fast_distribution_check,inla-method}
-\title{Use simulations to compare the observed distribution with the modelled distribution}
+\title{Use simulations to compare the observed distribution with the modelled
+distribution}
 \usage{
 fast_distribution_check(object, nsim = 1000)
 
@@ -16,5 +17,6 @@ fast_distribution_check(object, nsim = 1000)
 \item{nsim}{the number of simulation}
 }
 \description{
-This check uses the fitted values and thus ignores the uncertainty on the predictions
+This check uses the fitted values and thus ignores the uncertainty on the
+predictions
 }

@@ -1,4 +1,5 @@
-#' Use simulations to compare the observed distribution with the modelled distribution
+#' Use simulations to compare the observed distribution with the modelled
+#' distribution
 #' @inheritParams get_observed
 #' @inheritParams dispersion_check
 #' @name distribution_check
@@ -18,8 +19,10 @@ setGeneric(
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample inla.hyperpar.sample
 #' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab geom_text
-#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join filter
+#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
+#' geom_text
+#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise
+#' inner_join filter
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom

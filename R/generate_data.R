@@ -1,17 +1,22 @@
 #' Generate dummy data with several distribution
 #'
-#' All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i} with \eqn{b_i = N(0, \sigma_r)}
+#' All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i}
+#' with \eqn{b_i = N(0, \sigma_r)}
 #'
 #' - The Poisson distribution uses \eqn{\lambda = e^{\eta_{ij}}}
 #' - The negation binomial distribution uses \eqn{\mu = e^{\eta_{ij}}}
-#' - The binomial distribution uses \eqn{\pi_{ij} = e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
+#' - The binomial distribution uses \eqn{\pi_{ij} =
+#' e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
 #' @param a the intercept of the latent variable
 #' @param sigma_random The standard error for the random effect \eqn{\sigma_r}
 #' @param n_random the number of random effect levels (groups)
 #' @param n_replicate the number of observation per random effect level
-#' @param nb_size the size parameter of the negative binomial distribution. Passed to the `size` parameter of \code{\link[stats]{rnbinom}}
-#' @param b_size the size parameter of the binomial distribution. Passed to the `size` parameter of `\link[stats]{rbinom}`
-#' @param zero_inflation the probability the the observed value stems for the a point mass in zero
+#' @param nb_size the size parameter of the negative binomial distribution.
+#' Passed to the `size` parameter of \code{\link[stats]{rnbinom}}
+#' @param b_size the size parameter of the binomial distribution. Passed to the
+#' `size` parameter of `\link[stats]{rbinom}`
+#' @param zero_inflation the probability the the observed value stems for the a
+#' point mass in zero
 #' @return A `data.frame`
 #'
 #' - `ìd` the id of the random effect

@@ -16,11 +16,14 @@ generate_data(a = 0, sigma_random = 0.5, n_random = 20,
 
 \item{n_replicate}{the number of observation per random effect level}
 
-\item{nb_size}{the size parameter of the negative binomial distribution. Passed to the \code{size} parameter of \code{\link[stats]{rnbinom}}}
+\item{nb_size}{the size parameter of the negative binomial distribution.
+Passed to the \code{size} parameter of \code{\link[stats]{rnbinom}}}
 
-\item{b_size}{the size parameter of the binomial distribution. Passed to the \code{size} parameter of \code{\link[stats]{rbinom}}}
+\item{b_size}{the size parameter of the binomial distribution. Passed to the
+\code{size} parameter of \code{\link[stats]{rbinom}}}
 
-\item{zero_inflation}{the probability the the observed value stems for the a point mass in zero}
+\item{zero_inflation}{the probability the the observed value stems for the a
+point mass in zero}
 }
 \value{
 A \code{data.frame}
@@ -36,12 +39,14 @@ A \code{data.frame}
 }
 }
 \description{
-All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i} with \eqn{b_i = N(0, \sigma_r)}
+All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i}
+with \eqn{b_i = N(0, \sigma_r)}
 }
 \details{
 \itemize{
 \item The Poisson distribution uses \eqn{\lambda = e^{\eta_{ij}}}
 \item The negation binomial distribution uses \eqn{\mu = e^{\eta_{ij}}}
-\item The binomial distribution uses \eqn{\pi_{ij} = e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
+\item The binomial distribution uses \eqn{\pi_{ij} =
+e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
 }
 }

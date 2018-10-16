@@ -7,7 +7,8 @@
 \method{plot}{distribution_check}(x, y, ...)
 }
 \arguments{
-\item{x}{a distribution_check object. Which is the output of \code{\link{fast_distribution_check}}}
+\item{x}{a distribution_check object. Which is the output of
+\code{\link{fast_distribution_check}}}
 
 \item{y}{currently ignored}
 

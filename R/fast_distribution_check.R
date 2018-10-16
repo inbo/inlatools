@@ -1,6 +1,8 @@
-#' Use simulations to compare the observed distribution with the modelled distribution
+#' Use simulations to compare the observed distribution with the modelled
+#' distribution
 #'
-#' This check uses the fitted values and thus ignores the uncertainty on the predictions
+#' This check uses the fitted values and thus ignores the uncertainty on the
+#' predictions
 #' @inheritParams get_observed
 #' @inheritParams dispersion_check
 #' @name fast_distribution_check
@@ -20,7 +22,8 @@ setGeneric(
 #' @importFrom assertthat assert_that is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join
+#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise
+#' inner_join
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
@@ -104,7 +107,8 @@ setMethod(
 #' @param y a vector of positive integers for which to calculate the density
 #' @param mu a vector of averages for which to calculate the density
 #' @param phi a single overdispersion parameter
-#' @return a matrix with the density for each combination of `y` (rows) and `mu` (cols)
+#' @return a matrix with the density for each combination of `y` (rows) and `mu`
+#' (cols)
 #' @noRd
 #' @importFrom assertthat assert_that is.number
 dgpoisson <- function(y, mu, phi) {

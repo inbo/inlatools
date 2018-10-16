@@ -1,11 +1,13 @@
 #' Plot the results from a distribution check
-#' @param x a distribution_check object. Which is the output of `\link{fast_distribution_check}`
+#' @param x a distribution_check object. Which is the output of
+#' `\link{fast_distribution_check}`
 #' @param y currently ignored
 #' @param ... currently ignored
 #' @return a ggplot2 object
 #' @importFrom assertthat assert_that has_name
 #' @importFrom dplyr %>% mutate filter
-#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab geom_text
+#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
+#' geom_text
 #' @importFrom graphics plot
 #' @export
 plot.distribution_check <- function(x, y, ...) {
