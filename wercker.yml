@@ -1,0 +1,12 @@
+box: rocker/tidyverse:latest
+build:
+  steps:
+    - jimhester/r-dependencies
+    - jimhester/r-check
+    - jimhester/r-lint
+
+build-dev:
+  box: rocker/tidyverse:devel
+  steps:
+    - jimhester/r-dependencies
+    - jimhester/r-check
