@@ -48,7 +48,7 @@ setMethod(
         "size for the nbinomial observations",
         names(samples[[1]]$hyperpar)
       )
-      size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant]
+      size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
       mutate_all(
         exp(eta),
         function(mu) {
@@ -62,7 +62,7 @@ setMethod(
         "Overdispersion",
         names(samples[[1]]$hyperpar)
       )
-      phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant]
+      phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
       mu <- exp(eta)
       sapply(
         seq_len(nsim),
@@ -84,7 +84,7 @@ setMethod(
           rbinom(n = n, size = 1, prob = 1 - prob_zero) *
             rpois(n = n, lambda = lambda)
         },
-        prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant]
+        prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
       ) %>%
         gather("run", "x") %>%
         count(.data$run, .data$x) -> n_sampled
