@@ -27,6 +27,8 @@ plot.distribution_check <- function(x, y, ...) {
     ) %>%
     ggplot(aes_string(x = "x", y = "median", ymin = "lcl", ymax = "ucl")) +
     geom_hline(yintercept = 1, linetype = 2) +
+    geom_line(aes(y = lcl), linetype = 3, alpha = 0.5) +
+    geom_line(aes(y = ucl), linetype = 3, alpha = 0.5) +
     geom_ribbon(alpha = 0.1) +
     geom_line() +
     geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
