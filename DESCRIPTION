@@ -28,8 +28,9 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 Collate:
-    'generate_data.R'
     's3_classes.R'
+    'fast_distribution_check.R'
+    'generate_data.R'
     'get_observed.R'
     'residuals.R'
     'test_dispersion.R'
