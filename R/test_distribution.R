@@ -18,8 +18,8 @@ setGeneric(
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
-#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join
+#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab geom_text
+#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise inner_join filter
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
@@ -44,7 +44,10 @@ setMethod(
         gather("run", "x") %>%
         count(.data$run, .data$x) -> n_sampled
     } else if (object$.args$family == "nbinomial") {
-      relevant <- grep("size for the nbinomial observations", names(samples[[1]]$hyperpar))
+      relevant <- grep(
+        "size for the nbinomial observations",
+        names(samples[[1]]$hyperpar)
+      )
       size <- map_dfc(samples, "hyperpar")[relevant, ] %>%
         unlist()
       mutate_all(
@@ -101,6 +104,7 @@ setMethod(
     }
 
     p <- ecdf %>%
+      filter(.data$lcl <= 0.999) %>%
       mutate(
         median = .data$ecdf / .data$median,
         lcl = .data$ecdf / .data$lcl,
@@ -110,6 +114,7 @@ setMethod(
       geom_hline(yintercept = 1, linetype = 2) +
       geom_ribbon(alpha = 0.1) +
       geom_line() +
+      geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
       ylab("observed / expected")
     print(p)
 
