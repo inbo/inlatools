@@ -72,6 +72,17 @@ setMethod(
           rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
       ) %>%
         count(.data$run, .data$x) -> n_sampled
+    } else if (object$.args$family == "zeroinflatednbinomial1") {
+      relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
+      zero <- object$summary.hyperpar[relevant, "mean"]
+      relevant <- grep("size for nbinomial", rownames(object$summary.hyperpar))
+      size <- object$summary.hyperpar[relevant, "mean"]
+      data.frame(
+        run = rep(seq_len(nsim), each = n_mu),
+        x = rnbinom(n = n_mu * nsim, mu = mu, size = size) *
+          rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
+      ) %>%
+        count(.data$run, .data$x) -> n_sampled
     } else {
       stop(object$.args$family, " is not yet handled")
     }

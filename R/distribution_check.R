@@ -32,7 +32,6 @@ setMethod(
   signature = signature(object = "inla"),
   definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
-    assert_that(is.flag(plot))
 
     if (length(object$.args$family) > 1) {
       stop("Only single responses are handled")
