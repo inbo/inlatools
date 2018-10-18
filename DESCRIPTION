@@ -19,6 +19,7 @@ Imports:
   methods,
   purrr,
   rlang,
+  scales,
   tidyr
 Remotes:
   github::inbo/INLA
