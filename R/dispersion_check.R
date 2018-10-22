@@ -50,6 +50,27 @@ setMethod(
           dispersion(observed = x, fitted = mu, variance = mu)
         }
       )
+    } else if (object$.args$family == "zeroinflatedpoisson1") {
+      lambda <- exp(object$summary.linear.predictor[, "0.5quant"])
+      zi <- object$summary.hyperpar[1, "0.5quant"]
+      zi_mu  <- (1 - zi) * lambda
+      zi_var <- (1 - zi) * (lambda ^ 2 + lambda) - zi_mu ^ 2
+      dispersion_data <- dispersion(
+        observed = observed,
+        fitted = zi_mu,
+        variance = zi_var
+      )
+      dispersion_model <- apply(
+        matrix(
+          rbinom(nsim * length(lambda), size = 1, prob = 1 - zi) *
+            rpois(nsim * length(lambda), lambda = lambda),
+          ncol = nsim
+        ),
+        2,
+        function(x) {
+          dispersion(observed = x, fitted = zi_mu, variance = zi_var)
+        }
+      )
     } else {
       stop(object$.args$family, " is not yet handled")
     }
