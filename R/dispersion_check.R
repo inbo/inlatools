@@ -50,6 +50,26 @@ setMethod(
           dispersion(observed = x, fitted = mu, variance = mu)
         }
       )
+    } else if (object$.args$family == "nbinomial") {
+      size <- object$summary.hyperpar[
+        "size for the nbinomial observations (1/overdispersion)",
+        "mean"
+      ]
+      dispersion_data <- dispersion(
+        observed = observed,
+        fitted = mu,
+        variance = mu + mu ^ 2 / size
+      )
+      dispersion_model <- apply(
+        matrix(
+          rnbinom(nsim * length(mu), mu = mu, size = size),
+          ncol = nsim
+        ),
+        2,
+        function(x) {
+          dispersion(observed = x, fitted = mu, variance = mu + mu ^ 2 / size)
+        }
+      )
     } else if (object$.args$family == "zeroinflatedpoisson1") {
       lambda <- exp(object$summary.linear.predictor[, "0.5quant"])
       zi <- object$summary.hyperpar[1, "0.5quant"]
