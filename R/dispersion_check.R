@@ -89,7 +89,7 @@ setMethod(
       )
       dispersion_model <- apply(
         matrix(
-          rbinom(nsim * length(mu), size = 1, prob = 1 - zero) *
+          rbinom(nsim * length(mu), size = 1, prob = 1 - zi) *
             rnbinom(nsim * length(mu), mu = mu, size = size),
           ncol = nsim
         ),
