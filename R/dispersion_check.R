@@ -70,6 +70,34 @@ setMethod(
           dispersion(observed = x, fitted = mu, variance = mu + mu ^ 2 / size)
         }
       )
+    } else if (object$.args$family == "zeroinflatednbinomial1") {
+      mu <- exp(object$summary.linear.predictor[, "0.5quant"])
+      size <- object$summary.hyperpar[
+        "size for nbinomial zero-inflated observations",
+        "0.5quant"
+      ]
+      zi <- object$summary.hyperpar[
+        "zero-probability parameter for zero-inflated nbinomial_1",
+        "0.5quant"
+      ]
+      zi_mu <- (1 - zi) * mu
+      zi_var <- (1 - zi) * mu * (1 + mu * (zi + 1 / size))
+      dispersion_data <- dispersion(
+        observed = observed,
+        fitted = zi_mu,
+        variance = zi_var
+      )
+      dispersion_model <- apply(
+        matrix(
+          rbinom(nsim * length(mu), size = 1, prob = 1 - zero) *
+            rnbinom(nsim * length(mu), mu = mu, size = size),
+          ncol = nsim
+        ),
+        2,
+        function(x) {
+          dispersion(observed = x, fitted = zi_mu, variance = zi_var)
+        }
+      )
     } else if (object$.args$family == "zeroinflatedpoisson1") {
       lambda <- exp(object$summary.linear.predictor[, "0.5quant"])
       zi <- object$summary.hyperpar[1, "0.5quant"]
