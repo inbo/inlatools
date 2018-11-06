@@ -1,4 +1,4 @@
-box: rocker/tidyverse:latest
+box: rocker/verse:latest
 build:
   steps:
     - jimhester/r-dependencies
@@ -9,7 +9,7 @@ build:
     - inbobmk/r-lint
 
 build-dev:
-  box: rocker/tidyverse:devel
+  box: rocker/verse:devel
   steps:
     - jimhester/r-dependencies
     - jimhester/r-check
