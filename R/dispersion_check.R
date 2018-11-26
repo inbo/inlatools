@@ -31,6 +31,9 @@ setMethod(
 
     observed <- get_observed(object)
     mu <- fitted(object)
+    which_na <- is.na(observed)
+    mu <- mu[!which_na]
+    observed <- observed[!which_na]
     if (object$.args$family == "poisson") {
       dispersion_data <- dispersion(
         observed = observed,
@@ -96,7 +99,7 @@ setMethod(
         }
       )
     } else if (object$.args$family == "zeroinflatedpoisson1") {
-      lambda <- exp(object$summary.linear.predictor[, "0.5quant"])
+      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"])
       zi <- object$summary.hyperpar[1, "0.5quant"]
       zi_mu  <- (1 - zi) * lambda
       zi_var <- (1 - zi) * (lambda ^ 2 + lambda) - zi_mu ^ 2
