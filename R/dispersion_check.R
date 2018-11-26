@@ -1,7 +1,6 @@
 #' Use simulations to check for overdispersion or underdispersion
 #' @inheritParams get_observed
 #' @param nsim the number of simulation
-#' @param plot display a plot of of the simulated values
 #' @name dispersion_check
 #' @rdname dispersion_check
 #' @exportMethod dispersion_check
@@ -9,7 +8,7 @@
 #' @importFrom methods setGeneric
 setGeneric(
   name = "dispersion_check",
-  def = function(object, nsim = 1000, plot = TRUE){
+  def = function(object, nsim = 1000){
     standardGeneric("dispersion_check") # nocov
   }
 )
@@ -19,14 +18,12 @@ setGeneric(
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline ggtitle
 #' @include s3_classes.R
 setMethod(
   f = "dispersion_check",
   signature = signature(object = "inla"),
-  definition = function(object, nsim = 1000, plot = TRUE) {
+  definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
-    assert_that(is.flag(plot))
 
     if (length(object$.args$family) > 1) {
       stop("Only single responses are handled")
@@ -123,28 +120,9 @@ setMethod(
       stop(object$.args$family, " is not yet handled")
     }
 
-    if (!isTRUE(plot)) {
-      return(invisible(list(data = dispersion_data, model = dispersion_model)))
-    }
-
-    p <- ggplot(
-      data.frame(dispersion = dispersion_model),
-      aes_string(x = "dispersion")
-    ) +
-      geom_density() +
-      geom_vline(xintercept = dispersion_data, linetype = 2) +
-      ggtitle(
-        paste(
-          "P(D|data > D|model) =",
-          signif(mean(dispersion_data > dispersion_model), 3)
-        )
-      )
-    print(p)
-    return(
-      invisible(
-        list(data = dispersion_data, model = dispersion_model, plot = p)
-      )
-    )
+    output <- list(data = dispersion_data, model = dispersion_model)
+    class(output) <- "dispersion_check"
+    return(output)
   }
 )
 

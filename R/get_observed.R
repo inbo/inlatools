@@ -23,7 +23,8 @@ setMethod(
     ...
   ) {
     if (nrow(object$summary.fitted.values) == 0) { #nolint
-      stop("no fitted values in object")
+      stop("no fitted values in object.
+Refit the object with 'control.compute = list(compute = TRUE)'")
     }
     object$summary.fitted.values[, "mean"] #nolint
   }

@@ -38,3 +38,35 @@ plot.distribution_check <- function(x, y, ...) {
     geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
     scale_y_continuous("observed / expected", labels = percent)
 }
+
+#' Plot the results from a dispersion check
+#' @param x a dispersion_check object. Which is the output of
+#' `\link{dispersion_check}`
+#' @param y currently ignored
+#' @param ... currently ignored
+#' @return a ggplot2 object
+#' @importFrom assertthat assert_that has_name is.number
+#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline ggtitle
+#' @importFrom graphics plot
+#' @importFrom scales percent
+#' @export
+plot.dispersion_check <- function(x, y, ...) {
+  assert_that(
+    has_name(x, "data"),
+    has_name(x, "model"),
+    is.number(x$data),
+    is.numeric(x$model)
+  )
+  ggplot(
+      data.frame(dispersion = x$model),
+      aes_string(x = "dispersion")
+    ) +
+      geom_density() +
+      geom_vline(xintercept = x$data, linetype = 2) +
+      ggtitle(
+        paste(
+          "P(D|data > D|model) =",
+          signif(mean(x$data > x$model), 3)
+        )
+      )
+}

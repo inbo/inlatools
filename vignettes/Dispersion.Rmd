@@ -49,18 +49,20 @@ binom_model <- inla(
 ## Test the dispersion
 
 ```{r fig.cap = "Dispersion of the Poisson response"}
-dispersion_check(poisson_model)
+plot(dispersion_check(poisson_model))
 ```
 
 ```{r, fig.cap = "Dispersion for the negative binomial response"}
-dispersion_check(negbin_model)
+plot(dispersion_check(negbin_model))
 ```
 
 ```{r, fig.cap = "Dispersion for the negative binomial response"}
-dispersion_check(binom_model)
+plot(dispersion_check(binom_model))
 ```
 
 ## Simulation study
+
+The simulation study below is not run because it takes some time to run. 
 
 ```{r eval = FALSE}
 n_replicate <- 100
@@ -73,7 +75,7 @@ dispersion_poisson <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim)
   mean(D$data > D$model)
 }
 
@@ -84,7 +86,7 @@ dispersion_negbin <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim)
   mean(D$data > D$model)
 }
 
@@ -95,11 +97,10 @@ dispersion_binom <- function(i, nsim = 100) {
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
-  D <- dispersion_check(model, nsim = nsim, plot = FALSE)
+  D <- dispersion_check(model, nsim = nsim)
   mean(D$data > D$model)
 }
 
-library(purrr)
 sim_dispersion_poisson <- map_dbl(
   seq_len(n_replicate), 
   dispersion_poisson,
@@ -116,6 +117,7 @@ sim_dispersion_binom <- map_dbl(
   nsim = nsim
 )
 
+library(dplyr)
 library(ggplot2)
 data.frame(
   response = rep(

@@ -6,16 +6,14 @@
 \alias{dispersion_check,inla-method}
 \title{Use simulations to check for overdispersion or underdispersion}
 \usage{
-dispersion_check(object, nsim = 1000, plot = TRUE)
+dispersion_check(object, nsim = 1000)
 
-\S4method{dispersion_check}{inla}(object, nsim = 1000, plot = TRUE)
+\S4method{dispersion_check}{inla}(object, nsim = 1000)
 }
 \arguments{
 \item{object}{the INLA model}
 
 \item{nsim}{the number of simulation}
-
-\item{plot}{display a plot of of the simulated values}
 }
 \description{
 Use simulations to check for overdispersion or underdispersion
