@@ -27,7 +27,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Collate:
     's3_classes.R'
     'dispersion_check.R'
@@ -41,5 +41,6 @@ URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
 Suggests: 
   knitr,
-  rmarkdown
+  rmarkdown,
+  testthat
 VignetteBuilder: knitr
