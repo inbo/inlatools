@@ -6,6 +6,7 @@
 #' @exportMethod dispersion_check
 #' @docType methods
 #' @importFrom methods setGeneric
+#' @family checks
 setGeneric(
   name = "dispersion_check",
   def = function(object, nsim = 1000){
@@ -135,6 +136,7 @@ setMethod(
 #' @param fitted the fitted values
 #' @param variance the variance of the fitted values
 #' @export
+#' @family statistics
 dispersion <- function(observed, fitted, variance) {
   mean((observed - fitted) ^ 2 / variance)
 }

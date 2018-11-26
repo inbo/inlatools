@@ -12,3 +12,9 @@ get_observed(object)
 \description{
 get the observed values from the model object
 }
+\seealso{
+Other statistics: \code{\link{dispersion}},
+  \code{\link{fitted,inla-method}},
+  \code{\link{residuals,inla-method}}
+}
+\concept{statistics}

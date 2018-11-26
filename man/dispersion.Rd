@@ -18,3 +18,9 @@ dispersion(observed, fitted, variance)
 Calculate a measure for dispersion
 The measure is calculated as the average of the squared Pearson residuals
 }
+\seealso{
+Other statistics: \code{\link{fitted,inla-method}},
+  \code{\link{get_observed}},
+  \code{\link{residuals,inla-method}}
+}
+\concept{statistics}

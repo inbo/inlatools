@@ -11,6 +11,7 @@
 #' @importFrom graphics plot
 #' @importFrom scales percent
 #' @export
+#' @family utils
 plot.distribution_check <- function(x, y, ...) {
   assert_that(
     inherits(x, "data.frame"),
@@ -50,6 +51,7 @@ plot.distribution_check <- function(x, y, ...) {
 #' @importFrom graphics plot
 #' @importFrom scales percent
 #' @export
+#' @family utils
 plot.dispersion_check <- function(x, y, ...) {
   assert_that(
     has_name(x, "data"),

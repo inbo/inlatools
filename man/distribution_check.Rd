@@ -20,3 +20,8 @@ distribution_check(object, nsim = 1000)
 Use simulations to compare the observed distribution with the modelled
 distribution
 }
+\seealso{
+Other checks: \code{\link{dispersion_check}},
+  \code{\link{fast_distribution_check}}
+}
+\concept{checks}

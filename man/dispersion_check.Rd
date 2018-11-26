@@ -18,3 +18,8 @@ dispersion_check(object, nsim = 1000)
 \description{
 Use simulations to check for overdispersion or underdispersion
 }
+\seealso{
+Other checks: \code{\link{distribution_check}},
+  \code{\link{fast_distribution_check}}
+}
+\concept{checks}

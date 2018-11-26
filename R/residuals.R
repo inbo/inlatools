@@ -5,6 +5,7 @@
 #' @importFrom methods setMethod
 #' @export
 #' @include s3_classes.R
+#' @family statistics
 setMethod(
   f = "residuals",
   signature = signature(object = "inla"),

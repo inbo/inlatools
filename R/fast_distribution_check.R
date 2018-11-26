@@ -10,6 +10,7 @@
 #' @exportMethod fast_distribution_check
 #' @docType methods
 #' @importFrom methods setGeneric
+#' @family checks
 setGeneric(
   name = "fast_distribution_check",
   def = function(object, nsim = 1000){

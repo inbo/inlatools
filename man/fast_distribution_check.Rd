@@ -20,3 +20,8 @@ fast_distribution_check(object, nsim = 1000)
 This check uses the fitted values and thus ignores the uncertainty on the
 predictions
 }
+\seealso{
+Other checks: \code{\link{dispersion_check}},
+  \code{\link{distribution_check}}
+}
+\concept{checks}

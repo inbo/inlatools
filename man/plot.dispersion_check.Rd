@@ -20,3 +20,8 @@ a ggplot2 object
 \description{
 Plot the results from a dispersion check
 }
+\seealso{
+Other utils: \code{\link{generate_data}},
+  \code{\link{plot.distribution_check}}
+}
+\concept{utils}

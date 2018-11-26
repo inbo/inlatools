@@ -50,3 +50,8 @@ with \eqn{b_i = N(0, \sigma_r)}
 e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
 }
 }
+\seealso{
+Other utils: \code{\link{plot.dispersion_check}},
+  \code{\link{plot.distribution_check}}
+}
+\concept{utils}

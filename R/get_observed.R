@@ -2,6 +2,7 @@
 #' @param object the INLA model
 #' @export
 #' @importFrom assertthat assert_that is.string
+#' @family statistics
 get_observed <- function(object) {
   assert_that(inherits(object, "inla"))
   response <- as.character(object$.args$formula[2])
@@ -15,6 +16,7 @@ get_observed <- function(object) {
 #' @importFrom methods setMethod
 #' @export
 #' @include s3_classes.R
+#' @family statistics
 setMethod(
   f = "fitted",
   signature = signature(object = "inla"),

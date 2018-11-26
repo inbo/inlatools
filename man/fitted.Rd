@@ -16,3 +16,9 @@
 \description{
 Calculate the residuals from an INLA model
 }
+\seealso{
+Other statistics: \code{\link{dispersion}},
+  \code{\link{get_observed}},
+  \code{\link{residuals,inla-method}}
+}
+\concept{statistics}

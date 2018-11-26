@@ -32,6 +32,7 @@
 #' @importFrom rlang .data
 #' @importFrom stats rnorm rpois rnbinom rbinom plogis
 #' @export
+#' @family utils
 generate_data <- function(
   a = 0,
   sigma_random = 0.5,

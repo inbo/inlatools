@@ -7,6 +7,7 @@
 #' @exportMethod distribution_check
 #' @docType methods
 #' @importFrom methods setGeneric
+#' @family checks
 setGeneric(
   name = "distribution_check",
   def = function(object, nsim = 1000){
