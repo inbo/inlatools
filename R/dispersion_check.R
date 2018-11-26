@@ -72,7 +72,7 @@ setMethod(
         }
       )
     } else if (object$.args$family == "zeroinflatednbinomial1") {
-      mu <- exp(object$summary.linear.predictor[, "0.5quant"])
+      mu <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
       size <- object$summary.hyperpar[
         "size for nbinomial zero-inflated observations",
         "0.5quant"
@@ -100,7 +100,7 @@ setMethod(
         }
       )
     } else if (object$.args$family == "zeroinflatedpoisson1") {
-      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"])
+      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
       zi <- object$summary.hyperpar[1, "0.5quant"]
       zi_mu  <- (1 - zi) * lambda
       zi_var <- (1 - zi) * (lambda ^ 2 + lambda) - zi_mu ^ 2
@@ -138,5 +138,5 @@ setMethod(
 #' @export
 #' @family statistics
 dispersion <- function(observed, fitted, variance) {
-  mean((observed - fitted) ^ 2 / variance)
+  mean((observed - fitted) ^ 2 / variance) # nolint
 }

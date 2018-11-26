@@ -32,7 +32,8 @@ test_that("basic functionality works", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1", data = ds,
+    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1",
+    data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
   )
@@ -46,7 +47,8 @@ test_that("basic functionality works", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatedpoisson1", data = ds,
+    poisson ~ f(id, model = "iid"), family = "zeroinflatedpoisson1",
+    data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
   )
@@ -108,7 +110,8 @@ test_that("handles missing responses", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1", data = ds,
+    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1",
+    data = ds,
     control.predictor = list(compute = TRUE, link = 1),
     control.compute = list(config = TRUE),
   )
