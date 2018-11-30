@@ -5,7 +5,7 @@
 \title{Plot simulated second order random walks}
 \usage{
 \method{plot}{rw2_sim}(x, y, ..., type = c("all", "divergence",
-  "stationary"), link = c("identity", "log", "logit"))
+  "stationary", "quantile"), link = c("identity", "log", "logit"))
 }
 \arguments{
 \item{x}{a \code{rw2_sim} object. Which is the output of  \code{\link{simulate_rw2}}}

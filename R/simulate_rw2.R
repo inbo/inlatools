@@ -73,7 +73,7 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
 #' @export
 plot.rw2_sim <- function(
   x, y, ...,
-  type = c("all", "divergence", "stationary"),
+  type = c("all", "divergence", "stationary", "quantile"),
   link = c("identity", "log", "logit")
 ) {
   assert_that(
@@ -178,6 +178,56 @@ plot.rw2_sim <- function(
             geom_line() +
             scale +
             facet_wrap(~replicate)
+      }
+    },
+    quantile = {
+      if (link == "logit") {
+        x %>%
+          group_by(.data$x) %>%
+          summarise(
+            '2.5%' = quantile(y, 0.025),
+            '10%' = quantile(y, 0.1),
+            '25%' = quantile(y, 0.25),
+            '50%' = quantile(y, 0.5),
+            '75%' = quantile(y, 0.75),
+            '90%' = quantile(y, 0.9),
+            '97.5%' = quantile(y, 0.975)
+          ) %>%
+          crossing(reference) %>%
+          gather("quantile", "y", -x, -reference, factor_key = TRUE) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
+            geom_hline(
+              aes_string(yintercept = "reference"), linetype = 2, col = "red"
+            ) +
+            geom_line() +
+            scale_y_continuous("proportion", labels = percent) +
+            facet_wrap(~facet, scales = "free_y")
+      } else {
+        x %>%
+          group_by(.data$x) %>%
+          summarise(
+            '2.5%' = quantile(y, 0.025),
+            '10%' = quantile(y, 0.1),
+            '25%' = quantile(y, 0.25),
+            '50%' = quantile(y, 0.5),
+            '75%' = quantile(y, 0.75),
+            '90%' = quantile(y, 0.9),
+            '97.5%' = quantile(y, 0.975)
+          ) %>%
+          gather("quantile", "y", -x, factor_key = TRUE) %>%
+          mutate(x, y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            geom_line() +
+            scale
       }
     },
     all = {
