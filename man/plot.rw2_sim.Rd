@@ -5,7 +5,7 @@
 \title{Plot simulated second order random walks}
 \usage{
 \method{plot}{rw2_sim}(x, y, ..., type = c("all", "divergence",
-  "stationary"))
+  "stationary"), link = c("identity", "log", "logit"))
 }
 \arguments{
 \item{x}{a \code{rw2_sim} object. Which is the output of  \code{\link{simulate_rw2}}}
@@ -15,6 +15,8 @@
 \item{...}{currently ignored}
 
 \item{type}{which plot to create. \code{"all"} displays all simulations. \code{"divergence"} displays the most divergent simulations.}
+
+\item{link}{which link to use for back transformation}
 }
 \value{
 a ggplot2 object

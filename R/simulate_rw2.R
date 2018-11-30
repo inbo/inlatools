@@ -59,16 +59,22 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
 #' @param y currently ignored
 #' @param ... currently ignored
 #' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations.
+#' @param link which link to use for back transformation
 #' @return a ggplot2 object
 #' @family priors
 #' @importFrom assertthat assert_that has_name
-#' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap
+#' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap scale_y_continuous facet_grid
+#' @importFrom scales percent
 #' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join
 #' @importFrom rlang .data
 #' @importFrom utils head
+#' @importFrom tidyr crossing
+#' @importFrom stats qlogis
 #' @export
 plot.rw2_sim <- function(
-  x, y, ..., type = c("all", "divergence", "stationary")
+  x, y, ...,
+  type = c("all", "divergence", "stationary"),
+  link = c("identity", "log", "logit")
 ) {
   assert_that(
     inherits(x, "data.frame"),
@@ -77,33 +83,129 @@ plot.rw2_sim <- function(
     has_name(x, "replicate")
   )
   type <- match.arg(type)
+  link <- match.arg(link)
+  backtrans <- switch(
+    link,
+    identity = function(x) {
+      x
+    },
+    log = exp,
+    logit = plogis
+  )
+  reference <- switch(
+    link, identity = 0, log = 1, logit = c(0.05, 0.1, 0.25, 0.5)
+  )
+  scale <- switch(
+    link,
+    identity = scale_y_continuous("effect"),
+    log = scale_y_continuous("relative effect", labels = percent),
+    logit = scale_y_continuous("proportion", labels = percent)
+  )
   switch(
     type,
     divergence = {
-      x %>%
-        group_by(.data$replicate) %>%
-        summarise_at("y", c(min = min, max = max)) %>%
-        arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
-        head(10) %>%
-        semi_join(x = x, by = "replicate") %>%
-        ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-          geom_hline(yintercept = 0, linetype = 2, col = "red") +
-          geom_line()
+      if (link == "logit") {
+        x %>%
+          group_by(.data$replicate) %>%
+          summarise_at("y", c(min = min, max = max)) %>%
+          arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
+          head(10) %>%
+          semi_join(x = x, by = "replicate") %>%
+          crossing(reference) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_hline(
+              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
+            ) +
+            geom_line() +
+            scale_y_continuous("proportion", labels = percent) +
+            facet_wrap(~facet, scales = "free_y")
+      } else {
+        x %>%
+          group_by(.data$replicate) %>%
+          summarise_at("y", c(min = min, max = max)) %>%
+          arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
+          head(10) %>%
+          semi_join(x = x, by = "replicate") %>%
+          mutate(y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            geom_line() +
+            scale
+      }
     },
     stationary = {
-      x %>%
-        group_by(.data$replicate) %>%
-        summarise(extreme = max(abs(.data$y))) %>%
-        arrange(.data$extreme) %>%
-        head(9) %>%
-        semi_join(x = x, by = "replicate") %>%
-        ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-          geom_hline(yintercept = 0, linetype = 2, col = "red") +
-          geom_line() +
-          facet_wrap(~replicate)
+      if (link == "logit") {
+        x %>%
+          group_by(.data$replicate) %>%
+          summarise(extreme = max(abs(.data$y))) %>%
+          arrange(.data$extreme) %>%
+          head(9) %>%
+          semi_join(x = x, by = "replicate") %>%
+          crossing(reference) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y")) +
+            geom_hline(
+              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
+            ) +
+            geom_line() +
+            scale_y_continuous("proportion", labels = percent) +
+            facet_grid(facet ~ replicate, scales = "free_y")
+      } else {
+        x %>%
+          group_by(.data$replicate) %>%
+          summarise(extreme = max(abs(.data$y))) %>%
+          arrange(.data$extreme) %>%
+          head(9) %>%
+          semi_join(x = x, by = "replicate") %>%
+          mutate(y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y")) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            geom_line() +
+            scale +
+            facet_wrap(~replicate)
+      }
     },
-    ggplot(x, aes_string(x = "x", y = "y", group = "replicate")) +
-      geom_line(alpha = 0.1) +
-      geom_hline(yintercept = 0, linetype = 2, col = "red")
+    all = {
+      if (link == "logit") {
+        crossing(x, reference) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+          geom_line(alpha = 0.1) +
+          geom_hline(
+            aes_string(yintercept = "reference"), linetype = 2, colour = "red"
+          ) +
+          scale_y_continuous("proportion", labels = percent) +
+          facet_wrap(~facet, scales = "free_y")
+      } else {
+        x %>%
+          mutate(x, y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_line(alpha = 0.1) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            scale
+      }
+    }
   )
 }
