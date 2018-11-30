@@ -53,3 +53,57 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
   class(simulated) <- c("rw2_sim", class(simulated))
   return(simulated)
 }
+
+#' Plot simulated second order random walks
+#' @param x a `rw2_sim` object. Which is the output of  `\link{simulate_rw2}`
+#' @param y currently ignored
+#' @param ... currently ignored
+#' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations.
+#' @return a ggplot2 object
+#' @family priors
+#' @importFrom assertthat assert_that has_name
+#' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap
+#' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join
+#' @importFrom rlang .data
+#' @importFrom utils head
+#' @export
+plot.rw2_sim <- function(
+  x, y, ..., type = c("all", "divergence", "stationary")
+) {
+  assert_that(
+    inherits(x, "data.frame"),
+    has_name(x, "x"),
+    has_name(x, "y"),
+    has_name(x, "replicate")
+  )
+  type <- match.arg(type)
+  switch(
+    type,
+    divergence = {
+      x %>%
+        group_by(.data$replicate) %>%
+        summarise_at("y", c(min = min, max = max)) %>%
+        arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
+        head(10) %>%
+        semi_join(x = x, by = "replicate") %>%
+        ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+          geom_hline(yintercept = 0, linetype = 2, col = "red") +
+          geom_line()
+    },
+    stationary = {
+      x %>%
+        group_by(.data$replicate) %>%
+        summarise(extreme = max(abs(.data$y))) %>%
+        arrange(.data$extreme) %>%
+        head(9) %>%
+        semi_join(x = x, by = "replicate") %>%
+        ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+          geom_hline(yintercept = 0, linetype = 2, col = "red") +
+          geom_line() +
+          facet_wrap(~replicate)
+    },
+    ggplot(x, aes_string(x = "x", y = "y", group = "replicate")) +
+      geom_line(alpha = 0.1) +
+      geom_hline(yintercept = 0, linetype = 2, col = "red")
+  )
+}
