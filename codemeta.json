@@ -192,7 +192,7 @@
     }
   ],
   "readme": "https://github.com/inbo/inlatools/blob/master/README.md",
-  "fileSize": "25.373KB",
+  "fileSize": "26.872KB",
   "contIntegration": "https://ci.appveyor.com/project/inbo/inlatools",
   "developmentStatus": "https://www.repostatus.org/#wip"
 }

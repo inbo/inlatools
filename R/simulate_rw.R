@@ -4,14 +4,17 @@
 #' @param tau the precision of the random walk process
 #' @param length the length of the time series
 #' @param start the starting values of the time series
+#' @param order 1 for first order random walk or 2 for second order random walk
 #' @param n_sim the number of simulations
-#' @return a data.frame with simulated time series from the second order random walk
+#' @return a data.frame with simulated time series from the random walk
 #' @export
 #' @importFrom assertthat assert_that is.number is.count
 #' @importFrom dplyr %>% bind_rows
 #' @importFrom stats arima.sim
 #' @family priors
-simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim = 1e3) {
+simulate_rw <- function(
+  sigma = 0.01, tau = NULL, length = 10, start = 1, order = 1, n_sim = 1e3
+) {
   if (is.null(sigma)) {
     assert_that(
       is.number(tau),
@@ -28,6 +31,8 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
   assert_that(
     is.count(length),
     is.number(start),
+    is.count(order),
+    order < 3,
     is.count(n_sim)
   )
   x <- seq(start, length = length, by = 1)
@@ -38,7 +43,7 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
         x,
         y = head(
           arima.sim(
-            model = list(order = c(0, 2, 0)),
+            model = list(order = c(0, order, 0)),
             n = length,
             n.start = 1e3,
             sd = sigma
@@ -50,12 +55,12 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
     }
   ) %>%
     bind_rows() -> simulated
-  class(simulated) <- c("rw2_sim", class(simulated))
+  class(simulated) <- c("rw_sim", class(simulated))
   return(simulated)
 }
 
 #' Plot simulated second order random walks
-#' @param x a `rw2_sim` object. Which is the output of  `\link{simulate_rw2}`
+#' @param x a `rw_sim` object. Which is the output of  `\link{simulate_rw}`
 #' @param y currently ignored
 #' @param ... currently ignored
 #' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations.
@@ -71,7 +76,7 @@ simulate_rw2 <- function(sigma = 0.01, tau = NULL, length = 10, start = 1, n_sim
 #' @importFrom tidyr crossing
 #' @importFrom stats qlogis
 #' @export
-plot.rw2_sim <- function(
+plot.rw_sim <- function(
   x, y, ...,
   type = c("all", "divergence", "stationary", "quantile"),
   link = c("identity", "log", "logit")
