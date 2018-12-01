@@ -5,7 +5,8 @@
 \title{Plot simulated second order random walks}
 \usage{
 \method{plot}{rw_sim}(x, y, ..., type = c("all", "divergence",
-  "stationary", "quantile"), link = c("identity", "log", "logit"))
+  "stationary", "quantile", "change"), link = c("identity", "log",
+  "logit"))
 }
 \arguments{
 \item{x}{a \code{rw_sim} object. Which is the output of  \code{\link{simulate_rw}}}
@@ -14,7 +15,7 @@
 
 \item{...}{currently ignored}
 
-\item{type}{which plot to create. \code{"all"} displays all simulations. \code{"divergence"} displays the most divergent simulations.}
+\item{type}{which plot to create. \code{"all"} displays all simulations. \code{"divergence"} displays the most divergent simulations. \code{"stationary"} displays the smimulations with the smallest differences for the reference. \code{"quantile"} displays the enveloppes around the simulations. \code{"changes"} displays the simulations with the highest number of changes in directions in the random walk.}
 
 \item{link}{which link to use for back transformation}
 }

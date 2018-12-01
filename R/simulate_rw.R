@@ -63,14 +63,14 @@ simulate_rw <- function(
 #' @param x a `rw_sim` object. Which is the output of  `\link{simulate_rw}`
 #' @param y currently ignored
 #' @param ... currently ignored
-#' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations.
+#' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations. `"stationary"` displays the smimulations with the smallest differences for the reference. `"quantile"` displays the enveloppes around the simulations. `"changes"` displays the simulations with the highest number of changes in directions in the random walk.
 #' @param link which link to use for back transformation
 #' @return a ggplot2 object
 #' @family priors
 #' @importFrom assertthat assert_that has_name
 #' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap scale_y_continuous facet_grid
 #' @importFrom scales percent
-#' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join
+#' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join lag desc
 #' @importFrom rlang .data
 #' @importFrom utils head
 #' @importFrom tidyr crossing
@@ -78,7 +78,7 @@ simulate_rw <- function(
 #' @export
 plot.rw_sim <- function(
   x, y, ...,
-  type = c("all", "divergence", "stationary", "quantile"),
+  type = c("all", "divergence", "stationary", "quantile", "change"),
   link = c("identity", "log", "logit")
 ) {
   assert_that(
@@ -108,6 +108,55 @@ plot.rw_sim <- function(
   )
   switch(
     type,
+    change = {
+      if (link == "logit") {
+        x %>%
+          group_by(.data$replicate) %>%
+          mutate(
+            direction = sign(.data$y - lag(.data$y))
+          ) %>%
+          summarise(
+            changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
+          ) %>%
+          arrange(desc(.data$changes)) %>%
+          head(9) %>%
+          semi_join(x = x, by = "replicate") %>%
+          crossing(reference) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_hline(
+              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
+            ) +
+            geom_line() +
+            scale_y_continuous("proportion", labels = percent) +
+            facet_grid(facet ~ replicate, scales = "free_y")
+      } else {
+        x %>%
+          group_by(.data$replicate) %>%
+          mutate(
+            direction = sign(y - lag(y))
+          ) %>%
+          summarise(
+            changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
+          ) %>%
+          arrange(desc(.data$changes)) %>%
+          head(9) %>%
+          semi_join(x = x, by = "replicate") %>%
+          mutate(x, y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y")) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            geom_line() +
+            scale +
+            facet_wrap(~replicate)
+      }
+    },
     divergence = {
       if (link == "logit") {
         x %>%
