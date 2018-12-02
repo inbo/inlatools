@@ -20,6 +20,21 @@ a ggplot2 object
 \description{
 Plot the results from a distribution check
 }
+\examples{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE)
+)
+fdc <- fast_distribution_check(model)
+plot(fdc)
+}
 \seealso{
 Other utils: \code{\link{generate_data}},
   \code{\link{plot.dispersion_check}}

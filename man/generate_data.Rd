@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_data.R
 \name{generate_data}
 \alias{generate_data}
-\title{Generate dummy data with several distribution}
+\title{Generate dummy data with several distributions}
 \usage{
 generate_data(a = 0, sigma_random = 0.5, n_random = 20,
   n_replicate = 10, nb_size = 1, b_size = 5, zero_inflation = 0.5)
@@ -49,6 +49,10 @@ with \eqn{b_i = N(0, \sigma_r)}
 \item The binomial distribution uses \eqn{\pi_{ij} =
 e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
 }
+}
+\examples{
+set.seed(20181202)
+head(generate_data())
 }
 \seealso{
 Other utils: \code{\link{plot.dispersion_check}},

@@ -19,6 +19,11 @@ a data.frame with simulated time series from the random walk
 \description{
 simulate data from a second order random walk
 }
+\examples{
+set.seed(20181202)
+x <- simulate_iid(sigma = 0.25)
+head(x)
+}
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},
   \code{\link{plot.sim_rw}}, \code{\link{simulate_rw}}

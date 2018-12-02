@@ -25,6 +25,27 @@ a ggplot2 object
 \description{
 Plot simulated random walks
 }
+\examples{
+\donttest{
+set.seed(20181202)
+x <- simulate_rw(sigma = 0.05, start = -10, length = 40)
+plot(x)
+plot(x, type = "quantile")
+plot(x, type = "divergence")
+plot(x, type = "stationary")
+plot(x, type = "change")
+plot(x, type = "quantile", link = "log")
+plot(x, type = "quantile", link = "logit")
+y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
+plot(y)
+plot(y, type = "quantile")
+plot(y, type = "divergence")
+plot(y, type = "stationary")
+plot(y, type = "change")
+plot(y, type = "quantile", link = "log")
+plot(y, type = "quantile", link = "logit")
+}
+}
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},
   \code{\link{simulate_iid}}, \code{\link{simulate_rw}}

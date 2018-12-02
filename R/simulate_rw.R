@@ -12,6 +12,12 @@
 #' @importFrom dplyr %>% bind_rows
 #' @importFrom stats arima.sim
 #' @family priors
+#' @examples
+#' set.seed(20181202)
+#' x <- simulate_rw(sigma = 0.1, start = -10, length = 40)
+#' head(x)
+#' y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
+#' head(y)
 simulate_rw <- function(
   sigma = NULL, tau = NULL, length = 10, start = 1, order = 1, n_sim = 1e3
 ) {
@@ -84,6 +90,26 @@ simulate_rw <- function(
 #' @importFrom tidyr crossing
 #' @importFrom stats qlogis
 #' @export
+#' @examples
+#' \donttest{
+#' set.seed(20181202)
+#' x <- simulate_rw(sigma = 0.05, start = -10, length = 40)
+#' plot(x)
+#' plot(x, type = "quantile")
+#' plot(x, type = "divergence")
+#' plot(x, type = "stationary")
+#' plot(x, type = "change")
+#' plot(x, type = "quantile", link = "log")
+#' plot(x, type = "quantile", link = "logit")
+#' y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
+#' plot(y)
+#' plot(y, type = "quantile")
+#' plot(y, type = "divergence")
+#' plot(y, type = "stationary")
+#' plot(y, type = "change")
+#' plot(y, type = "quantile", link = "log")
+#' plot(y, type = "quantile", link = "logit")
+#' }
 plot.sim_rw <- function(
   x, y, ...,
   type = c("all", "divergence", "stationary", "quantile", "change"),

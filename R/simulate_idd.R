@@ -8,6 +8,10 @@
 #' @importFrom assertthat assert_that is.number is.count
 #' @importFrom stats rnorm
 #' @family priors
+#' @examples
+#' set.seed(20181202)
+#' x <- simulate_iid(sigma = 0.25)
+#' head(x)
 simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
   if (is.null(sigma)) {
     assert_that(
@@ -46,6 +50,12 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
 #' @importFrom scales percent
 #' @importFrom tidyr crossing
 #' @export
+#' @examples
+#' set.seed(20181202)
+#' x <- simulate_iid(sigma = 0.25)
+#' plot(x)
+#' plot(x, link = "log")
+#' plot(x, link = "logit")
 plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
   assert_that(is.numeric(x))
   quants <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)

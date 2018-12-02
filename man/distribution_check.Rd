@@ -20,6 +20,23 @@ distribution_check(object, nsim = 1000)
 Use simulations to compare the observed distribution with the modelled
 distribution
 }
+\examples{
+\donttest{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE),
+  control.compute = list(config = TRUE)
+)
+distribution_check(model)
+}
+}
 \seealso{
 Other checks: \code{\link{dispersion_check}},
   \code{\link{fast_distribution_check}}

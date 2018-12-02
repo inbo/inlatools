@@ -18,6 +18,21 @@ dispersion_check(object, nsim = 1000)
 \description{
 Use simulations to check for overdispersion or underdispersion
 }
+\examples{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE)
+)
+dc <- dispersion_check(model)
+str(dc)
+}
 \seealso{
 Other checks: \code{\link{distribution_check}},
   \code{\link{fast_distribution_check}}

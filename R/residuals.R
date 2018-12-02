@@ -1,11 +1,25 @@
 #' Calculate the residuals from an INLA model
-#' @inheritParams stats::residuals.glm
-#' @inheritParams get_observed
+#' @param object an `inla` object
+#' @param type currently only Pearson residuals are available. Other types are only listed for compatibility with the default `residuals` function.
+#' @param ... currently ignored
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export
 #' @include s3_classes.R
 #' @family statistics
+#' @examples
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE)
+#' )
+#' residuals(model)
 setMethod(
   f = "residuals",
   signature = signature(object = "inla"),

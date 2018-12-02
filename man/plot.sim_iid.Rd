@@ -21,6 +21,13 @@ a ggplot2 object
 \description{
 Plot simulated random intercepts
 }
+\examples{
+set.seed(20181202)
+x <- simulate_iid(sigma = 0.25)
+plot(x)
+plot(x, link = "log")
+plot(x, link = "logit")
+}
 \seealso{
 Other priors: \code{\link{plot.sim_rw}},
   \code{\link{simulate_iid}}, \code{\link{simulate_rw}}

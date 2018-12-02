@@ -28,6 +28,22 @@ setGeneric(
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
 #' @include s3_classes.R
+#' @examples
+#' \donttest{
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE),
+#'   control.compute = list(config = TRUE)
+#' )
+#' distribution_check(model)
+#' }
 setMethod(
   f = "distribution_check",
   signature = signature(object = "inla"),

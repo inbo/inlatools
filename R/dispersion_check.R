@@ -20,6 +20,20 @@ setGeneric(
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
 #' @include s3_classes.R
+#' @examples
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE)
+#' )
+#' dc <- dispersion_check(model)
+#' str(dc)
 setMethod(
   f = "dispersion_check",
   signature = signature(object = "inla"),
@@ -137,6 +151,23 @@ setMethod(
 #' @param variance the variance of the fitted values
 #' @export
 #' @family statistics
+#' @examples
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE)
+#' )
+#' dispersion(
+#'   observed = get_observed(model),
+#'   fitted = fitted(model),
+#'   variance = fitted(model)
+#' )
 dispersion <- function(observed, fitted, variance) {
   mean((observed - fitted) ^ 2 / variance) # nolint
 }

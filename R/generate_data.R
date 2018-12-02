@@ -1,4 +1,4 @@
-#' Generate dummy data with several distribution
+#' Generate dummy data with several distributions
 #'
 #' All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i}
 #' with \eqn{b_i = N(0, \sigma_r)}
@@ -33,6 +33,9 @@
 #' @importFrom stats rnorm rpois rnbinom rbinom plogis
 #' @export
 #' @family utils
+#' @examples
+#' set.seed(20181202)
+#' head(generate_data())
 generate_data <- function(
   a = 0,
   sigma_random = 0.5,

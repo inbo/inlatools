@@ -18,6 +18,24 @@ dispersion(observed, fitted, variance)
 Calculate a measure for dispersion
 The measure is calculated as the average of the squared Pearson residuals
 }
+\examples{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE)
+)
+dispersion(
+  observed = get_observed(model),
+  fitted = fitted(model),
+  variance = fitted(model)
+)
+}
 \seealso{
 Other statistics: \code{\link{fitted,inla-method}},
   \code{\link{get_observed}},

@@ -12,6 +12,20 @@
 #' @importFrom scales percent
 #' @export
 #' @family utils
+#' @examples
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE)
+#' )
+#' fdc <- fast_distribution_check(model)
+#' plot(fdc)
 plot.distribution_check <- function(x, y, ...) {
   assert_that(
     inherits(x, "data.frame"),
@@ -52,6 +66,20 @@ plot.distribution_check <- function(x, y, ...) {
 #' @importFrom scales percent
 #' @export
 #' @family utils
+#' @examples
+#' library(INLA)
+#' set.seed(20181202)
+#' model <- inla(
+#'   poisson ~ 1,
+#'   family = "poisson",
+#'   data = data.frame(
+#'     poisson = rpois(20, lambda = 10),
+#'     base = 1
+#'   ),
+#'   control.predictor = list(compute = TRUE)
+#' )
+#' dc <- dispersion_check(model)
+#' plot(dc)
 plot.dispersion_check <- function(x, y, ...) {
   assert_that(
     has_name(x, "data"),
