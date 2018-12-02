@@ -1,0 +1,157 @@
+---
+title: "Setting a prior"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Setting a prior}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+library(inlatools)
+```
+
+## "iid" random intercept
+
+### Testing `sigma`
+
+`simulate_iid()` generates a number of iid random intercepts from a Gaussian distribution with standard deviation `sigma`.
+
+```{r}
+x <- simulate_iid(sigma = 1)
+y <- simulate_iid(sigma = 0.1)
+```
+
+`plot()` on the simulated random intercepts yields a density with indication of the quantiles.
+
+```{r, fig.show='hold'}
+plot(x)
+plot(y)
+```
+
+Adding `link = "log"` displays the density after back transformation of the random intercepts using the log-link. The random intercept can be interpreted as a relative effect.
+
+```{r, fig.show='hold'}
+plot(x, link = "log")
+plot(y, link = "log")
+```
+
+Adding `link = "logit"` displays the individual random intercepts after back transformation using the loglit-link. Since the influence of the random intercept depends on base proportion, the plot shows for each random intercept the resulting proportion after adding the random intercept to the base proportion.
+
+```{r, fig.show='hold'}
+plot(x, link = "logit")
+plot(y, link = "logit")
+```
+
+### Testing `tau`
+
+One can specify the precision `tau` ($\tau$) instead of the standard deviation `sigma` ($\sigma$). Note that the precision is the inverse of the variance ($\tau = 1 / \sigma ^ 2$).
+
+```{r}
+z <- simulate_iid(tau = 10)
+plot(z)
+```
+
+You must either specify `sigma` or `tau`, the other must remain `NULL` (the default).
+
+```{r error = TRUE}
+simulate_iid(sigma = 0.1, tau = 100)
+```
+
+## First order random walk
+
+```{r}
+x <- simulate_rw(sigma = 0.1, length = 50)
+y <- simulate_rw(sigma = 0.01, length = 50)
+```
+
+The default plot displays all simulated time series.
+
+```{r, fig.show='hold'}
+plot(x)
+plot(y)
+```
+
+Setting `type = "quantile"` shows, at each time point, the quantiles of the simulated time series.
+
+```{r, fig.show='hold'}
+plot(x, type = "quantile")
+plot(y, type = "quantile")
+```
+
+For each simulated time series, we can calculate the strongest absolute effect at any time point. `type = "divergence"` shows the top 10 simulated time series with the strongest absolute effect. 
+
+```{r, fig.show='hold'}
+plot(x, type = "divergence")
+plot(y, type = "divergence")
+```
+
+`type = "stationary"` is the opposite of `type = "divergence"`: the top 10 simulated time series with the smallest maximum absolute effect at any time point.
+
+```{r, fig.show='hold'}
+plot(x, type = "stationary")
+plot(y, type = "stationary")
+```
+
+`type = "change"` calculates the number of changes in direction of the time series. It will display the top 10 simulated time series with the highest number of changes.
+
+```{r, fig.show='hold'}
+plot(x, type = "change")
+plot(y, type = "change")
+```
+
+Back transformation is available for each `type` of plot. `link = "log"` back transforms from a log-link. The plot shows the relative effect of the random walk.
+
+```{r, fig.show='hold'}
+plot(x, type = "quantile", link = "log")
+plot(y, type = "quantile", link = "log")
+```
+
+The effect of the logit link depends on the base proportion. Therefore `link = "logit"` will create a subplot for 4 different base proportions: 5%, 10%, 25% and 50%.
+
+```{r, fig.show='hold'}
+plot(x, type = "quantile", link = "logit")
+plot(y, type = "quantile", link = "logit")
+```
+
+## Second order random walk
+
+```{r}
+x <- simulate_rw(sigma = 0.1, length = 50, order = 2)
+y <- simulate_rw(sigma = 0.01, length = 50, order = 2)
+```
+
+```{r, fig.show='hold'}
+plot(x)
+plot(y)
+```
+
+```{r, fig.show='hold'}
+plot(x, type = "quantile")
+plot(y, type = "quantile")
+```
+
+```{r, fig.show='hold'}
+plot(x, type = "divergence")
+plot(y, type = "divergence")
+```
+
+```{r, fig.show='hold'}
+plot(x, type = "stationary")
+plot(y, type = "stationary")
+```
+
+```{r, fig.show='hold'}
+plot(x, type = "change")
+plot(y, type = "change")
+```
