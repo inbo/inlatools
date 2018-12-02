@@ -27,6 +27,6 @@ a data.frame with simulated time series from the random walk
 simulate data from a second order random walk
 }
 \seealso{
-Other priors: \code{\link{plot.rw_sim}}
+Other priors: \code{\link{plot.sim_rw}}
 }
 \concept{priors}

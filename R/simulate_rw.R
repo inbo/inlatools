@@ -55,12 +55,12 @@ simulate_rw <- function(
     }
   ) %>%
     bind_rows() -> simulated
-  class(simulated) <- c("rw_sim", class(simulated))
+  class(simulated) <- c("sim_rw", class(simulated))
   return(simulated)
 }
 
-#' Plot simulated second order random walks
-#' @param x a `rw_sim` object. Which is the output of  `\link{simulate_rw}`
+#' Plot simulated random walks
+#' @param x a `sim_rw` object. Which is the output of  `\link{simulate_rw}`
 #' @param y currently ignored
 #' @param ... currently ignored
 #' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations. `"stationary"` displays the smimulations with the smallest differences for the reference. `"quantile"` displays the enveloppes around the simulations. `"changes"` displays the simulations with the highest number of changes in directions in the random walk.
@@ -76,7 +76,7 @@ simulate_rw <- function(
 #' @importFrom tidyr crossing
 #' @importFrom stats qlogis
 #' @export
-plot.rw_sim <- function(
+plot.sim_rw <- function(
   x, y, ...,
   type = c("all", "divergence", "stationary", "quantile", "change"),
   link = c("identity", "log", "logit")
@@ -141,7 +141,7 @@ plot.rw_sim <- function(
         x %>%
           group_by(.data$replicate) %>%
           mutate(
-            direction = sign(y - lag(y))
+            direction = sign(.data$y - lag(.data$y))
           ) %>%
           summarise(
             changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
@@ -167,11 +167,13 @@ plot.rw_sim <- function(
           semi_join(x = x, by = "replicate") %>%
           crossing(reference) %>%
           mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
+            y = .data$y + qlogis(.data$reference),
+            y = plogis(.data$y),
             facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+              .data$reference,
+              labels = sprintf(
+                "base = %2.0f%%", 100 * sort(unique(.data$reference))
+              )
             )
           ) %>%
           ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
@@ -205,11 +207,14 @@ plot.rw_sim <- function(
           semi_join(x = x, by = "replicate") %>%
           crossing(reference) %>%
           mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
+            y = y + qlogis(.data$reference),
+            y = plogis(.data$y),
             facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+              .data$reference,
+              labels = sprintf(
+                "base = %2.0f%%",
+                100 * sort(unique(.data$reference))
+              )
             )
           ) %>%
           ggplot(aes_string(x = "x", y = "y")) +
@@ -226,7 +231,7 @@ plot.rw_sim <- function(
           arrange(.data$extreme) %>%
           head(9) %>%
           semi_join(x = x, by = "replicate") %>%
-          mutate(y = backtrans(y)) %>%
+          mutate(y = backtrans(.data$y)) %>%
           ggplot(aes_string(x = "x", y = "y")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
@@ -250,11 +255,14 @@ plot.rw_sim <- function(
           crossing(reference) %>%
           gather("quantile", "y", -x, -reference, factor_key = TRUE) %>%
           mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
+            y = y + qlogis(.data$reference),
+            y = plogis(.data$y),
             facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+              .data$reference,
+              labels = sprintf(
+                "base = %2.0f%%",
+                100 * sort(unique(.data$reference))
+              )
             )
           ) %>%
           ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
@@ -277,7 +285,7 @@ plot.rw_sim <- function(
             '97.5%' = quantile(y, 0.975)
           ) %>%
           gather("quantile", "y", -x, factor_key = TRUE) %>%
-          mutate(x, y = backtrans(y)) %>%
+          mutate(x, y = backtrans(.data$y)) %>%
           ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
@@ -288,11 +296,14 @@ plot.rw_sim <- function(
       if (link == "logit") {
         crossing(x, reference) %>%
           mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
+            y = .data$y + qlogis(.data$reference),
+            y = plogis(.data$y),
             facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+              .data$reference,
+              labels = sprintf(
+                "base = %2.0f%%",
+                100 * sort(unique(.data$reference))
+              )
             )
           ) %>%
           ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
