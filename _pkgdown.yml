@@ -4,8 +4,13 @@ template:
 
 reference:
 - title: Checks
+  desc: Useful functions to validate a model
   contents:
   - has_concept("checks")
+- title: Setting priors
+  desc: Get a grasp of potential effect of random effects with a specified standard error `sigma` or precision `tau`
+  contents:
+  - has_concept("priors")
 - title: Statistics
   contents:
   - has_concept("statistics")
