@@ -26,6 +26,7 @@ a ggplot2 object
 Plot simulated random walks
 }
 \seealso{
-Other priors: \code{\link{simulate_rw}}
+Other priors: \code{\link{plot.sim_iid}},
+  \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
 }
 \concept{priors}

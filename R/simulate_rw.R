@@ -13,7 +13,7 @@
 #' @importFrom stats arima.sim
 #' @family priors
 simulate_rw <- function(
-  sigma = 0.01, tau = NULL, length = 10, start = 1, order = 1, n_sim = 1e3
+  sigma = NULL, tau = NULL, length = 10, start = 1, order = 1, n_sim = 1e3
 ) {
   if (is.null(sigma)) {
     assert_that(

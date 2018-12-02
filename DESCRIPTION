@@ -37,6 +37,7 @@ Collate:
     'get_observed.R'
     'plot_distribution_check.R'
     'residuals.R'
+    'simulate_idd.R'
     'simulate_rw.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues

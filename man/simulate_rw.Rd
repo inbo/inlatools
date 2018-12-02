@@ -4,7 +4,7 @@
 \alias{simulate_rw}
 \title{simulate data from a second order random walk}
 \usage{
-simulate_rw(sigma = 0.01, tau = NULL, length = 10, start = 1,
+simulate_rw(sigma = NULL, tau = NULL, length = 10, start = 1,
   order = 1, n_sim = 1000)
 }
 \arguments{
@@ -27,6 +27,7 @@ a data.frame with simulated time series from the random walk
 simulate data from a second order random walk
 }
 \seealso{
-Other priors: \code{\link{plot.sim_rw}}
+Other priors: \code{\link{plot.sim_iid}},
+  \code{\link{plot.sim_rw}}, \code{\link{simulate_iid}}
 }
 \concept{priors}
