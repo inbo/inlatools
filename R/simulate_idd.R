@@ -17,15 +17,20 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
     sigma <- tau ^ -0.5
   } else {
     assert_that(
-      is.null(tau),
       is.number(sigma),
       sigma > 0
+    )
+    assert_that(
+      is.null(tau),
+      msg = "either 'sigma' or 'tau' must be NULL"
     )
   }
   assert_that(is.count(n_sim))
 
   simulated <- rnorm(n_sim, mean = 0, sd = sigma)
   class(simulated) <- c("sim_iid", class(simulated))
+  attr(simulated, "sigma") <- sigma
+  attr(simulated, "tau") <- tau
   return(simulated)
 }
 
@@ -46,6 +51,14 @@ plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
   quants <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
   quant <- quantile(x, quants)
   link <- match.arg(link)
+  title <- ggtitle(
+    bquote(
+      sigma == .(signif(attr(x, "sigma"), 4)) ~
+        sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+        tau == .(signif(attr(x, "sigma") ^ -2, 4))
+    )
+  )
+
   switch(
     link,
     identity = {
@@ -62,7 +75,8 @@ plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
           vjust = -0.5,
           hjust = 1.5,
           angle = 90
-        )
+        ) +
+        title
     },
     log = {
       tibble(effect = exp(x)) %>%
@@ -79,7 +93,8 @@ plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
           vjust = -0.5,
           hjust = 1.5,
           angle = 90
-        )
+        ) +
+        title
     },
     logit = {
       x_range <- seq(0, 1, length = 41)
@@ -106,7 +121,8 @@ plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
         geom_abline(linetype = 2, colour = "red") +
         geom_line(data = quantiles, aes_string(colour = "quantile"), size = 1) +
         scale_x_continuous("base proportion", labels = percent) +
-        scale_y_continuous("proportion", labels = percent)
+        scale_y_continuous("proportion", labels = percent) +
+        title
     }
   )
 }

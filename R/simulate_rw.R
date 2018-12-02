@@ -23,9 +23,16 @@ simulate_rw <- function(
     sigma <- tau ^ -0.5
   } else {
     assert_that(
-      is.null(tau),
       is.number(sigma),
       sigma > 0
+    )
+    assert_that(
+      is.number(sigma),
+      sigma > 0
+    )
+    assert_that(
+      is.null(tau),
+      msg = "either 'sigma' or 'tau' must be NULL"
     )
   }
   assert_that(
@@ -56,6 +63,7 @@ simulate_rw <- function(
   ) %>%
     bind_rows() -> simulated
   class(simulated) <- c("sim_rw", class(simulated))
+  attr(simulated, "sigma") <- sigma
   return(simulated)
 }
 
@@ -106,6 +114,14 @@ plot.sim_rw <- function(
     log = scale_y_continuous("relative effect", labels = percent),
     logit = scale_y_continuous("proportion", labels = percent)
   )
+  title <- ggtitle(
+    bquote(
+      sigma == .(signif(attr(x, "sigma"), 4)) ~
+        sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+        tau == .(signif(attr(x, "sigma") ^ -2, 4))
+    )
+  )
+
   switch(
     type,
     change = {
@@ -136,7 +152,8 @@ plot.sim_rw <- function(
             ) +
             geom_line() +
             scale_y_continuous("proportion", labels = percent) +
-            facet_grid(facet ~ replicate, scales = "free_y")
+            facet_grid(facet ~ replicate, scales = "free_y") +
+            title
       } else {
         x %>%
           group_by(.data$replicate) %>%
@@ -154,7 +171,8 @@ plot.sim_rw <- function(
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
             scale +
-            facet_wrap(~replicate)
+            facet_wrap(~replicate) +
+            title
       }
     },
     divergence = {
@@ -182,7 +200,8 @@ plot.sim_rw <- function(
             ) +
             geom_line() +
             scale_y_continuous("proportion", labels = percent) +
-            facet_wrap(~facet, scales = "free_y")
+            facet_wrap(~facet, scales = "free_y") +
+            title
       } else {
         x %>%
           group_by(.data$replicate) %>%
@@ -194,7 +213,8 @@ plot.sim_rw <- function(
           ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
-            scale
+            scale +
+            title
       }
     },
     stationary = {
@@ -223,7 +243,8 @@ plot.sim_rw <- function(
             ) +
             geom_line() +
             scale_y_continuous("proportion", labels = percent) +
-            facet_grid(facet ~ replicate, scales = "free_y")
+            facet_grid(facet ~ replicate, scales = "free_y") +
+            title
       } else {
         x %>%
           group_by(.data$replicate) %>%
@@ -236,7 +257,8 @@ plot.sim_rw <- function(
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
             scale +
-            facet_wrap(~replicate)
+            facet_wrap(~replicate) +
+            title
       }
     },
     quantile = {
@@ -271,7 +293,8 @@ plot.sim_rw <- function(
             ) +
             geom_line() +
             scale_y_continuous("proportion", labels = percent) +
-            facet_wrap(~facet, scales = "free_y")
+            facet_wrap(~facet, scales = "free_y") +
+            title
       } else {
         x %>%
           group_by(.data$x) %>%
@@ -289,7 +312,8 @@ plot.sim_rw <- function(
           ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
-            scale
+            scale +
+            title
       }
     },
     all = {
@@ -312,14 +336,16 @@ plot.sim_rw <- function(
             aes_string(yintercept = "reference"), linetype = 2, colour = "red"
           ) +
           scale_y_continuous("proportion", labels = percent) +
-          facet_wrap(~facet, scales = "free_y")
+          facet_wrap(~facet, scales = "free_y") +
+            title
       } else {
         x %>%
           mutate(x, y = backtrans(y)) %>%
           ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
             geom_line(alpha = 0.1) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            scale
+            scale +
+            title
       }
     }
   )
