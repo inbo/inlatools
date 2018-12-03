@@ -296,13 +296,13 @@ plot.sim_rw <- function(
         x %>%
           group_by(.data$x) %>%
           summarise(
-            '2.5%' = quantile(y, 0.025),
-            '10%' = quantile(y, 0.1),
-            '25%' = quantile(y, 0.25),
-            '50%' = quantile(y, 0.5),
-            '75%' = quantile(y, 0.75),
-            '90%' = quantile(y, 0.9),
-            '97.5%' = quantile(y, 0.975)
+            "2.5%" = quantile(y, 0.025),
+            "10%" = quantile(y, 0.1),
+            "25%" = quantile(y, 0.25),
+            "50%" = quantile(y, 0.5),
+            "75%" = quantile(y, 0.75),
+            "90%" = quantile(y, 0.9),
+            "97.5%" = quantile(y, 0.975)
           ) %>%
           crossing(reference) %>%
           gather("quantile", "y", -x, -reference, factor_key = TRUE) %>%
@@ -329,13 +329,13 @@ plot.sim_rw <- function(
         x %>%
           group_by(.data$x) %>%
           summarise(
-            '2.5%' = quantile(y, 0.025),
-            '10%' = quantile(y, 0.1),
-            '25%' = quantile(y, 0.25),
-            '50%' = quantile(y, 0.5),
-            '75%' = quantile(y, 0.75),
-            '90%' = quantile(y, 0.9),
-            '97.5%' = quantile(y, 0.975)
+            "2.5%" = quantile(y, 0.025),
+            "10%" = quantile(y, 0.1),
+            "25%" = quantile(y, 0.25),
+            "50%" = quantile(y, 0.5),
+            "75%" = quantile(y, 0.75),
+            "90%" = quantile(y, 0.9),
+            "97.5%" = quantile(y, 0.975)
           ) %>%
           gather("quantile", "y", -x, factor_key = TRUE) %>%
           mutate(x, y = backtrans(.data$y)) %>%
