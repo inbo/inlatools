@@ -17,11 +17,13 @@ test_that("handles poisson", {
 })
 
 test_that("handles gpoisson", {
-  model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
-    family = "gpoisson",
-    data = ds,
-    control.compute = list(config = TRUE)
+  suppressWarnings(
+    model <- INLA::inla(
+      poisson ~ f(id, model = "iid"),
+      family = "gpoisson",
+      data = ds,
+      control.compute = list(config = TRUE)
+    )
   )
   expect_is(
     dc <- distribution_check(model, nsim = 10),

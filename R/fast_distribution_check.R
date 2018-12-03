@@ -95,7 +95,10 @@ setMethod(
       zeroinflatednbinomial1 = {
         relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
         zero <- object$summary.hyperpar[relevant, "mean"]
-        relevant <- grep("size for nbinomial", rownames(object$summary.hyperpar))
+        relevant <- grep(
+          "size for nbinomial",
+          rownames(object$summary.hyperpar)
+        )
         size <- object$summary.hyperpar[relevant, "mean"]
         data.frame(
           run = rep(seq_len(nsim), each = n_mu),
