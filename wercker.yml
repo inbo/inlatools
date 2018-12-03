@@ -4,10 +4,29 @@ build:
     - jimhester/r-dependencies
     - jimhester/r-check
     - jimhester/r-coverage
-    - inbobmk/r-lint
+    - jimhester/r-lint
 
 build-dev:
   box: rocker/verse:devel
   steps:
     - jimhester/r-dependencies
     - jimhester/r-check
+
+deploy:
+  steps:
+    - add-ssh-key:
+        keyname: inlatools_ghpages
+    - script:
+      name: update pkgdown website
+      code: |
+        git clone --branch=gh-pages --depth=1 --single-branch git@github.com:inbo/inlatools.git /ghpages/docs
+        rm -r /ghpages/docs/*
+        Rscript -e 'install.packages("roxygen2")'
+        Rscript -e "pkgdown::build_site()"
+        cp -r docs /ghpages
+        cd /ghpages/docs
+        git config user.email "bmk@inbo.be"
+        git config user.name "BMK by Wercker"
+        git add --all
+        git commit --amend -m "Update pkgdown website"
+        git push --force origin
