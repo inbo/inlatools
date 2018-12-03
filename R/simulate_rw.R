@@ -23,6 +23,10 @@ simulate_rw <- function(
 ) {
   if (is.null(sigma)) {
     assert_that(
+      !is.null(tau),
+      msg = "either 'sigma' or 'tau' must be specified"
+    )
+    assert_that(
       is.number(tau),
       tau > 0
     )

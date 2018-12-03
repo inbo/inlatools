@@ -58,58 +58,66 @@ setMethod(
     samples <- inla.posterior.sample(n = nsim, result = object) #nolint
     relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
     eta <- map_dfc(samples, "latent")[relevant, ]
-    if (object$.args$family == "poisson") {
-      mutate_all(exp(eta), rpois, n = nrow(eta)) %>%
-        gather("run", "x") %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "nbinomial") {
-      relevant <- grep(
-        "size for the nbinomial observations",
-        names(samples[[1]]$hyperpar)
-      )
-      size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
-      mutate_all(
-        exp(eta),
-        function(mu) {
-          rnbinom(n = length(mu), mu = mu, size = size)
-        }
-      ) %>%
-        gather("run", "x") %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "gpoisson") {
-      relevant <- grep(
-        "Overdispersion",
-        names(samples[[1]]$hyperpar)
-      )
-      phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
-      mu <- exp(eta)
-      sapply(
-        seq_len(nsim),
-        function(i) {
-          rgpoisson(n = 1, mu = mu[, i, drop = TRUE], phi = phi[i])
-        }
-      ) -> n_sampled
-      data.frame(
-        run = rep(seq_len(nsim), each = nrow(mu)),
-        x = as.vector(n_sampled)
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "zeroinflatedpoisson1") {
-      relevant <- grep("zero-inflated poisson_1", names(samples[[1]]$hyperpar))
-      mutate_all(
-        exp(eta),
-        function(lambda, prob_zero) {
-          n <- length(lambda)
-          rbinom(n = n, size = 1, prob = 1 - prob_zero) *
-            rpois(n = n, lambda = lambda)
-        },
-        prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
-      ) %>%
-        gather("run", "x") %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else {
+    n_sampled <- switch(
+      object$.args$family,
+      poisson = {
+        mutate_all(exp(eta), rpois, n = nrow(eta)) %>%
+          gather("run", "x") %>%
+          count(.data$run, .data$x)
+      },
+      nbinomial = {
+        relevant <- grep(
+          "size for the nbinomial observations",
+          names(samples[[1]]$hyperpar)
+        )
+        size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        mutate_all(
+          exp(eta),
+          function(mu) {
+            rnbinom(n = length(mu), mu = mu, size = size)
+          }
+        ) %>%
+          gather("run", "x") %>%
+          count(.data$run, .data$x)
+      },
+      gpoisson = {
+        relevant <- grep(
+          "Overdispersion",
+          names(samples[[1]]$hyperpar)
+        )
+        phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        mu <- exp(eta)
+        sapply(
+          seq_len(nsim),
+          function(i) {
+            rgpoisson(n = 1, mu = mu[, i, drop = TRUE], phi = phi[i])
+          }
+        ) -> n_sampled
+        data.frame(
+          run = rep(seq_len(nsim), each = nrow(mu)),
+          x = as.vector(n_sampled)
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      zeroinflatedpoisson1 = {
+        relevant <- grep(
+          "zero-inflated poisson_1",
+          names(samples[[1]]$hyperpar)
+        )
+        mutate_all(
+          exp(eta),
+          function(lambda, prob_zero) {
+            n <- length(lambda)
+            rbinom(n = n, size = 1, prob = 1 - prob_zero) *
+              rpois(n = n, lambda = lambda)
+          },
+          prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        ) %>%
+          gather("run", "x") %>%
+          count(.data$run, .data$x)
+      },
       stop(object$.args$family, " is not yet handled")
-    }
+    )
 
     data.frame(x = observed) %>%
       count(.data$x) -> n_observed

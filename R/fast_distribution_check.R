@@ -55,51 +55,57 @@ setMethod(
     observed <- get_observed(object)
     mu <- fitted(object)
     n_mu <- length(mu)
-    if (object$.args$family == "poisson") {
-      data.frame(
-        run = rep(seq_len(nsim), each = n_mu),
-        x = rpois(n = n_mu * nsim, lambda = mu)
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "nbinomial") {
-      relevant <- grep("overdispersion", rownames(object$summary.hyperpar))
-      size <- object$summary.hyperpar[relevant, "mean"]
-      data.frame(
-        run = rep(seq_len(nsim), each = n_mu),
-        x = rnbinom(n = n_mu * nsim, mu = mu, size = size)
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "gpoisson") {
-      relevant <- grep("Overdispersion", rownames(object$summary.hyperpar))
-      phi <- object$summary.hyperpar[relevant, "mean"]
-      data.frame(
-        run = rep(seq_len(nsim), n_mu),
-        x = as.vector(rgpoisson(n = nsim, mu = mu, phi = phi))
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "zeroinflatedpoisson1") {
-      relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
-      zero <- object$summary.hyperpar[relevant, "mean"]
-      data.frame(
-        run = rep(seq_len(nsim), each = n_mu),
-        x = rpois(n = n_mu * nsim, lambda = mu) *
-          rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else if (object$.args$family == "zeroinflatednbinomial1") {
-      relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
-      zero <- object$summary.hyperpar[relevant, "mean"]
-      relevant <- grep("size for nbinomial", rownames(object$summary.hyperpar))
-      size <- object$summary.hyperpar[relevant, "mean"]
-      data.frame(
-        run = rep(seq_len(nsim), each = n_mu),
-        x = rnbinom(n = n_mu * nsim, mu = mu, size = size) *
-          rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
-      ) %>%
-        count(.data$run, .data$x) -> n_sampled
-    } else {
+    n_sampled <- switch(
+      object$.args$family,
+      poisson = {
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rpois(n = n_mu * nsim, lambda = mu)
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      nbinomial = {
+        relevant <- grep("overdispersion", rownames(object$summary.hyperpar))
+        size <- object$summary.hyperpar[relevant, "mean"]
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rnbinom(n = n_mu * nsim, mu = mu, size = size)
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      gpoisson = {
+        relevant <- grep("Overdispersion", rownames(object$summary.hyperpar))
+        phi <- object$summary.hyperpar[relevant, "mean"]
+        data.frame(
+          run = rep(seq_len(nsim), n_mu),
+          x = as.vector(rgpoisson(n = nsim, mu = mu, phi = phi))
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      zeroinflatedpoisson1 = {
+        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
+        zero <- object$summary.hyperpar[relevant, "mean"]
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rpois(n = n_mu * nsim, lambda = mu) *
+            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      zeroinflatednbinomial1 = {
+        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
+        zero <- object$summary.hyperpar[relevant, "mean"]
+        relevant <- grep("size for nbinomial", rownames(object$summary.hyperpar))
+        size <- object$summary.hyperpar[relevant, "mean"]
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rnbinom(n = n_mu * nsim, mu = mu, size = size) *
+            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
+        ) %>%
+          count(.data$run, .data$x)
+      },
       stop(object$.args$family, " is not yet handled")
-    }
+    )
 
     data.frame(x = observed) %>%
       count(.data$x) -> n_observed
