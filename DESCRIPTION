@@ -8,25 +8,41 @@ Authors@R: c(
     email = "thierry.onkelinx@inbo.be", 
     comment = c(ORCID = "0000-0001-8804-4216")),
   person(
-    family = "Research Institute for Nature and Forest",
+    "Research Institute for Nature and Forest",
     role = c("cph", "fnd"), email = "info@inbo.be"))
 Depends: R (>= 3.4.0)
 Imports:
   assertthat,
+  dplyr,
   ggplot2,
   INLA,
   methods,
-  purrr
+  purrr,
+  rlang,
+  scales,
+  tidyr
 Remotes:
   github::inbo/INLA
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
 Collate:
     's3_classes.R'
+    'dispersion_check.R'
+    'distribution_check.R'
+    'fast_distribution_check.R'
+    'generate_data.R'
     'get_observed.R'
+    'plot_distribution_check.R'
     'residuals.R'
-    'test_dispersion.R'
+    'simulate_idd.R'
+    'simulate_rw.R'
 URL: https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
+Suggests: 
+  knitr,
+  rmarkdown,
+  testthat
+VignetteBuilder: knitr

@@ -9,16 +9,32 @@
   "working", "response", "partial"), ...)
 }
 \arguments{
-\item{object}{an object of class \code{glm}, typically the result of
-    a call to \code{\link{glm}}.}
+\item{object}{an \code{inla} object}
 
-\item{type}{the type of residuals which should be returned.
-    The alternatives are: \code{"deviance"} (default), \code{"pearson"},
-    \code{"working"}, \code{"response"}, and \code{"partial"}.
-    Can be abbreviated.}
+\item{type}{currently only Pearson residuals are available. Other types are only listed for compatibility with the default \code{residuals} function.}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{...}{currently ignored}
 }
 \description{
 Calculate the residuals from an INLA model
 }
+\examples{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE)
+)
+residuals(model)
+}
+\seealso{
+Other statistics: \code{\link{dispersion}},
+  \code{\link{fitted,inla-method}},
+  \code{\link{get_observed}}
+}
+\concept{statistics}

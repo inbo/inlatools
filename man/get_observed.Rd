@@ -12,3 +12,23 @@ get_observed(object)
 \description{
 get the observed values from the model object
 }
+\examples{
+library(INLA)
+set.seed(20181202)
+model <- inla(
+  poisson ~ 1,
+  family = "poisson",
+  data = data.frame(
+    poisson = rpois(20, lambda = 10),
+    base = 1
+  ),
+  control.predictor = list(compute = TRUE)
+)
+get_observed(model)
+}
+\seealso{
+Other statistics: \code{\link{dispersion}},
+  \code{\link{fitted,inla-method}},
+  \code{\link{residuals,inla-method}}
+}
+\concept{statistics}

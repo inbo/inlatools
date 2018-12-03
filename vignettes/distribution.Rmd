@@ -1,0 +1,92 @@
+---
+title: "Check the distribution of a model"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Check the distribution of a model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+set.seed(20181011)
+```
+
+## Generate data
+
+```{r}
+library(inlatools)
+dataset <- generate_data()
+```
+
+
+## Fit the model
+
+```{r}
+library(dplyr)
+library(purrr)
+library(INLA)
+expand.grid(
+  variable = c("poisson", "zipoisson", "negbin", "zinegbin", "binom"),
+  family = c("poisson", "nbinomial"),
+  stringsAsFactors = FALSE
+) %>%
+  mutate(
+    formula = paste(variable, "~ 1 + f(id, model = \"iid\")") %>%
+      map(as.formula),
+    model = map2(
+      formula, 
+      family, 
+      function(.x, .y, data) {
+        inla(
+          .x, 
+          family = .y, 
+          data = data, 
+          control.predictor = list(compute = TRUE),
+          control.compute = list(config = TRUE)
+        )
+      },
+      data = dataset
+    )
+  ) -> combinations
+```
+
+## Test the distribution
+
+```{r echo = FALSE, results = "asis"}
+combinations %>%
+  inner_join(
+    data.frame(
+      variable = c("poisson", "zipoisson", "negbin", "zinegbin", "binom"),
+      long = c(
+        "Poisson", "zeroinflated Poisson", "negative binomial", 
+        "zeroinflated negative binomial", "binomial"
+      ),
+      stringsAsFactors = FALSE
+    ),
+    by = "variable"
+  ) %>%
+  transmute(
+    rmd = sprintf(
+"```{r fig.cap = 'Distribution check for a %s variable fit with %s family'}
+plot(fast_distribution_check(combinations$model[[%i]]))
+```",
+      long,
+      family,
+      seq_along(family)
+    )
+  ) %>%
+  pull(rmd) %>%
+  paste(collapse = "\n\n") -> rmd
+knit(text = rmd, quiet = TRUE) %>%
+  cat()
+```
+

@@ -1,0 +1,135 @@
+---
+title: "Check the dispersion of a model"
+author: "Thierry Onkelinx"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+set.seed(20181011)
+```
+
+## Generate data
+
+```{r}
+library(inlatools)
+dataset <- generate_data()
+```
+
+
+## Fit the models
+
+```{r}
+library(INLA)
+poisson_model <- inla(
+  poisson ~ 1 + f(id, model = "iid"), family = "poisson", 
+  data = dataset, 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+negbin_model <- inla(
+  negbin ~ 1 + f(id, model = "iid"), family = "poisson", 
+  data = dataset, 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+binom_model <- inla(
+  binom ~ 1 + f(id, model = "iid"), family = "poisson", 
+  data = dataset, 
+  control.compute = list(config = TRUE, waic = TRUE)
+)
+```
+
+## Test the dispersion
+
+```{r fig.cap = "Dispersion of the Poisson response"}
+plot(dispersion_check(poisson_model))
+```
+
+```{r, fig.cap = "Dispersion for the negative binomial response"}
+plot(dispersion_check(negbin_model))
+```
+
+```{r, fig.cap = "Dispersion for the negative binomial response"}
+plot(dispersion_check(binom_model))
+```
+
+## Simulation study
+
+The simulation study below is not run because it takes some time to run. 
+
+```{r eval = FALSE}
+n_replicate <- 100
+nsim <- 100
+
+dispersion_poisson <- function(i, nsim = 100) {
+  dataset <- generate_data()
+  model <- inla(
+    poisson ~ 1 + f(id, model = "iid"), family = "poisson", 
+    data = dataset, 
+    control.compute = list(config = TRUE, waic = TRUE)
+  )
+  D <- dispersion_check(model, nsim = nsim)
+  mean(D$data > D$model)
+}
+
+dispersion_negbin <- function(i, nsim = 100) {
+  dataset <- generate_data()
+  model <- inla(
+    negbin ~ 1 + f(id, model = "iid"), family = "poisson", 
+    data = dataset, 
+    control.compute = list(config = TRUE, waic = TRUE)
+  )
+  D <- dispersion_check(model, nsim = nsim)
+  mean(D$data > D$model)
+}
+
+dispersion_binom <- function(i, nsim = 100) {
+  dataset <- generate_data()
+  model <- inla(
+    binom ~ 1 + f(id, model = "iid"), family = "poisson", 
+    data = dataset, 
+    control.compute = list(config = TRUE, waic = TRUE)
+  )
+  D <- dispersion_check(model, nsim = nsim)
+  mean(D$data > D$model)
+}
+
+sim_dispersion_poisson <- map_dbl(
+  seq_len(n_replicate), 
+  dispersion_poisson,
+  nsim = nsim
+)
+sim_dispersion_negbin <- map_dbl(
+  seq_len(n_replicate), 
+  dispersion_negbin,
+  nsim = nsim
+)
+sim_dispersion_binom <- map_dbl(
+  seq_len(n_replicate), 
+  dispersion_binom,
+  nsim = nsim
+)
+
+library(dplyr)
+library(ggplot2)
+data.frame(
+  response = rep(
+    c("Poisson", "negative\nbinomial", "binomial"), 
+    each = n_replicate
+  ),
+  proportion = c(
+    sim_dispersion_poisson, sim_dispersion_negbin, sim_dispersion_binom
+  )
+) %>%
+  ggplot(aes(x = proportion)) +
+  geom_density() +
+  facet_wrap(~response, scales = "free_y")
+```
+

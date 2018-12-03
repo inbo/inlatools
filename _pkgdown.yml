@@ -1,0 +1,27 @@
+template:
+  params:
+    bootswatch: sandstone
+
+reference:
+- title: Checks
+  desc: Useful functions to validate a model
+  contents:
+  - has_concept("checks")
+- title: Setting priors
+  desc: Get a grasp of potential effect of random effects with a specified standard error `sigma` or precision `tau`
+  contents:
+  - has_concept("priors")
+- title: Statistics
+  contents:
+  - has_concept("statistics")
+- title: Utils
+  contents:
+  - has_concept("utils")
+
+
+authors:
+  Thierry Onkelinx:
+    href: "https://www.muscardinus.be"
+  Research Institute for Nature and Forest:
+    href: "https://www.inbo.be/en"
+    html: "<img src='https://inbo.github.io/inlatools/reference/figures/logo_en.png' height=24 alt='Research Institute for Nature and Forest'>"
