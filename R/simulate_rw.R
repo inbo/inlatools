@@ -9,7 +9,7 @@
 #' @return a data.frame with simulated time series from the random walk
 #' @export
 #' @importFrom assertthat assert_that is.number is.count
-#' @importFrom dplyr %>% bind_rows
+#' @importFrom dplyr %>% bind_rows tibble
 #' @importFrom stats arima.sim
 #' @family priors
 #' @examples
@@ -56,7 +56,7 @@ simulate_rw <- function(
   lapply(
     seq_len(n_sim),
     function(i) {
-      data.frame(
+      tibble(
         x,
         y = head(
           arima.sim(
