@@ -5,7 +5,6 @@
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
 [![wercker status](https://app.wercker.com/status/d0205ffb719d28fac3f8ebe492a0caef/s/master "wercker status")](https://app.wercker.com/project/byKey/d0205ffb719d28fac3f8ebe492a0caef)
-[![Travis build status](https://travis-ci.org/inbo/inlatools.svg?branch=master)](https://travis-ci.org/inbo/inlatools)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/inbo/inlatools?branch=master&svg=true)](https://ci.appveyor.com/project/inbo/inlatools)
 [![codecov](https://codecov.io/gh/inbo/inlatools/branch/master/graph/badge.svg)](https://codecov.io/gh/inbo/inlatools)
 
