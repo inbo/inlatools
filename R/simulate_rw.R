@@ -81,300 +81,130 @@ simulate_rw <- function(
 #' @param x a `sim_rw` object. Which is the output of  `\link{simulate_rw}`
 #' @param y currently ignored
 #' @param ... currently ignored
-#' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations. `"stationary"` displays the smimulations with the smallest differences for the reference. `"quantile"` displays the enveloppes around the simulations. `"changes"` displays the simulations with the highest number of changes in directions in the random walk.
 #' @param link which link to use for back transformation
-#' @param coefs the polynomial coefficients
-#' @param n the number of simulations to plot when only a subset is shown.
-#' @return a ggplot2 object
+#' @param baseline optional baseline for the time series
+#' @return a `\link[ggplot2]{ggplot}` object
 #' @family priors
-#' @importFrom assertthat assert_that has_name is.count noNA
-#' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap scale_y_continuous facet_grid
+#' @importFrom assertthat assert_that has_name
+#' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap labs
 #' @importFrom scales percent
-#' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join lag desc
+#' @importFrom dplyr n_distinct %>% mutate distinct
 #' @importFrom rlang .data
 #' @importFrom utils head
 #' @importFrom tidyr crossing
-#' @importFrom stats qlogis
+#' @importFrom stats qlogis plogis
 #' @export
 #' @examples
 #' \donttest{
 #' set.seed(20181202)
 #' x <- simulate_rw(sigma = 0.05, start = -10, length = 40)
 #' plot(x)
-#' plot(x, type = "quantile")
-#' plot(x, type = "divergence")
-#' plot(x, type = "stationary")
-#' plot(x, type = "change")
-#' plot(x, type = "quantile", link = "log")
-#' plot(x, type = "quantile", link = "logit")
-#' y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
-#' plot(y)
-#' plot(y, type = "quantile")
-#' plot(y, type = "divergence")
-#' plot(y, type = "stationary")
-#' plot(y, type = "change")
-#' plot(y, type = "quantile", link = "log")
-#' plot(y, type = "quantile", link = "logit")
+#' plot(select_quantile(x))
+#' plot(select_quantile(x), link = "log")
+#' plot(select_quantile(x), link = "logit")
+#' x <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
+#' plot(x)
+#' plot(select_quantile(x))
+#' plot(select_quantile(x), link = "log")
+#' plot(select_quantile(x), link = "logit")
 #' }
 plot.sim_rw <- function(
-  x, y, ...,
-  type = c("all", "divergence", "stationary", "quantile", "change", "poly"),
-  link = c("identity", "log", "logit"),
-  n = 10, coefs = c(0, -1)
+  x, y, ..., link = c("identity", "log", "logit"), baseline
 ) {
   assert_that(
     inherits(x, "data.frame"),
     has_name(x, "x"),
     has_name(x, "y"),
-    has_name(x, "replicate"),
-    is.count(n),
-    is.numeric(coefs),
-    length(coefs) > 1,
-    noNA(coefs)
+    has_name(x, "replicate")
   )
-  type <- match.arg(type)
   link <- match.arg(link)
-
-  backtrans <- switch(
-    link,
-    identity = function(x) {
-      x
-    },
-    log = exp,
-    logit = plogis
-  )
-  reference <- switch(
-    link, identity = 0, log = 1, logit = c(0.05, 0.1, 0.25, 0.5)
-  )
-  scale <- switch(
-    link,
-    identity = scale_y_continuous("effect"),
-    log = scale_y_continuous("relative effect", labels = percent),
-    logit = scale_y_continuous("proportion", labels = percent)
-  )
-  title <- ggtitle(
-    bquote(
-      sigma == .(signif(attr(x, "sigma"), 4)) ~
-        sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
-        tau == .(signif(attr(x, "sigma") ^ -2, 4))
+  if (missing(baseline)) {
+    baseline <- switch(
+      link, identity = 0, log = 1, logit = c(0.05, 0.1, 0.25, 0.5)
     )
+  } else {
+    assert_that(
+      is.numeric(baseline),
+      length(baseline) >= 1
+    )
+  }
+
+  alpha <- sqrt(10) / sqrt(pmax(10, n_distinct(x$replicate)))
+
+  z <- crossing(x, bl = baseline)
+  z <- switch(
+    link,
+    identity = z %>%
+      mutate(
+        y = .data$y + .data$bl,
+        facet = factor(.data$bl)
+      ),
+    log = z %>%
+      mutate(
+        y = exp(.data$y + log(.data$bl)),
+        facet = factor(.data$bl)
+      ),
+    logit = z %>%
+      mutate(
+        y = plogis(.data$y + qlogis(.data$bl)),
+        facet = factor(
+          .data$bl,
+          labels = paste0(100 * baseline, "%")
+        )
+      )
   )
+
+  p <- ggplot(z, aes_string(x = "x", y = "y", group = "replicate")) +
+    labs(
+      title = bquote(
+        sigma == .(signif(attr(x, "sigma"), 4)) ~
+          sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+          tau == .(signif(attr(x, "sigma") ^ -2, 4))
+      )
+    )
+  if (inherits(x, "sim_rw_quant")) {
+    p <- p +
+      geom_line(alpha = alpha, aes_string(colour = "replicate")) +
+      labs(colour = "quantile")
+  } else {
+    p <- p + geom_line(alpha = alpha)
+  }
+  if (length(baseline) == 1) {
+    p <- p +
+      geom_hline(yintercept = baseline, colour = "red", linetype = 2)
+  } else {
+    p <- p +
+      geom_hline(
+        data = distinct(z, .data$bl, .data$facet),
+        aes_string(yintercept = "bl"),
+        colour = "red",
+        linetype = 2
+      ) +
+      facet_wrap(~facet, scales = "free_y")
+  }
   switch(
-    type,
-    poly = {
-      selection <- select_poly(x, coefs = coefs, n = n)
-      if (link == "logit") {
-        selection %>%
-          crossing(reference) %>%
-          mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
-            facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_hline(
-              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
-            ) +
-            geom_line() +
-            scale_y_continuous("proportion", labels = percent) +
-            facet_wrap(~facet, scales = "free_y") +
-            title
-      } else {
-        selection %>%
-          mutate(y = backtrans(y)) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            geom_line() +
-            scale +
-            title
-      }
+    link,
+    identity = p + scale_y_continuous("effect"),
+    log = if (isTRUE(all.equal(baseline, 1))) {
+      p + scale_y_continuous("relative effect", labels = percent) }
+    else {
+      p + scale_y_continuous("effect")
     },
-    change = {
-      if (link == "logit") {
-        select_change(x, n = n) %>%
-          crossing(reference) %>%
-          mutate(
-            y = y + qlogis(reference),
-            y = plogis(y),
-            facet = factor(
-              reference,
-              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_hline(
-              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
-            ) +
-            geom_line() +
-            scale_y_continuous("proportion", labels = percent) +
-            facet_grid(facet ~ replicate, scales = "free_y") +
-            title
-      } else {
-        select_change(x, n = n) %>%
-          mutate(x, y = backtrans(y)) %>%
-          ggplot(aes_string(x = "x", y = "y")) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            geom_line() +
-            scale +
-            facet_wrap(~replicate) +
-            title
-      }
-    },
-    divergence = {
-      if (link == "logit") {
-        select_divergence(x, n = n) %>%
-          crossing(reference) %>%
-          mutate(
-            y = .data$y + qlogis(.data$reference),
-            y = plogis(.data$y),
-            facet = factor(
-              .data$reference,
-              labels = sprintf(
-                "base = %2.0f%%", 100 * sort(unique(.data$reference))
-              )
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_hline(
-              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
-            ) +
-            geom_line() +
-            scale_y_continuous("proportion", labels = percent) +
-            facet_wrap(~facet, scales = "free_y") +
-            title
-      } else {
-        select_divergence(x, n = n) %>%
-          mutate(y = backtrans(y)) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            geom_line() +
-            scale +
-            title
-      }
-    },
-    stationary = {
-      if (link == "logit") {
-        x %>%
-          group_by(.data$replicate) %>%
-          summarise(extreme = max(abs(.data$y))) %>%
-          arrange(.data$extreme) %>%
-          head(9) %>%
-          semi_join(x = x, by = "replicate") %>%
-          crossing(reference) %>%
-          mutate(
-            y = y + qlogis(.data$reference),
-            y = plogis(.data$y),
-            facet = factor(
-              .data$reference,
-              labels = sprintf(
-                "base = %2.0f%%",
-                100 * sort(unique(.data$reference))
-              )
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y")) +
-            geom_hline(
-              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
-            ) +
-            geom_line() +
-            scale_y_continuous("proportion", labels = percent) +
-            facet_grid(facet ~ replicate, scales = "free_y") +
-            title
-      } else {
-        x %>%
-          group_by(.data$replicate) %>%
-          summarise(extreme = max(abs(.data$y))) %>%
-          arrange(.data$extreme) %>%
-          head(9) %>%
-          semi_join(x = x, by = "replicate") %>%
-          mutate(y = backtrans(.data$y)) %>%
-          ggplot(aes_string(x = "x", y = "y")) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            geom_line() +
-            scale +
-            facet_wrap(~replicate) +
-            title
-      }
-    },
-    quantile = {
-      if (link == "logit") {
-        x %>%
-          select_quantile(quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975)) %>%
-          crossing(reference) %>%
-          mutate(
-            y = y + qlogis(.data$reference),
-            y = plogis(.data$y),
-            facet = factor(
-              .data$reference,
-              labels = sprintf(
-                "base = %2.0f%%",
-                100 * sort(unique(.data$reference))
-              )
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y", colour = "replicate")) +
-            geom_hline(
-              aes_string(yintercept = "reference"), linetype = 2, col = "red"
-            ) +
-            geom_line() +
-            scale_y_continuous("proportion", labels = percent) +
-            facet_wrap(~facet, scales = "free_y") +
-            title
-      } else {
-        x %>%
-          select_quantile(quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975)) %>%
-          mutate(x, y = backtrans(.data$y)) %>%
-          ggplot(aes_string(x = "x", y = "y", colour = "replicate")) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            geom_line() +
-            scale +
-            title
-      }
-    },
-    all = {
-      if (link == "logit") {
-        crossing(x, reference) %>%
-          mutate(
-            y = .data$y + qlogis(.data$reference),
-            y = plogis(.data$y),
-            facet = factor(
-              .data$reference,
-              labels = sprintf(
-                "base = %2.0f%%",
-                100 * sort(unique(.data$reference))
-              )
-            )
-          ) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-          geom_line(alpha = 0.1) +
-          geom_hline(
-            aes_string(yintercept = "reference"), linetype = 2, colour = "red"
-          ) +
-          scale_y_continuous("proportion", labels = percent) +
-          facet_wrap(~facet, scales = "free_y") +
-            title
-      } else {
-        x %>%
-          mutate(x, y = backtrans(y)) %>%
-          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-            geom_line(alpha = 0.1) +
-            geom_hline(yintercept = reference, linetype = 2, col = "red") +
-            scale +
-            title
-      }
-    }
+    logit = p + scale_y_continuous("proportion", labels = percent)
   )
 }
+
+
 
 #' Select random walks best matching some polygon coefficients
 #'
 #' The target coefficients will be rescaled to have norm 1. The coefficients of the simulations will be rescaled by the largest norm over all simulations.
-#' @param x a `sim_rw` object
 #' @inheritParams plot.sim_rw
-#' @noRd
+#' @param coefs the polynomial coefficients
+#' @param n the number of simulations to plot when only a subset is shown.
+#' @family priors
+#' @export
+#' @importFrom assertthat assert_that has_name is.count noNA
 #' @importFrom dplyr %>% group_by transmute ungroup mutate summarise arrange select
 #' @importFrom rlang .data
 #' @importFrom tidyr nest unnest
@@ -390,7 +220,7 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
     has_name(x, "replicate"),
     is.count(n),
     is.numeric(coefs),
-    length(coefs) > 1,
+    length(coefs) >= 1,
     noNA(coefs),
     all(is.finite(coefs))
   )
@@ -422,7 +252,11 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
     mutate(Estimate = .data$Estimate / max(.data$norm)) %>%
     inner_join(
       tibble(
-        rowname = sprintf("poly(x, %i)%i", length(coefs), seq_along(coefs)),
+        rowname = ifelse(
+          length(coefs) > 1,
+          sprintf("poly(x, %i)%i", length(coefs), seq_along(coefs)),
+          "poly(x, 1)"
+        ),
         target = coefs
       ),
       by = "rowname"
@@ -443,7 +277,8 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
 #' select the quantiles from an 'sim_rw' object
 #' @inheritParams plot.sim_rw
 #' @param quantiles a vector of quantiles
-#' @noRd
+#' @family priors
+#' @export
 #' @importFrom assertthat assert_that has_name
 #' @importFrom dplyr %>% group_by mutate tibble
 #' @importFrom rlang .data
@@ -476,8 +311,8 @@ select_quantile <- function(
     mutate(
       replicate = factor(
         replicate,
-        levels = sort(quantiles),
-        labels = sprintf("%.1f%%", 100 * sort(quantiles))
+        levels = rev(sort(quantiles)),
+        labels = paste0(100 * rev(sort(quantiles)), "%")
       )
     ) -> selection
   class(selection) <- c("sim_rw_quant", "sim_rw", class(selection))
@@ -489,9 +324,11 @@ select_quantile <- function(
 #'
 #' This functions count the number of changes in direction in each simulation. It returns the subset with the highest number of direction changes
 #' @inheritParams plot.sim_rw
-#' @noRd
+#' @inheritParams select_poly
+#' @family priors
+#' @export
 #' @importFrom assertthat assert_that has_name
-#' @importFrom dplyr %>% group_by mutate summarise lag semi_join
+#' @importFrom dplyr %>% group_by mutate summarise lag semi_join desc
 #' @importFrom rlang .data
 #' @importFrom utils head
 select_change <- function(x, n = 10) {
@@ -522,7 +359,9 @@ select_change <- function(x, n = 10) {
 #'
 #' The selection will contain the most extreme simulations base on either the minimum effect or the maximum effect within the simulation.
 #' @inheritParams plot.sim_rw
-#' @noRd
+#' @inheritParams select_poly
+#' @family priors
+#' @export
 #' @importFrom assertthat assert_that has_name
 #' @importFrom dplyr %>% group_by summarise_at semi_join
 #' @importFrom rlang .data

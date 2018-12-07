@@ -4,9 +4,8 @@
 \alias{plot.sim_rw}
 \title{Plot simulated random walks}
 \usage{
-\method{plot}{sim_rw}(x, y, ..., type = c("all", "divergence",
-  "stationary", "quantile", "change", "poly"), link = c("identity",
-  "log", "logit"), n = 10, coefs = c(0, -1))
+\method{plot}{sim_rw}(x, y, ..., link = c("identity", "log", "logit"),
+  baseline)
 }
 \arguments{
 \item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
@@ -15,16 +14,12 @@
 
 \item{...}{currently ignored}
 
-\item{type}{which plot to create. \code{"all"} displays all simulations. \code{"divergence"} displays the most divergent simulations. \code{"stationary"} displays the smimulations with the smallest differences for the reference. \code{"quantile"} displays the enveloppes around the simulations. \code{"changes"} displays the simulations with the highest number of changes in directions in the random walk.}
-
 \item{link}{which link to use for back transformation}
 
-\item{n}{the number of simulations to plot when only a subset is shown.}
-
-\item{coefs}{the polynomial coefficients}
+\item{baseline}{optional baseline for the time series}
 }
 \value{
-a ggplot2 object
+a \code{\link[ggplot2]{ggplot}} object
 }
 \description{
 Plot simulated random walks
@@ -34,24 +29,21 @@ Plot simulated random walks
 set.seed(20181202)
 x <- simulate_rw(sigma = 0.05, start = -10, length = 40)
 plot(x)
-plot(x, type = "quantile")
-plot(x, type = "divergence")
-plot(x, type = "stationary")
-plot(x, type = "change")
-plot(x, type = "quantile", link = "log")
-plot(x, type = "quantile", link = "logit")
-y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
-plot(y)
-plot(y, type = "quantile")
-plot(y, type = "divergence")
-plot(y, type = "stationary")
-plot(y, type = "change")
-plot(y, type = "quantile", link = "log")
-plot(y, type = "quantile", link = "logit")
+plot(select_quantile(x))
+plot(select_quantile(x), link = "log")
+plot(select_quantile(x), link = "logit")
+x <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
+plot(x)
+plot(select_quantile(x))
+plot(select_quantile(x), link = "log")
+plot(select_quantile(x), link = "logit")
 }
 }
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},
+  \code{\link{select_change}},
+  \code{\link{select_divergence}},
+  \code{\link{select_poly}}, \code{\link{select_quantile}},
   \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
 }
 \concept{priors}

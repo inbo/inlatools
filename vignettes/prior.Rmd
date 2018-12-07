@@ -82,46 +82,58 @@ plot(x)
 plot(y)
 ```
 
-Setting `type = "quantile"` shows, at each time point, the quantiles of the simulated time series.
+You can reduce the clutter by subsetting the time series. `select_quantile()` calculates the quantiles at each time step.
 
 ```{r, fig.show='hold'}
-plot(x, type = "quantile")
-plot(y, type = "quantile")
+qx <- select_quantile(x) 
+plot(qx)
+qy <- select_quantile(y, quantiles = c(0.05, 0.3, 0.7, 0.95)) 
+plot(qy)
 ```
 
-For each simulated time series, we can calculate the strongest absolute effect at any time point. `type = "divergence"` shows the top 10 simulated time series with the strongest absolute effect. 
+For each simulated time series, we can calculate the strongest absolute effect at any time point. `select_divergence()` makes a subset of time series with the strongest absolute effect. 
 
 ```{r, fig.show='hold'}
-plot(x, type = "divergence")
-plot(y, type = "divergence")
+plot(select_divergence(x))
+plot(select_divergence(y, n = 20))
 ```
 
-`type = "stationary"` is the opposite of `type = "divergence"`: the top 10 simulated time series with the smallest maximum absolute effect at any time point.
+`select_change()` calculates the number of changes in direction of the time series. It will display the top simulated time series with the highest number of changes.
 
 ```{r, fig.show='hold'}
-plot(x, type = "stationary")
-plot(y, type = "stationary")
+plot(select_change(x))
+plot(select_change(y, n = 20))
 ```
 
-`type = "change"` calculates the number of changes in direction of the time series. It will display the top 10 simulated time series with the highest number of changes.
+`select_poly()` is useful in case you have a certain generic pattern in mind which can be described as a polynomial. 
 
 ```{r, fig.show='hold'}
-plot(x, type = "change")
-plot(y, type = "change")
+plot(select_poly(x, coefs = -1))
+plot(select_poly(y, coefs = 1, n = 20))
+```
+      
+```{r, fig.show='hold'}
+plot(select_poly(x, coefs = c(0, 1)))
+plot(select_poly(y, coefs = c(0, -1), n = 20))
+```
+
+```{r, fig.show='hold'}
+plot(select_poly(x, coefs = c(0, 0, -1)))
+plot(select_poly(y, coefs = c(0, 0, 1), n = 20))
 ```
 
 Back transformation is available for each `type` of plot. `link = "log"` back transforms from a log-link. The plot shows the relative effect of the random walk.
 
 ```{r, fig.show='hold'}
-plot(x, type = "quantile", link = "log")
-plot(y, type = "quantile", link = "log")
+plot(qx, link = "log")
+plot(qy, link = "log", baseline = 10)
 ```
 
 The effect of the logit link depends on the base proportion. Therefore `link = "logit"` will create a subplot for 4 different base proportions: 5%, 10%, 25% and 50%.
 
 ```{r, fig.show='hold'}
-plot(x, type = "quantile", link = "logit")
-plot(y, type = "quantile", link = "logit")
+plot(qx, link = "logit")
+plot(qy, link = "logit", baseline = c(0.01, 0.0001, 0.98))
 ```
 
 ## Second order random walk
@@ -132,26 +144,44 @@ y <- simulate_rw(sigma = 0.01, length = 50, order = 2)
 ```
 
 ```{r, fig.show='hold'}
-plot(x)
-plot(y)
+qx <- select_quantile(x) 
+plot(qx)
+qy <- select_quantile(y, quantiles = c(0.05, 0.3, 0.7, 0.95)) 
+plot(qy)
 ```
 
 ```{r, fig.show='hold'}
-plot(x, type = "quantile")
-plot(y, type = "quantile")
+plot(select_divergence(x))
+plot(select_divergence(y, n = 20))
 ```
 
 ```{r, fig.show='hold'}
-plot(x, type = "divergence")
-plot(y, type = "divergence")
+plot(select_change(x))
+plot(select_change(y, n = 20))
 ```
 
 ```{r, fig.show='hold'}
-plot(x, type = "stationary")
-plot(y, type = "stationary")
+plot(select_poly(x, coefs = -1))
+plot(select_poly(y, coefs = 1, n = 20))
+```
+      
+```{r, fig.show='hold'}
+plot(select_poly(x, coefs = c(0, 1)))
+plot(select_poly(y, coefs = c(0, -1), n = 20))
 ```
 
 ```{r, fig.show='hold'}
-plot(x, type = "change")
-plot(y, type = "change")
+plot(select_poly(x, coefs = c(0, 0, -1)))
+plot(select_poly(y, coefs = c(0, 0, 1), n = 20))
 ```
+
+```{r, fig.show='hold'}
+plot(qx, link = "log")
+plot(qy, link = "log", baseline = 10)
+```
+
+```{r, fig.show='hold'}
+plot(qx, link = "logit")
+plot(qy, link = "logit", baseline = c(0.01, 0.0001, 0.98))
+```
+
