@@ -195,17 +195,7 @@ plot.sim_rw <- function(
     },
     change = {
       if (link == "logit") {
-        x %>%
-          group_by(.data$replicate) %>%
-          mutate(
-            direction = sign(.data$y - lag(.data$y))
-          ) %>%
-          summarise(
-            changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
-          ) %>%
-          arrange(desc(.data$changes)) %>%
-          head(9) %>%
-          semi_join(x = x, by = "replicate") %>%
+        select_change(x, n = n) %>%
           crossing(reference) %>%
           mutate(
             y = y + qlogis(reference),
@@ -224,17 +214,7 @@ plot.sim_rw <- function(
             facet_grid(facet ~ replicate, scales = "free_y") +
             title
       } else {
-        x %>%
-          group_by(.data$replicate) %>%
-          mutate(
-            direction = sign(.data$y - lag(.data$y))
-          ) %>%
-          summarise(
-            changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
-          ) %>%
-          arrange(desc(.data$changes)) %>%
-          head(9) %>%
-          semi_join(x = x, by = "replicate") %>%
+        select_change(x, n = n) %>%
           mutate(x, y = backtrans(y)) %>%
           ggplot(aes_string(x = "x", y = "y")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
@@ -510,6 +490,39 @@ select_quantile <- function(
       )
     ) -> selection
   class(selection) <- c("sim_rw_quant", "sim_rw", class(selection))
+  attr(selection, "sigma") <- attr(x, "sigma")
+  return(selection)
+}
+
+#' select fast changing simulations from an 'sim_rw' object
+#'
+#' This functions count the number of changes in direction in each simulation. It returns the subset with the highest number of direction changes
+#' @inheritParams plot.sim_rw
+#' @noRd
+#' @importFrom assertthat assert_that has_name
+#' @importFrom dplyr %>% group_by mutate summarise lag semi_join
+#' @importFrom rlang .data
+#' @importFrom utils head
+select_change <- function(x, n = 10) {
+  assert_that(
+    inherits(x, "sim_rw"),
+    has_name(x, "x"),
+    has_name(x, "y"),
+    has_name(x, "replicate"),
+    is.count(n)
+  )
+  x %>%
+    group_by(.data$replicate) %>%
+    mutate(
+      direction = sign(.data$y - lag(.data$y))
+    ) %>%
+    summarise(
+      changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
+    ) %>%
+    arrange(desc(.data$changes)) %>%
+    head(n) %>%
+    semi_join(x = x, by = "replicate") -> selection
+  class(selection) <- c("sim_rw", class(selection))
   attr(selection, "sigma") <- attr(x, "sigma")
   return(selection)
 }
