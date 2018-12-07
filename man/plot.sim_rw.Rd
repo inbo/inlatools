@@ -5,8 +5,8 @@
 \title{Plot simulated random walks}
 \usage{
 \method{plot}{sim_rw}(x, y, ..., type = c("all", "divergence",
-  "stationary", "quantile", "change"), link = c("identity", "log",
-  "logit"))
+  "stationary", "quantile", "change", "poly"), link = c("identity",
+  "log", "logit"), n = 10, coefs = c(0, -1))
 }
 \arguments{
 \item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
@@ -18,6 +18,10 @@
 \item{type}{which plot to create. \code{"all"} displays all simulations. \code{"divergence"} displays the most divergent simulations. \code{"stationary"} displays the smimulations with the smallest differences for the reference. \code{"quantile"} displays the enveloppes around the simulations. \code{"changes"} displays the simulations with the highest number of changes in directions in the random walk.}
 
 \item{link}{which link to use for back transformation}
+
+\item{n}{the number of simulations to plot when only a subset is shown.}
+
+\item{coefs}{the polynomial coefficients}
 }
 \value{
 a ggplot2 object

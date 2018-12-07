@@ -83,9 +83,11 @@ simulate_rw <- function(
 #' @param ... currently ignored
 #' @param type which plot to create. `"all"` displays all simulations. `"divergence"` displays the most divergent simulations. `"stationary"` displays the smimulations with the smallest differences for the reference. `"quantile"` displays the enveloppes around the simulations. `"changes"` displays the simulations with the highest number of changes in directions in the random walk.
 #' @param link which link to use for back transformation
+#' @param coefs the polynomial coefficients
+#' @param n the number of simulations to plot when only a subset is shown.
 #' @return a ggplot2 object
 #' @family priors
-#' @importFrom assertthat assert_that has_name
+#' @importFrom assertthat assert_that has_name is.count noNA
 #' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap scale_y_continuous facet_grid
 #' @importFrom scales percent
 #' @importFrom dplyr %>% group_by summarise summarise_at  arrange semi_join lag desc
@@ -116,17 +118,24 @@ simulate_rw <- function(
 #' }
 plot.sim_rw <- function(
   x, y, ...,
-  type = c("all", "divergence", "stationary", "quantile", "change"),
-  link = c("identity", "log", "logit")
+  type = c("all", "divergence", "stationary", "quantile", "change", "poly"),
+  link = c("identity", "log", "logit"),
+  n = 10, coefs = c(0, -1)
 ) {
   assert_that(
     inherits(x, "data.frame"),
     has_name(x, "x"),
     has_name(x, "y"),
-    has_name(x, "replicate")
+    has_name(x, "replicate"),
+    is.count(n),
+    is.numeric(coefs),
+    length(coefs) > 1,
+    noNA(coefs)
   )
   type <- match.arg(type)
   link <- match.arg(link)
+  coefs <- coefs / sqrt(sum(coefs ^ 2))
+
   backtrans <- switch(
     link,
     identity = function(x) {
@@ -151,9 +160,39 @@ plot.sim_rw <- function(
         tau == .(signif(attr(x, "sigma") ^ -2, 4))
     )
   )
-
   switch(
     type,
+    poly = {
+      selection <- select_poly(x, coefs = coefs, n = n)
+      if (link == "logit") {
+        selection %>%
+          crossing(reference) %>%
+          mutate(
+            y = y + qlogis(reference),
+            y = plogis(y),
+            facet = factor(
+              reference,
+              labels = sprintf("base = %2.0f%%", 100 * sort(unique(reference)))
+            )
+          ) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_hline(
+              aes_string(yintercept = "reference"), linetype = 2, colour = "red"
+            ) +
+            geom_line() +
+            scale_y_continuous("proportion", labels = percent) +
+            facet_wrap(~facet, scales = "free_y") +
+            title
+      } else {
+        selection %>%
+          mutate(y = backtrans(y)) %>%
+          ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
+            geom_hline(yintercept = reference, linetype = 2, col = "red") +
+            geom_line() +
+            scale +
+            title
+      }
+    },
     change = {
       if (link == "logit") {
         x %>%
@@ -379,4 +418,67 @@ plot.sim_rw <- function(
       }
     }
   )
+}
+
+#' Select random walks best matching some polygon coefficients
+#'
+#' The target coefficients will be rescaled to have norm 1. The coefficients of the simulations will be rescaled by the largest norm over all simulations.
+#' @param x a `sim_rw` object
+#' @inheritParams plot.sim_rw
+#' @noRd
+#' @importFrom dplyr %>% group_by transmute ungroup mutate summarise arrange select
+#' @importFrom rlang .data
+#' @importFrom tidyr nest unnest
+#' @importFrom purrr map
+#' @importFrom tibble rownames_to_column
+#' @importFrom stats as.formula lm poly coefficients
+#' @importFrom utils head
+select_poly <- function(x, coefs = c(0, -1), n = 10) {
+  assert_that(
+    inherits(x, "sim_rw"),
+    has_name(x, "x"),
+    has_name(x, "y"),
+    has_name(x, "replicate"),
+    is.count(n),
+    is.numeric(coefs),
+    length(coefs) > 1,
+    noNA(coefs),
+    all(is.finite(coefs))
+  )
+  sprintf("y ~ poly(x, %i)", length(coefs)) %>%
+    as.formula() -> formula
+  coefs <- coefs / sqrt(sum(coefs ^ 2))
+  x %>%
+    group_by(.data$replicate) %>%
+    nest() %>%
+    mutate(
+      coef = map(.data$data, lm, formula = formula) %>%
+        map(summary) %>%
+        map(coefficients) %>%
+        map(data.frame) %>%
+        map(rownames_to_column)
+    ) %>%
+    select(-.data$data) %>%
+    unnest() %>%
+    filter(grepl("poly", .data$rowname)) %>%
+    group_by(.data$replicate) %>%
+    transmute(
+      .data$rowname,
+      .data$Estimate,
+      norm = sqrt(sum(.data$Estimate ^ 2))
+    ) %>%
+    ungroup() %>%
+    mutate(Estimate = .data$Estimate / max(.data$norm)) %>%
+    inner_join(
+      tibble(
+        rowname = sprintf("poly(x, %i)%i", length(coefs), seq_along(coefs)),
+        target = coefs
+      ),
+      by = "rowname"
+    ) %>%
+    group_by(.data$replicate) %>%
+    summarise(delta = sum((.data$target - .data$Estimate) ^ 2)) %>%
+    arrange(.data$delta) %>%
+    head(n) %>%
+    semi_join(x = x, by = "replicate")
 }
