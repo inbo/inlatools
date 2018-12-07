@@ -333,18 +333,8 @@ plot.sim_rw <- function(
     quantile = {
       if (link == "logit") {
         x %>%
-          group_by(.data$x) %>%
-          summarise(
-            "2.5%" = quantile(y, 0.025),
-            "10%" = quantile(y, 0.1),
-            "25%" = quantile(y, 0.25),
-            "50%" = quantile(y, 0.5),
-            "75%" = quantile(y, 0.75),
-            "90%" = quantile(y, 0.9),
-            "97.5%" = quantile(y, 0.975)
-          ) %>%
+          select_quantile(quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975)) %>%
           crossing(reference) %>%
-          gather("quantile", "y", -x, -reference, factor_key = TRUE) %>%
           mutate(
             y = y + qlogis(.data$reference),
             y = plogis(.data$y),
@@ -356,7 +346,7 @@ plot.sim_rw <- function(
               )
             )
           ) %>%
-          ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
+          ggplot(aes_string(x = "x", y = "y", colour = "replicate")) +
             geom_hline(
               aes_string(yintercept = "reference"), linetype = 2, col = "red"
             ) +
@@ -366,19 +356,9 @@ plot.sim_rw <- function(
             title
       } else {
         x %>%
-          group_by(.data$x) %>%
-          summarise(
-            "2.5%" = quantile(y, 0.025),
-            "10%" = quantile(y, 0.1),
-            "25%" = quantile(y, 0.25),
-            "50%" = quantile(y, 0.5),
-            "75%" = quantile(y, 0.75),
-            "90%" = quantile(y, 0.9),
-            "97.5%" = quantile(y, 0.975)
-          ) %>%
-          gather("quantile", "y", -x, factor_key = TRUE) %>%
+          select_quantile(quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975)) %>%
           mutate(x, y = backtrans(.data$y)) %>%
-          ggplot(aes_string(x = "x", y = "y", colour = "quantile")) +
+          ggplot(aes_string(x = "x", y = "y", colour = "replicate")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
             geom_line() +
             scale +
@@ -477,8 +457,59 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
       by = "rowname"
     ) %>%
     group_by(.data$replicate) %>%
-    summarise(delta = sum((.data$target - .data$Estimate) ^ 2)) %>%
+    summarise(delta = sum(
+      (.data$target - .data$Estimate) ^ 2)
+    ) %>%
     arrange(.data$delta) %>%
     head(n) %>%
-    semi_join(x = x, by = "replicate")
+    semi_join(x = x, by = "replicate") -> selection
+  class(selection) <- c("sim_rw", class(selection))
+  attr(selection, "sigma") <- attr(x, "sigma")
+  return(selection)
+}
+
+
+#' select the quantiles from an 'sim_rw' object
+#' @inheritParams plot.sim_rw
+#' @param quantiles a vector of quantiles
+#' @noRd
+#' @importFrom assertthat assert_that has_name
+#' @importFrom dplyr %>% group_by mutate tibble
+#' @importFrom rlang .data
+#' @importFrom tidyr nest
+#' @importFrom purrr map
+#' @importFrom stats quantile
+select_quantile <- function(
+  x,
+  quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975)
+) {
+  assert_that(
+    inherits(x, "sim_rw"),
+    has_name(x, "x"),
+    has_name(x, "y"),
+    has_name(x, "replicate")
+  )
+  x %>%
+    group_by(.data$x) %>%
+    nest() %>%
+    mutate(
+      data = map(
+        .data$data,
+        ~tibble(
+          y = quantile(.x$y, quantiles),
+          replicate = quantiles
+        )
+      )
+    ) %>%
+    unnest() %>%
+    mutate(
+      replicate = factor(
+        replicate,
+        levels = sort(quantiles),
+        labels = sprintf("%.1f%%", 100 * sort(quantiles))
+      )
+    ) -> selection
+  class(selection) <- c("sim_rw_quant", "sim_rw", class(selection))
+  attr(selection, "sigma") <- attr(x, "sigma")
+  return(selection)
 }
