@@ -58,3 +58,8 @@ test_that("plots on simulated random walks work", {
   expect_is(plot(x, type = "change", link = "logit"), c("gg", "ggplot"))
   expect_is(plot(x, type = "poly", link = "logit"), c("gg", "ggplot"))
 })
+
+test_that("select_poly()", {
+  x <- simulate_rw(sigma = 0.5)
+  expect_is(inlatools:::select_poly(x, coefs = c(0, 0), n = 10), "sim_rw")
+})

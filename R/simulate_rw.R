@@ -134,7 +134,6 @@ plot.sim_rw <- function(
   )
   type <- match.arg(type)
   link <- match.arg(link)
-  coefs <- coefs / sqrt(sum(coefs ^ 2))
 
   backtrans <- switch(
     link,
@@ -407,7 +406,9 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
   )
   sprintf("y ~ poly(x, %i)", length(coefs)) %>%
     as.formula() -> formula
-  coefs <- coefs / sqrt(sum(coefs ^ 2))
+  if (any(coefs != 0)) {
+    coefs <- coefs / sqrt(sum(coefs ^ 2))
+  }
   x %>%
     group_by(.data$replicate) %>%
     nest() %>%
