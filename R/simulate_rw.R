@@ -225,12 +225,7 @@ plot.sim_rw <- function(
     },
     divergence = {
       if (link == "logit") {
-        x %>%
-          group_by(.data$replicate) %>%
-          summarise_at("y", c(min = min, max = max)) %>%
-          arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
-          head(10) %>%
-          semi_join(x = x, by = "replicate") %>%
+        select_divergence(x, n = n) %>%
           crossing(reference) %>%
           mutate(
             y = .data$y + qlogis(.data$reference),
@@ -251,12 +246,7 @@ plot.sim_rw <- function(
             facet_wrap(~facet, scales = "free_y") +
             title
       } else {
-        x %>%
-          group_by(.data$replicate) %>%
-          summarise_at("y", c(min = min, max = max)) %>%
-          arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
-          head(10) %>%
-          semi_join(x = x, by = "replicate") %>%
+        select_divergence(x, n = n) %>%
           mutate(y = backtrans(y)) %>%
           ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
             geom_hline(yintercept = reference, linetype = 2, col = "red") +
@@ -521,6 +511,34 @@ select_change <- function(x, n = 10) {
       changes = sum(.data$direction != lag(.data$direction), na.rm = TRUE)
     ) %>%
     arrange(desc(.data$changes)) %>%
+    head(n) %>%
+    semi_join(x = x, by = "replicate") -> selection
+  class(selection) <- c("sim_rw", class(selection))
+  attr(selection, "sigma") <- attr(x, "sigma")
+  return(selection)
+}
+
+#' select diverging simulations from an 'sim_rw' object
+#'
+#' The selection will contain the most extreme simulations base on either the minimum effect or the maximum effect within the simulation.
+#' @inheritParams plot.sim_rw
+#' @noRd
+#' @importFrom assertthat assert_that has_name
+#' @importFrom dplyr %>% group_by summarise_at semi_join
+#' @importFrom rlang .data
+#' @importFrom utils head
+select_divergence <- function(x, n = 10) {
+  assert_that(
+    inherits(x, "sim_rw"),
+    has_name(x, "x"),
+    has_name(x, "y"),
+    has_name(x, "replicate"),
+    is.count(n)
+  )
+  x %>%
+    group_by(.data$replicate) %>%
+    summarise_at("y", c(min = min, max = max)) %>%
+    arrange(pmin(rank(.data$min), rank(-.data$max))) %>%
     head(n) %>%
     semi_join(x = x, by = "replicate") -> selection
   class(selection) <- c("sim_rw", class(selection))
