@@ -144,10 +144,10 @@ plot.sim_rw <- function(
     mean = x %>%
       group_by(.data$replicate) %>%
       summarise(center = mean(.data$y)),
-    minimum = x %>%
+    bottom = x %>%
       group_by(.data$replicate) %>%
       summarise(center = min(.data$y)),
-    maximum = x %>%
+    top = x %>%
       group_by(.data$replicate) %>%
       summarise(center = max(.data$y))
   ) %>%
@@ -248,6 +248,11 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
   )
   sprintf("y ~ poly(x, %i)", length(coefs)) %>%
     as.formula() -> formula
+  if (length(coefs) > 1) {
+    rownames <- sprintf("poly(x, %i)%i", length(coefs), seq_along(coefs))
+  } else {
+    rownames <- "poly(x, 1)"
+  }
   if (any(coefs != 0)) {
     coefs <- coefs / sqrt(sum(coefs ^ 2))
   }
@@ -274,11 +279,7 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
     mutate(Estimate = .data$Estimate / max(.data$norm)) %>%
     inner_join(
       tibble(
-        rowname = ifelse(
-          length(coefs) > 1,
-          sprintf("poly(x, %i)%i", length(coefs), seq_along(coefs)),
-          "poly(x, 1)"
-        ),
+        rowname = rownames,
         target = coefs
       ),
       by = "rowname"
@@ -294,7 +295,6 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
   attr(selection, "sigma") <- attr(x, "sigma")
   return(selection)
 }
-
 
 #' select the quantiles from an 'sim_rw' object
 #' @inheritParams plot.sim_rw

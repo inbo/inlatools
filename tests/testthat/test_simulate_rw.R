@@ -43,6 +43,9 @@ test_that("plots on simulated random walks work", {
   expect_is(plot(x, link = "log"), c("gg", "ggplot"))
   expect_is(plot(x, link = "logit"), c("gg", "ggplot"))
   expect_is(plot(x, baseline = 10, link = "log"), c("gg", "ggplot"))
+  expect_is(plot(x, center = "mean"), c("gg", "ggplot"))
+  expect_is(plot(x, center = "bottom"), c("gg", "ggplot"))
+  expect_is(plot(x, center = "top"), c("gg", "ggplot"))
 })
 
 test_that("select_poly()", {
