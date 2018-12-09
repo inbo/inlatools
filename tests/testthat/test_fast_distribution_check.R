@@ -1,5 +1,6 @@
 context("fast_distribution_check")
-ds <- generate_data()
+set.seed(20181209)
+ds <- generate_data(n_random = 10, n_replicate = 2)
 test_that("handles poisson", {
   model <- INLA::inla(
     poisson ~ f(id, model = "iid"),

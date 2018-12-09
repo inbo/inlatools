@@ -1,4 +1,5 @@
 context("dispersion test")
+set.seed(20181209)
 test_that("basic functionality works", {
   nsim <- 10L
   ds <- generate_data(n_random = 10, n_replicate = 3)
