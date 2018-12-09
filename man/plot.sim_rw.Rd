@@ -5,7 +5,7 @@
 \title{Plot simulated random walks}
 \usage{
 \method{plot}{sim_rw}(x, y, ..., link = c("identity", "log", "logit"),
-  baseline)
+  baseline, center = c("start", "mean", "bottom", "top"))
 }
 \arguments{
 \item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
@@ -17,6 +17,8 @@
 \item{link}{which link to use for back transformation}
 
 \item{baseline}{optional baseline for the time series}
+
+\item{center}{defines how to center the time series to the baseline. Options are: \code{start} all time series start at the baseline; \code{mean} the average of the time series is the baseline; \code{bottom} the lowest value of the time series equals the baseline; \code{top} the highest value of the time series equals the baseline}
 }
 \value{
 a \code{\link[ggplot2]{ggplot}} object

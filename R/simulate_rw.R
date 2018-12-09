@@ -83,12 +83,13 @@ simulate_rw <- function(
 #' @param ... currently ignored
 #' @param link which link to use for back transformation
 #' @param baseline optional baseline for the time series
+#' @param center defines how to center the time series to the baseline. Options are: `start` all time series start at the baseline; `mean` the average of the time series is the baseline; `bottom` the lowest value of the time series equals the baseline; `top` the highest value of the time series equals the baseline
 #' @return a `\link[ggplot2]{ggplot}` object
 #' @family priors
 #' @importFrom assertthat assert_that has_name
 #' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap labs
 #' @importFrom scales percent
-#' @importFrom dplyr n_distinct %>% mutate distinct
+#' @importFrom dplyr n_distinct %>% mutate distinct slice
 #' @importFrom rlang .data
 #' @importFrom utils head
 #' @importFrom tidyr crossing
@@ -109,7 +110,8 @@ simulate_rw <- function(
 #' plot(select_quantile(x), link = "logit")
 #' }
 plot.sim_rw <- function(
-  x, y, ..., link = c("identity", "log", "logit"), baseline
+  x, y, ..., link = c("identity", "log", "logit"), baseline,
+  center = c("start", "mean", "bottom", "top")
 ) {
   assert_that(
     inherits(x, "data.frame"),
@@ -118,6 +120,7 @@ plot.sim_rw <- function(
     has_name(x, "replicate")
   )
   link <- match.arg(link)
+  center <- match.arg(center)
   if (missing(baseline)) {
     baseline <- switch(
       link, identity = 0, log = 1, logit = c(0.05, 0.1, 0.25, 0.5)
@@ -131,7 +134,28 @@ plot.sim_rw <- function(
 
   alpha <- sqrt(10) / sqrt(pmax(10, n_distinct(x$replicate)))
 
-  z <- crossing(x, bl = baseline)
+  switch(
+    center,
+    start = x %>%
+      group_by(.data$replicate) %>%
+      arrange(.data$x) %>%
+      slice(1) %>%
+      select("replicate", center = "y"),
+    mean = x %>%
+      group_by(.data$replicate) %>%
+      summarise(center = mean(.data$y)),
+    minimum = x %>%
+      group_by(.data$replicate) %>%
+      summarise(center = min(.data$y)),
+    maximum = x %>%
+      group_by(.data$replicate) %>%
+      summarise(center = max(.data$y))
+  ) %>%
+    inner_join(x, by = "replicate") %>%
+    mutate(y = .data$y - .data$center) %>%
+    select(-"center") -> z
+
+  z <- crossing(z, bl = baseline)
   z <- switch(
     link,
     identity = z %>%
@@ -186,15 +210,13 @@ plot.sim_rw <- function(
     link,
     identity = p + scale_y_continuous("effect"),
     log = if (isTRUE(all.equal(baseline, 1))) {
-      p + scale_y_continuous("relative effect", labels = percent) }
-    else {
+      p + scale_y_continuous("relative effect", labels = percent)
+    } else {
       p + scale_y_continuous("effect")
     },
     logit = p + scale_y_continuous("proportion", labels = percent)
   )
 }
-
-
 
 #' Select random walks best matching some polygon coefficients
 #'

@@ -40,26 +40,36 @@ test_that("simulate_rw() yields sensible output", {
 test_that("plots on simulated random walks work", {
   x <- simulate_rw(sigma = 0.001, length = 20, n_sim = 20)
   expect_is(plot(x), c("gg", "ggplot"))
-  expect_is(plot(x, type = "divergence"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "stationary"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "quantile"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "change"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "poly"), c("gg", "ggplot"))
   expect_is(plot(x, link = "log"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "divergence", link = "log"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "stationary", link = "log"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "quantile", link = "log"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "change", link = "log"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "poly", link = "log"), c("gg", "ggplot"))
   expect_is(plot(x, link = "logit"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "divergence", link = "logit"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "stationary", link = "logit"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "quantile", link = "logit"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "change", link = "logit"), c("gg", "ggplot"))
-  expect_is(plot(x, type = "poly", link = "logit"), c("gg", "ggplot"))
+  expect_is(plot(x, baseline = 10, link = "log"), c("gg", "ggplot"))
 })
 
 test_that("select_poly()", {
-  x <- simulate_rw(sigma = 0.5)
-  expect_is(inlatools:::select_poly(x, coefs = c(0, 0), n = 10), "sim_rw")
+  x <- simulate_rw(sigma = 0.5, n_sim = 10)
+  expect_is(select_poly(x, coefs = c(0, 0), n = 1), "sim_rw")
+  expect_is(selection <- select_poly(x, n = 1), "sim_rw")
+  expect_identical(attr(x, "sigma"), attr(selection, "sigma"))
+})
+
+test_that("select_quantile()", {
+  x <- simulate_rw(sigma = 0.5, n_sim = 100)
+  expect_is(
+    selection <- select_quantile(x, quantiles = c(0.5, 0.75)),
+    c("sim_rw_quant", "sim_rw")
+  )
+  expect_identical(attr(x, "sigma"), attr(selection, "sigma"))
+  expect_is(plot(selection), c("gg", "ggplot"))
+})
+
+test_that("select_change()", {
+  x <- simulate_rw(sigma = 0.5, n_sim = 10)
+  expect_is(selection <- select_change(x, n = 1), "sim_rw")
+  expect_identical(attr(x, "sigma"), attr(selection, "sigma"))
+})
+
+test_that("select_divergence()", {
+  x <- simulate_rw(sigma = 0.5, n_sim = 10)
+  expect_is(selection <- select_divergence(x, n = 1), "sim_rw")
+  expect_identical(attr(x, "sigma"), attr(selection, "sigma"))
 })
