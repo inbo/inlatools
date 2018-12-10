@@ -16,11 +16,11 @@ opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-run <- interactive() || 
+no_stored_data <- interactive() || 
   Sys.getenv("WERCKER") == "true" || 
-  !file.exists("prior_random_walk.Rda")
-if (!run) {
-  load("prior_random_walk.Rda")
+  !file.exists("rwprior.Rda")
+if (!no_stored_data) {
+  load("rwprior.Rda")
 }
 ```
 
@@ -43,7 +43,7 @@ Both random walks can be simulated with the `simulate_rw()` function. `order = 1
 ```{r load_package}
 library(inlatools)
 ```
-```{r simulate, eval = run}
+```{r simulate, eval = no_stored_data}
 set.seed(20181209)
 # first order random walk
 rw1 <- simulate_rw(sigma = 0.05, length = 20)
@@ -74,7 +74,7 @@ plot(rw2)
 
 Plotting all simulations only yields a general idea on the likelihood of different effect sizes. However, plotting every simulation can be time consuming. Therefore we created a `select_subset()` function which calculates the quantiles over all simulations at each point in time. The user can specify the required probabilities through the `quantiles` argument. These default to 2.5%, 10%, 25%, 50% 75%, 90% and 97.5%. The resulting object is again a data.frame with the same structure as the simulations, which can be visuallised with the `plot()` function. The quantiles are useful to visalise the enveloppe of all potential random walks with that specific hyperparameter. 
 
-```{r quantile_eval, eval = run}
+```{r quantile_eval, eval = no_stored_data}
 rw1_q <- select_quantile(rw1, quantiles = c(0.05, 0.95))
 ```
 ```{r quantile, fig.cap = "Quantiles over all simulation at each point in time displaying the enveloppe around the simulations."}
@@ -84,7 +84,7 @@ plot(rw1_q)
 
 `select_divergence()` is another option to visualise how strong the effect of the random walk can be. It selects the `n` (default `n = 10`) simulation which the strongest deviation from the baseline. The result is somewhat comparable with `select_quantile()` with extreme probabilities. The main difference is that `select_divergence()` returns a actual simulated time series.
 
-```{r divergence_eval, eval = run}
+```{r divergence_eval, eval = no_stored_data}
 rw1_d <- select_divergence(rw1)
 ```
 ```{r divergence, fig.cap = "Most diverging random walks for a second order random walk process."}
@@ -93,7 +93,7 @@ plot(rw1_d)
 
 `select_change()` counts the number of changes in direction  per time series. A change in direction occurs the one first order differences change sign when going from one point in time to the next point in time. The function return a selection (default `n = 10`) time series with the most changes in direction. These are often the most wiggly time series.
 
-```{r change_eval, eval = run}
+```{r change_eval, eval = no_stored_data}
 rw1_c <- select_change(rw1)
 ```
 ```{r change, fig.cap = "First order random walks with lots of changes in directions."}
@@ -102,7 +102,7 @@ plot(rw1_c)
 
 Finally, there is `select_poly()`. This function is useful when we assume that the random walk in the model will more or less match a pattern which can be described by a polynomial function. `select_poly()` fit will orthonogal polynomials see (`poly()`). The coefficients of the fitted polynomials compared with the user defined target coefficients. The target coefficients are rescaled to that there norm equals 1. The fitted coefficients are rescaled by a common factor so that the largest norm equals 1.
 
-```{r poly_eval, eval = run}
+```{r poly_eval, eval = no_stored_data}
 rw1_s1 <- select_poly(rw1, coefs = c(1)) 
 rw1_s2 <- select_poly(rw1, coefs = c(0, -1)) 
 rw1_s3 <- select_poly(rw1, coefs = c(0, 1)) 
@@ -155,9 +155,9 @@ plot(rw1_c, center = "bottom", link = "log")
 plot(rw1_c, center = "top", link = "logit")
 ```
 
-```{r save_eval, eval = run, echo = FALSE}
+```{r save_eval, eval = no_stored_data, echo = FALSE}
 save(
   rw1, rw1_c, rw1_d, rw1_q, rw1_s1, rw1_s2, rw1_s3, rw2, 
-  file = "prior_random_walk.Rda"
+  file = "rwprior.Rda"
 )
 ```
