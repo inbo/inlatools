@@ -51,6 +51,7 @@ test_that("plots on simulated random walks work", {
 test_that("select_poly()", {
   x <- simulate_rw(sigma = 0.5, n_sim = 10)
   expect_is(select_poly(x, coefs = c(0, 0), n = 1), "sim_rw")
+  expect_is(select_poly(x, coefs = 1, n = 1), "sim_rw")
   expect_is(selection <- select_poly(x, n = 1), "sim_rw")
   expect_identical(attr(x, "sigma"), attr(selection, "sigma"))
 })

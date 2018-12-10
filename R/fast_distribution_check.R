@@ -137,6 +137,25 @@ setMethod(
   }
 )
 
+#' @rdname fast_distribution_check
+#' @importFrom methods setMethod new
+#' @importFrom purrr map map2
+setMethod(
+  f = "fast_distribution_check",
+  signature = signature(object = "list"),
+  definition = function(object, nsim = 1000) {
+    ecdf <- map(object, fast_distribution_check)
+    if (is.null(names(object))) {
+      ecdf <- map2(ecdf, seq_along(object), ~mutate(.x, model = .y))
+    } else {
+      ecdf <- map2(ecdf, names(object), ~mutate(.x, model = .y))
+    }
+    ecdf <- bind_rows(ecdf)
+    class(ecdf) <- c("distribution_check", class(ecdf))
+    return(ecdf)
+  }
+)
+
 #' The generalised Poisson distribution
 #' @param y a vector of positive integers for which to calculate the density
 #' @param mu a vector of averages for which to calculate the density

@@ -48,35 +48,35 @@ test_that("handles gpoisson", {
   expect_is(plot(fdc), c("gg", "ggplot"))
 })
 
-test_that("handles zeroinflatedpoisson1", {
-  model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
-    family = "zeroinflatedpoisson1",
-    data = ds,
-    control.predictor = list(compute = TRUE)
+test_that("handles zeroinflated", {
+  model <- list(
+    poisson = INLA::inla(
+      poisson ~ f(id, model = "iid"),
+      family = "zeroinflatedpoisson1",
+      data = ds,
+      control.predictor = list(compute = TRUE)
+    ),
+    nbinomial = INLA::inla(
+      poisson ~ f(id, model = "iid"),
+      family = "zeroinflatednbinomial1",
+      data = ds,
+      control.predictor = list(compute = TRUE)
+    )
   )
   expect_is(
     fdc <- fast_distribution_check(model, nsim = 10),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
-  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
+  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf", "model"))
   expect_true(all(ds$poisson %in% fdc$x))
+  expect_identical(names(model), unique(fdc$model))
   expect_is(plot(fdc), c("gg", "ggplot"))
-})
-
-test_that("handles zeroinflatednbinomial1", {
-  model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
-    family = "zeroinflatednbinomial1",
-    data = ds,
-    control.predictor = list(compute = TRUE)
-  )
   expect_is(
-    fdc <- fast_distribution_check(model, nsim = 10),
+    fdc <- fast_distribution_check(unname(model), nsim = 10),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
-  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
-  expect_true(all(ds$poisson %in% fdc$x))
+  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf", "model"))
+  expect_identical(seq_along(model), unique(fdc$model))
 })
 
 test_that("checks the model properties", {

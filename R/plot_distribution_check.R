@@ -36,7 +36,7 @@ plot.distribution_check <- function(x, y, ...) {
     has_name(x, "lcl"),
     has_name(x, "ucl")
   )
-  x %>%
+  p <- x %>%
     filter(.data$lcl <= 0.999) %>%
     mutate(
       median = .data$ecdf / .data$median,
@@ -52,6 +52,10 @@ plot.distribution_check <- function(x, y, ...) {
     geom_line() +
     geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
     scale_y_continuous("observed / expected", labels = percent)
+  if (!has_name(x, "model")) {
+    return(p)
+  }
+  p + facet_wrap(~model)
 }
 
 #' Plot the results from a dispersion check
