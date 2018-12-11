@@ -53,7 +53,8 @@ setMethod(
     }
 
     observed <- get_observed(object)
-    mu <- fitted(object)
+    mu <- fitted(object)[!is.na(observed)]
+    observed <- observed[!is.na(observed)]
     n_mu <- length(mu)
     n_sampled <- switch(
       object$.args$family,
