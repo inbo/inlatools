@@ -37,7 +37,7 @@ plot.distribution_check <- function(x, y, ...) {
     has_name(x, "ucl")
   )
   p <- x %>%
-    filter(.data$lcl <= 0.999) %>%
+    filter(.data$lcl <= 0.999, .data$ucl < 1) %>%
     mutate(
       median = .data$ecdf / .data$median,
       lcl = .data$ecdf / .data$lcl,
