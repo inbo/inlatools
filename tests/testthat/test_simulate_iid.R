@@ -29,4 +29,7 @@ test_that("plots on simulated random intercepts work", {
   expect_is(plot(x), c("gg", "ggplot"))
   expect_is(plot(x, link = "log"), c("gg", "ggplot"))
   expect_is(plot(x, link = "logit"), c("gg", "ggplot"))
+  expect_is(plot(x, baseline = c(0, 0.5)), c("gg", "ggplot"))
+  expect_is(plot(x, baseline = 2, link = "log"), c("gg", "ggplot"))
+  expect_is(plot(x, baseline = c(1, 2), link = "log"), c("gg", "ggplot"))
 })
