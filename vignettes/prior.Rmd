@@ -1,5 +1,5 @@
 ---
-title: "Setting a prior"
+title: "Setting a prior for the random intercept variance and fixed effects"
 author: "Thierry Onkelinx"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -10,60 +10,93 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+set.seed(20181212)
 library(knitr)
 opts_chunk$set(
+  fig.width = 6,
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r}
+## Simulating random intercepts
+
+`simulate_iid()` generates a number of iid random intercepts from a zero mean Gaussian distribution with variance $\sigma^2$. The variance is either specified through the standard deviance $\sigma$ or the precision $\tau = 1 /\sigma ^2$. Specifying both leads to an error, even if both arguments have compatible arguments.
+
+```{r iid-start}
 library(inlatools)
+str(x <- simulate_iid(sigma = 1))
+str(y <- simulate_iid(tau = 100))
 ```
 
-## "iid" random intercept
-
-### Testing `sigma`
-
-`simulate_iid()` generates a number of iid random intercepts from a Gaussian distribution with standard deviation `sigma`.
-
-```{r}
-x <- simulate_iid(sigma = 1)
-y <- simulate_iid(sigma = 0.1)
-```
-
-`plot()` on the simulated random intercepts yields a density with indication of the quantiles.
-
-```{r, fig.show='hold'}
-plot(x)
-plot(y)
-```
-
-Adding `link = "log"` displays the density after back transformation of the random intercepts using the log-link. The random intercept can be interpreted as a relative effect.
-
-```{r, fig.show='hold'}
-plot(x, link = "log")
-plot(y, link = "log")
-```
-
-Adding `link = "logit"` displays the individual random intercepts after back transformation using the loglit-link. Since the influence of the random intercept depends on base proportion, the plot shows for each random intercept the resulting proportion after adding the random intercept to the base proportion.
-
-```{r, fig.show='hold'}
-plot(x, link = "logit")
-plot(y, link = "logit")
-```
-
-### Testing `tau`
-
-One can specify the precision `tau` ($\tau$) instead of the standard deviation `sigma` ($\sigma$). Note that the precision is the inverse of the variance ($\tau = 1 / \sigma ^ 2$).
-
-```{r}
-z <- simulate_iid(tau = 10)
-plot(z)
-```
-
-You must either specify `sigma` or `tau`, the other must remain `NULL` (the default).
-
-```{r error = TRUE}
+```{r iid-error, error = TRUE}
 simulate_iid(sigma = 0.1, tau = 100)
+```
+
+## Inspecting simulated random intercepts
+
+
+The default `plot()` on the simulated random intercepts yields a density with indication of the baseline and quantiles. The plot title displays the standard deviation, variance and precision used to simulate the random intercepts. This makes it easy to simulate the random intercept based on a standard deviation and get the precision required for the prior.
+
+```{r iid-default, fig.cap = "Default plot of simulated random intercepts."}
+plot(x)
+```
+
+## Link functions
+
+Often we are using distributions were the relationship between the mean and the linear predictor is defined through a link function. Therefore we added a `link` argument to the plot function. This will apply the back transformation to the random intercepts, making it easier to interprete their effect on the original scale. 
+
+```{r iid-log, fig.cap = "Default plot with log-link"}
+plot(x, link = "log")
+```
+
+The plot shows the effect of the random intercept + the baseline. The default baseline are chosen to get an informative plot. `link = "identity` uses `baseline = 0` as default. `link = "log"` uses `baseline = 1`, so that the random intercepts can be interpreted as relative effects. In case of `link = "logit"`, the absolute effect on the natural scale, depends on the baseline. Therefore we use `baseline = seq(0, 0.5, length = 21)` as default. When more than one baseline is defined, a line plot is used instead of a density. Each random intercept is depicted as a separate line. 
+
+```{r iid-logit, fig.cap = "Default plot with logit link"}
+plot(x, link = "logit")
+```
+
+The user can override the default baseline. So if you want a density plot in combination with `link = "logit"`, then you need to specify a single baseline. Note that the baseline is always expressed on the natural scale.
+
+```{r iid-logit-density, fig.cap = "Density plot with logit link"}
+plot(x, link = "logit", baseline = 0.7)
+```
+
+Likewise you can get a line plot for `link = "identity"` or `link = "log"` if you specify a vector of baselines. The result of `plot()` is a `ggplot()` object, so you can alter it using standard ggplot functions.
+
+```{r iid-log-line, fig.cap = "Line plot with log link"}
+library(ggplot2)
+plot(x, link = "log", baseline = c(0.01, 0.1, 0.5)) +
+  scale_x_log10("baseline") +
+  scale_y_log10("effect")
+```
+
+## Centering and quantiles
+
+By default the random intercepts are center so that their mean matches the baseline. The alternative are `center = "bottom"` and `center = "top"`. In those cases, the random effects are centered to that the baseline matches the lowest (`center = "bottom"`) or the highest (`center = "top"`) quantile. This is useful in case you want to get an idea of the difference between the lowest quantile and some other point (e.g. the largest quantile). The plot below illustrates that ratio of more that 50 between extreme random intercepts are not uncommon when $\sigma = 1$ with a log link.
+
+```{r iid-bottom, fig.cap = "Density of the random effects after centering to the lowest quantile."}
+plot(x, link = "log", center = "bottom")
+```
+
+The user has the option to specify custom quantiles.
+
+```{r iid-top, fig.cap = "Density of the random effects after centering to the highest quantile."}
+plot(
+  y, center = "top", link = "logit", baseline = 0.9, quantiles = c(0.01, 0.99)
+)
+```
+
+## Priors for fixed effects
+
+INLA assumes Gaussian priors for the fixed effects. Hence we can use `simulate_iid()` to get a feeling of these priors too. Below we give two examples. The first shows the default prior for fixed effects. The second one shows an informative prior for a fixed effect.
+
+```{r fixed-default, fig.cap = "Simulated density of the default fixed effect prior with mean = 0 and precision = 0.001"}
+fixed <- simulate_iid(tau = 0.001)
+plot(fixed)
+```
+
+```{r fixed-informative, fig.cap = "Simulated density of an informative fixed effect prior with mean = 14 and precision = 0.1"}
+fixed <- simulate_iid(tau = 0.1)
+plot(fixed, baseline = 14)
 ```

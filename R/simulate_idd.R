@@ -38,7 +38,6 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
   simulated <- rnorm(n_sim, mean = 0, sd = sigma)
   class(simulated) <- c("sim_iid", class(simulated))
   attr(simulated, "sigma") <- sigma
-  attr(simulated, "tau") <- tau
   return(simulated)
 }
 
@@ -51,7 +50,7 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
 #' @importFrom assertthat assert_that noNA
 #' @importFrom dplyr tibble %>% mutate
 #' @importFrom rlang .data
-#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous
+#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous labs
 #' @importFrom scales percent
 #' @importFrom tidyr crossing
 #' @importFrom stats quantile plogis qlogis
@@ -89,8 +88,6 @@ plot.sim_iid <- function(
     )
   }
 
-
-  alpha <- sqrt(10) / sqrt(pmax(10, length(x)))
   quantiles <- sort(quantiles, decreasing = TRUE)
   quant <- quantile(x, quantiles)
 
@@ -116,9 +113,9 @@ plot.sim_iid <- function(
   if (length(baseline) == 1) {
     quant_c <- switch(
       link,
-      identity = quant_c,
-      log = exp(quant_c),
-      logit = plogis(quant_c)
+      identity = quant_c + baseline,
+      log = exp(quant_c + log(baseline)),
+      logit = plogis(quant_c + qlogis(baseline))
     )
     p <- ggplot(z, aes_string(x = "y")) +
       geom_density() +
@@ -132,7 +129,14 @@ plot.sim_iid <- function(
         hjust = 1.5,
         angle = 90
       ) +
-      geom_vline(xintercept = baseline, colour = "red", linetype = 2)
+      geom_vline(xintercept = baseline, colour = "red", linetype = 2) +
+      labs(
+        title = bquote(
+          sigma == .(signif(attr(x, "sigma"), 4)) ~
+            sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+            tau == .(signif(attr(x, "sigma") ^ -2, 4))
+        )
+      )
     p <- switch(
       link,
       identity = p + scale_x_continuous("effect"),
@@ -146,6 +150,7 @@ plot.sim_iid <- function(
     return(p)
   }
 
+  alpha <- sqrt(10) / sqrt(pmax(10, length(x)))
   tibble(
     re = quant_c,
     quantile = factor(
@@ -163,7 +168,15 @@ plot.sim_iid <- function(
   p <- ggplot(z, aes_string(x = "bl", y = "y", group = "re")) +
     geom_line(alpha = alpha) +
     geom_line(data = quant_bl, aes_string(colour = "quantile"), size = 1) +
-    geom_abline(linetype = 2, colour = "red")
+    geom_abline(linetype = 2, colour = "red") +
+    labs(
+      title = bquote(
+        sigma == .(signif(attr(x, "sigma"), 4)) ~
+          sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+          tau == .(signif(attr(x, "sigma") ^ -2, 4))
+      )
+    )
+
   switch(
     link,
     identity = p +
