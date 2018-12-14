@@ -4,7 +4,7 @@
 \alias{plot.distribution_check}
 \title{Plot the results from a distribution check}
 \usage{
-\method{plot}{distribution_check}(x, y, ...)
+\method{plot}{distribution_check}(x, y, ..., n = FALSE)
 }
 \arguments{
 \item{x}{a distribution_check object. Which is the output of
@@ -13,6 +13,8 @@
 \item{y}{currently ignored}
 
 \item{...}{currently ignored}
+
+\item{n}{display the number of observations}
 }
 \value{
 a ggplot2 object

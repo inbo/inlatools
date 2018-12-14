@@ -15,6 +15,7 @@ test_that("handles poisson", {
   expect_named(dc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
   expect_true(all(ds$poisson %in% dc$x))
   expect_is(plot(dc), c("gg", "ggplot"))
+  expect_is(plot(dc, n = TRUE), c("gg", "ggplot"))
 })
 
 test_that("handles gpoisson", {

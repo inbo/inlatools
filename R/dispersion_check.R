@@ -145,6 +145,7 @@ setMethod(
 )
 
 #' Calculate a measure for dispersion
+#'
 #' The measure is calculated as the average of the squared Pearson residuals
 #' @param observed the observed values
 #' @param fitted the fitted values

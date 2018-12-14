@@ -3,6 +3,7 @@
 #' `\link{fast_distribution_check}`
 #' @param y currently ignored
 #' @param ... currently ignored
+#' @param n display the number of observations
 #' @return a ggplot2 object
 #' @importFrom assertthat assert_that has_name
 #' @importFrom dplyr %>% mutate filter
@@ -26,7 +27,7 @@
 #' )
 #' fdc <- fast_distribution_check(model)
 #' plot(fdc)
-plot.distribution_check <- function(x, y, ...) {
+plot.distribution_check <- function(x, y, ..., n = FALSE) {
   assert_that(
     inherits(x, "data.frame"),
     has_name(x, "x"),
@@ -34,7 +35,8 @@ plot.distribution_check <- function(x, y, ...) {
     has_name(x, "n"),
     has_name(x, "median"),
     has_name(x, "lcl"),
-    has_name(x, "ucl")
+    has_name(x, "ucl"),
+    assert_that(is.flag(n))
   )
   p <- x %>%
     filter(.data$lcl <= 0.999, .data$ucl < 1) %>%
@@ -50,8 +52,10 @@ plot.distribution_check <- function(x, y, ...) {
     geom_line(aes_string(y = "ucl"), linetype = 3, alpha = 0.5) +
     geom_ribbon(alpha = 0.1, aes_string(ymin = "lcl", ymax = "ucl")) +
     geom_line() +
-    geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
     scale_y_continuous("observed / expected", labels = percent)
+  if (isTRUE(n)) {
+    p <- p + geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5)
+  }
   if (!has_name(x, "model")) {
     return(p)
   }
