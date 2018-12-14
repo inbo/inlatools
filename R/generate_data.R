@@ -60,10 +60,11 @@ generate_data <- function(
 
   re_random <- rnorm(n_random, mean = 0, sd = sigma_random)
   data.frame(
-    id = rep(seq_len(n_random), n_replicate)
+    group_id = rep(seq_len(n_random), n_replicate)
   ) %>%
     mutate(
-      eta = a + re_random[.data$id],
+      observation_id = seq_along(.data$group_id),
+      eta = a + re_random[.data$group_id],
       zero_inflation = rbinom(n(), size = 1, prob = zero_inflation) %>%
         as.logical(),
       poisson = rpois(n(), lambda = exp(.data$eta)),

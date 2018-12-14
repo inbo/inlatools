@@ -3,7 +3,7 @@ set.seed(20181209)
 ds <- generate_data(n_random = 10, n_replicate = 2)
 test_that("handles poisson", {
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "poisson",
     data = ds,
     control.compute = list(config = TRUE)
@@ -20,7 +20,7 @@ test_that("handles poisson", {
 test_that("handles gpoisson", {
   suppressWarnings(
     model <- INLA::inla(
-      poisson ~ f(id, model = "iid"),
+      poisson ~ f(group_id, model = "iid"),
       family = "gpoisson",
       data = ds,
       control.compute = list(config = TRUE)
@@ -37,7 +37,7 @@ test_that("handles gpoisson", {
 
 test_that("handles nbinomial", {
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "nbinomial",
     data = ds,
     control.compute = list(config = TRUE)
@@ -53,7 +53,7 @@ test_that("handles nbinomial", {
 
 test_that("handles zeroinflatedpoisson1", {
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "zeroinflatedpoisson1",
     data = ds,
     control.compute = list(config = TRUE)
@@ -69,7 +69,7 @@ test_that("handles zeroinflatedpoisson1", {
 
 test_that("checks the model properties", {
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "poisson",
     data = ds
   )
@@ -79,7 +79,7 @@ test_that("checks the model properties", {
   )
 
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "gaussian",
     data = ds,
     control.compute = list(config = TRUE)
@@ -93,7 +93,7 @@ test_that("checks the model properties", {
   ds$poisson[selected] <- NA
   ds$zipoisson[-selected] <- NA
   model <- INLA::inla(
-    cbind(poisson, zipoisson) ~ f(id, model = "iid"),
+    cbind(poisson, zipoisson) ~ f(group_id, model = "iid"),
     family = c("poisson", "poisson"),
     data = ds
   )

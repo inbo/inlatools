@@ -2,7 +2,7 @@ context("distribution_check")
 test_that("checks the model properties", {
   ds <- generate_data()
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "poisson",
     data = ds,
     control.predictor = list(compute = TRUE)
@@ -15,7 +15,7 @@ test_that("checks the model properties", {
   expect_identical(length(resid), nrow(ds))
 
   model <- INLA::inla(
-    poisson ~ f(id, model = "iid"),
+    poisson ~ f(group_id, model = "iid"),
     family = "gaussian",
     data = ds,
     control.predictor = list(compute = TRUE)
@@ -26,7 +26,7 @@ test_that("checks the model properties", {
   ds$poisson[selected] <- NA
   ds$zipoisson[-selected] <- NA
   model <- INLA::inla(
-    cbind(poisson, zipoisson) ~ f(id, model = "iid"),
+    cbind(poisson, zipoisson) ~ f(group_id, model = "iid"),
     family = c("poisson", "poisson"),
     data = ds
   )

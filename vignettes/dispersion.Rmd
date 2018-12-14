@@ -30,17 +30,17 @@ dataset <- generate_data()
 ```{r}
 library(INLA)
 poisson_model <- inla(
-  poisson ~ 1 + f(id, model = "iid"), family = "poisson", 
+  poisson ~ 1 + f(group_id, model = "iid"), family = "poisson", 
   data = dataset, 
   control.compute = list(config = TRUE, waic = TRUE)
 )
 negbin_model <- inla(
-  negbin ~ 1 + f(id, model = "iid"), family = "poisson", 
+  negbin ~ 1 + f(group_id, model = "iid"), family = "poisson", 
   data = dataset, 
   control.compute = list(config = TRUE, waic = TRUE)
 )
 binom_model <- inla(
-  binom ~ 1 + f(id, model = "iid"), family = "poisson", 
+  binom ~ 1 + f(group_id, model = "iid"), family = "poisson", 
   data = dataset, 
   control.compute = list(config = TRUE, waic = TRUE)
 )
@@ -71,7 +71,7 @@ nsim <- 100
 dispersion_poisson <- function(i, nsim = 100) {
   dataset <- generate_data()
   model <- inla(
-    poisson ~ 1 + f(id, model = "iid"), family = "poisson", 
+    poisson ~ 1 + f(group_id, model = "iid"), family = "poisson", 
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
@@ -82,7 +82,7 @@ dispersion_poisson <- function(i, nsim = 100) {
 dispersion_negbin <- function(i, nsim = 100) {
   dataset <- generate_data()
   model <- inla(
-    negbin ~ 1 + f(id, model = "iid"), family = "poisson", 
+    negbin ~ 1 + f(group_id, model = "iid"), family = "poisson", 
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
@@ -93,7 +93,7 @@ dispersion_negbin <- function(i, nsim = 100) {
 dispersion_binom <- function(i, nsim = 100) {
   dataset <- generate_data()
   model <- inla(
-    binom ~ 1 + f(id, model = "iid"), family = "poisson", 
+    binom ~ 1 + f(group_id, model = "iid"), family = "poisson", 
     data = dataset, 
     control.compute = list(config = TRUE, waic = TRUE)
   )
