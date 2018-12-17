@@ -4,8 +4,9 @@
 #' @param y currently ignored
 #' @param ... currently ignored
 #' @param n display the number of observations
+#' @inheritParams ggplot2::facet_wrap
 #' @return a ggplot2 object
-#' @importFrom assertthat assert_that has_name
+#' @importFrom assertthat assert_that has_name is.flag is.string
 #' @importFrom dplyr %>% mutate filter
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline
 #' geom_text geom_blank scale_y_continuous
@@ -27,7 +28,7 @@
 #' )
 #' fdc <- fast_distribution_check(model)
 #' plot(fdc)
-plot.distribution_check <- function(x, y, ..., n = FALSE) {
+plot.distribution_check <- function(x, y, ..., n = FALSE, scales = "fixed") {
   assert_that(
     inherits(x, "data.frame"),
     has_name(x, "x"),
@@ -36,7 +37,8 @@ plot.distribution_check <- function(x, y, ..., n = FALSE) {
     has_name(x, "median"),
     has_name(x, "lcl"),
     has_name(x, "ucl"),
-    assert_that(is.flag(n))
+    assert_that(is.flag(n)),
+    assert_that(is.string(scales))
   )
   p <- x %>%
     filter(.data$lcl <= 0.999, .data$ucl < 1) %>%
@@ -59,7 +61,7 @@ plot.distribution_check <- function(x, y, ..., n = FALSE) {
   if (!has_name(x, "model")) {
     return(p)
   }
-  p + facet_wrap(~model)
+  p + facet_wrap(~model, scales = scales)
 }
 
 #' Plot the results from a dispersion check

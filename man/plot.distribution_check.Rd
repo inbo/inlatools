@@ -4,7 +4,8 @@
 \alias{plot.distribution_check}
 \title{Plot the results from a distribution check}
 \usage{
-\method{plot}{distribution_check}(x, y, ..., n = FALSE)
+\method{plot}{distribution_check}(x, y, ..., n = FALSE,
+  scales = "fixed")
 }
 \arguments{
 \item{x}{a distribution_check object. Which is the output of
@@ -15,6 +16,10 @@
 \item{...}{currently ignored}
 
 \item{n}{display the number of observations}
+
+\item{scales}{Should scales be fixed (\code{"fixed"}, the default),
+free (\code{"free"}), or free in one dimension (\code{"free_x"},
+\code{"free_y"})?}
 }
 \value{
 a ggplot2 object
