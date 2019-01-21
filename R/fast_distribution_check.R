@@ -197,11 +197,10 @@ dgpoisson <- function(y, mu, phi) {
 
   a <- outer(phi * y, mu, "+")
   b <- 1 + phi
-  d <- exp(
+  exp(
     matrix(log(mu), nrow = length(y), ncol = length(mu), byrow = TRUE) +
     (y - 1) * log(a) - y * log(b) - lfactorial(y) - a / b
   )
-  return(d)
 }
 
 #' @noRd

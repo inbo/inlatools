@@ -57,7 +57,7 @@ setMethod(
     observed <- get_observed(object)
     samples <- inla.posterior.sample(n = nsim, result = object) #nolint
     relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
-    eta <- map_dfc(samples, "latent")[relevant, ]
+    eta <- map_dfc(samples, "latent")[relevant, , drop = FALSE]
     n_sampled <- switch(
       object$.args$family,
       poisson = {
@@ -85,12 +85,14 @@ setMethod(
           "Overdispersion",
           names(samples[[1]]$hyperpar)
         )
-        phi <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        phi <- inla.hyperpar.sample(n = nsim, result = object)[
+          , relevant, drop = TRUE
+        ] #nolint
         mu <- exp(eta)
         sapply(
           seq_len(nsim),
           function(i) {
-            rgpoisson(n = 1, mu = mu[, i, drop = TRUE], phi = phi[i])
+            rgpoisson(n = 1, mu = as.vector(mu[, i, drop = TRUE]), phi = phi[i])
           }
         ) -> n_sampled
         data.frame(
