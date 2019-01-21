@@ -9,7 +9,7 @@ test_that("handles poisson", {
     control.predictor = list(compute = TRUE)
   )
   expect_is(
-    fdc <- fast_distribution_check(model, nsim = 10),
+    fdc <- fast_distribution_check(model, nsim = 100),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
   expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
@@ -45,6 +45,39 @@ test_that("handles gpoisson", {
   )
   expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
   expect_true(all(ds$poisson %in% fdc$x))
+  expect_is(plot(fdc), c("gg", "ggplot"))
+})
+
+test_that("handles zeroinflatedpoisson0", {
+  model <- INLA::inla(
+    zipoisson ~ f(group_id, model = "iid"),
+    family = "zeroinflatedpoisson0",
+    data = ds,
+    control.predictor = list(compute = TRUE)
+  )
+  expect_is(
+    fdc <- fast_distribution_check(model, nsim = 10),
+    c("distribution_check", "tbl_df", "tbl", "data.frame")
+  )
+  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
+  expect_true(all(ds$zipoisson %in% fdc$x))
+  expect_is(plot(fdc), c("gg", "ggplot"))
+
+  model <- INLA::inla(
+    zipoisson ~ f(group_id, model = "iid"),
+    family = "zeroinflatedpoisson0",
+    data = ds,
+    control.predictor = list(compute = TRUE),
+    control.family = list(
+      hyper = list(theta = list(initial = -10, fixed = TRUE))
+    )
+  )
+  expect_is(
+    fdc <- fast_distribution_check(model, nsim = 10),
+    c("distribution_check", "tbl_df", "tbl", "data.frame")
+  )
+  expect_named(fdc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
+  expect_true(all(ds$zipoisson %in% fdc$x))
   expect_is(plot(fdc), c("gg", "ggplot"))
 })
 

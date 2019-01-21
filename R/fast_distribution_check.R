@@ -93,6 +93,22 @@ setMethod(
         ) %>%
           count(.data$run, .data$x)
       },
+      zeroinflatedpoisson0 = {
+        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
+        if (length(relevant) == 1) {
+          zero <- object$summary.hyperpar[relevant, "mean"]
+        } else {
+          zero <- object$all.hyper$family[[1]]$hyper$theta$from.theta(
+            object$all.hyper$family[[1]]$hyper$theta$initial
+          )
+        }
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rtpois(n = n_mu * nsim, lambda = mu) *
+            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
+        ) %>%
+          count(.data$run, .data$x)
+      },
       zeroinflatednbinomial1 = {
         relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
         zero <- object$summary.hyperpar[relevant, "mean"]
@@ -208,5 +224,16 @@ rgpoisson <- function(n, mu, phi) {
   high <- as.integer(max(mu) + 20 * s)
   prob <- dgpoisson(y = low:high, mu, phi)
   y <- apply(prob, 2, sample, x = low:high, replace = TRUE, size = n)
+  return(y)
+}
+
+rtpois <- function(n, lambda) {
+  if (length(lambda) < n) {
+    lambda <- head(rep(lambda, ceiling(n / length(lambda))), n)
+  }
+  y <- rpois(n = n, lambda = lambda)
+  while (any(y == 0)) {
+    y[y == 0] <- rpois(sum(y == 0), lambda = lambda[y == 0])
+  }
   return(y)
 }

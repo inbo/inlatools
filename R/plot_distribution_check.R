@@ -7,7 +7,7 @@
 #' @inheritParams ggplot2::facet_wrap
 #' @return a ggplot2 object
 #' @importFrom assertthat assert_that has_name is.flag is.string
-#' @importFrom dplyr %>% mutate filter
+#' @importFrom dplyr %>% mutate slice
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline
 #' geom_text geom_blank scale_y_continuous
 #' @importFrom graphics plot
@@ -40,8 +40,13 @@ plot.distribution_check <- function(x, y, ..., n = FALSE, scales = "fixed") {
     assert_that(is.flag(n)),
     assert_that(is.string(scales))
   )
+  relevant <- x$lcl <= 0.999 & 0 < pmax(x$ucl, x$ecdf)
+  if (any(x$ucl < 1)) {
+    relevant <- relevant & x$ucl < 1
+  }
+  relevant <- range(which(relevant))
   p <- x %>%
-    filter(.data$lcl <= 0.999, .data$ucl < 1) %>%
+    slice(relevant[1]:(relevant[2] + 1)) %>%
     mutate(
       median = .data$ecdf / .data$median,
       lcl = .data$ecdf / .data$lcl,
