@@ -96,8 +96,7 @@ bind_rows(
     mutate(distribution = "Poisson")
 ) %>%
   select(
-    distribution, parameter, zeroinflation, 
-    mean, lcl = `0.025quant`, ucl = `0.975quant`
+    distribution, parameter, mean, lcl = `0.025quant`, ucl = `0.975quant`
   ) -> summary_hyper
 ```
 
