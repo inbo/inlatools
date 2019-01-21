@@ -34,6 +34,7 @@ We created `generate_data()` to manufacture a basic data set with variables from
 ```{r load-packages, message = FALSE}
 library(tibble)
 library(dplyr)
+library(ggplot2)
 library(INLA)
 library(inlatools)
 ```
@@ -46,6 +47,12 @@ dataset <- generate_data(
   a = intercept, sigma_random = sigma_random, nb_size = nb_size
 )
 ```
+
+```{r dataset}
+glimpse(dataset)
+summary(dataset)
+```
+
 
 ## Overdispersion
 
@@ -71,12 +78,15 @@ negbin_poisson_model <- inla(
 )
 bind_rows(
   negbin_negbin_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
     mutate(distribution = "negative binomial"),
   negbin_poisson_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
     mutate(distribution = "Poisson")
 ) %>%
-  select(distribution, mean, lcl = `0.025quant`, ucl = `0.975quant`) -> 
-  summary_fixed
+  select(
+    distribution, parameter, mean, lcl = `0.025quant`, ucl = `0.975quant`
+  ) -> summary_fixed
 bind_rows(
   negbin_negbin_model$summary.hyperpar %>%
     rownames_to_column("parameter") %>%
@@ -86,7 +96,8 @@ bind_rows(
     mutate(distribution = "Poisson")
 ) %>%
   select(
-    distribution, parameter, mean, lcl = `0.025quant`, ucl = `0.975quant`
+    distribution, parameter, zeroinflation, 
+    mean, lcl = `0.025quant`, ucl = `0.975quant`
   ) -> summary_hyper
 ```
 
@@ -183,10 +194,199 @@ negbin_poisson_disp <- dispersion_check(negbin_poisson_model)
 plot(negbin_poisson_disp)
 ```
 
+## Zero inflation
+
+Let's see what happens if we do the same things for a zero inflated Poisson variable. We'll fit the variable using a Poisson, negative binomial, zero inflated Poisson and zero inflated negative binomial distribution.
+
+```{r zip-fit, eval = no_stored_data}
+pcprior <- list(theta = list(prior = "pc.prec", param = c(1, 0.01)))
+zip_poisson_model <- inla(
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
+  data = dataset, 
+  family = "poisson",
+  control.predictor = list(compute = TRUE)
+)
+zip_negbin_model <- inla(
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
+  data = dataset, 
+  family = "nbinomial",
+  control.predictor = list(compute = TRUE)
+)
+zip_zipoisson_model <- inla(
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
+  data = dataset, 
+  family = "zeroinflatedpoisson1",
+  control.predictor = list(compute = TRUE)
+)
+zip_zinegbin_model <- inla(
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
+  data = dataset, 
+  family = "zeroinflatednbinomial1",
+  control.predictor = list(compute = TRUE)
+)
+bind_rows(
+  zip_negbin_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "negative binomial",
+      zeroinflation = FALSE
+    ),
+  zip_poisson_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "Poisson",
+      zeroinflation = FALSE
+    ),
+  zip_zinegbin_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "negative binomial",
+      zeroinflation = TRUE
+    ),
+  zip_zipoisson_model$summary.fixed %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "Poisson",
+      zeroinflation = TRUE
+    )
+) %>%
+  select(
+    distribution, zeroinflation, parameter, 
+    mean, lcl = `0.025quant`, ucl = `0.975quant`
+  ) -> summary_zip_fixed
+bind_rows(
+  zip_negbin_model$summary.hyperpar %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "negative binomial",
+      zeroinflation = FALSE
+    ),
+  zip_poisson_model$summary.hyperpar %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "Poisson",
+      zeroinflation = FALSE
+    ),
+  zip_zinegbin_model$summary.hyperpar %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "negative binomial",
+      zeroinflation = TRUE
+    ),
+  zip_zipoisson_model$summary.hyperpar %>%
+    rownames_to_column("parameter") %>%
+    mutate(
+      distribution = "Poisson",
+      zeroinflation = TRUE
+    )
+) %>%
+  select(
+    distribution, zeroinflation, parameter, 
+    mean, lcl = `0.025quant`, ucl = `0.975quant`
+  ) %>%
+  arrange(parameter, distribution, zeroinflation) -> summary_zip_hyper
+```
+
+Using a distribution without zero inflation adds a downward bias to the intercept.
+
+```{r zip-print-fixed, echo = FALSE}
+kable(
+  summary_zip_fixed,
+  digits = 2, 
+  caption = "Estimates of the fixed effect for the different models"
+)
+```
+
+We have set $\sigma_r = `r sigma_random`$. This is equivalent with a precision of `r signif(sigma_random ^ -2, 4)`. All distributions lead to a large precision, so they all shrink the group effects. Note that the analyses are based on a very small dataset of only 200 observations and about half of them stem from the zero inflation part. The zero inflation probability is recorved very well. The size parameter of the negative binomial is very small when assuming no zero inflation. This indicates that it handles the zero inflation by increasing the variance. The zero inflated negative binomial has a very large size indicating that there is no overdispersion. Which is the case with a zero inflated Poisson response.
+
+```{r zip-print-hyperpar, echo = FALSE}
+kable(
+  summary_zip_hyper,
+  digits = 2, 
+  caption = "Hyperparameters of the different models"
+)
+```
+
+### Dispersion checks
+
+```{r zip-calc-disp, eval = no_stored_data}
+dispersion_check(zip_poisson_model) -> zip_poisson_disp
+dispersion_check(zip_negbin_model) -> zip_negbin_disp
+dispersion_check(zip_zipoisson_model) -> zip_zipoisson_disp
+dispersion_check(zip_zinegbin_model) -> zip_zinegbin_disp
+```
+
+Using the Poisson distribution we get strong indications for overdispersion. 
+
+```{r zip-poisson-disp, fig.cap = "Dispersion check for a zero inflated Poisson reponse modelled with a Poisson distribution"}
+plot(zip_poisson_disp)
+```
+
+The negative binomial distribution has a weak indication for underdispersion. More important, the range of dispersion values based on the simulation data is quite large.
+
+```{r zip-negbin-disp, fig.cap = "Dispersion check for a zero inflated Poisson reponse modelled with a negative binomial distribution"}
+plot(zip_negbin_disp)
+```
+
+The dispersion checks on both the zero inflation Poisson and the zero inflated negative binomial models give a go-ahead. The observed dispersion is well within the range of the dispersion of the simulated data and that range is quite narrow.
+
+```{r zip-zipoisson-disp, fig.cap = "Dispersion check for a zero inflated Poisson reponse modelled with a zero inflated Poisson distribution"}
+plot(zip_zipoisson_disp)
+```
+
+```{r zip-zinegbin-disp, fig.cap = "Dispersion check for a zero inflated Poisson reponse modelled with a zero inflated negative binomial distribution"}
+plot(zip_zinegbin_disp)
+```
+
+### Distribution checks
+
+Another feature of the distribution checks is that they can handle a list of models. The resulting data.frame gains a `model` variables which contains the name of the list (or their index in case of an unnamed list). Plotting the resulting check will create a subplot for each model (using `facet_wrap()`). By default all subplots will have the same scale. The strong ratio observed / expected for the Poisson model will swamp all information of the other models. Therefore we used `scales = "free"`, resulting in a dedicated x and y axis for each subplot.
+
+```{r zip-calc-fdc, eval = no_stored_data}
+list(
+  poisson = zip_poisson_model,
+  negbin = zip_negbin_model,
+  zipoisson = zip_zipoisson_model,
+  zinegbin = zip_zinegbin_model
+) %>%
+  fast_distribution_check() -> zip_fdc
+```
+
+The plot for the Poisson model clearly indicates a problem with the (near) zero values, the data has much more of those than the model predicts. The negative binomial models is better at modelling the large number of zero's but it fails on the small, non-zero values which are overrepresented by the model. Both the zero inflated Poisson and the zero inflated negative binomial models pass the distribution check with flying colours. 
+
+```{r zip-fdc, fig.cap = "Fast distribution check on a zero inflated Poisson response which is modelled using several distributions"}
+glimpse(zip_fdc)
+plot(zip_fdc, scales = "free")
+```
+
+## Underdispersion
+
+`generate_data()` has a binomial variable. We use this as an example for underdispersed data. The dispersion check clearly indicates underdispersion. The distribution check has a ratio smaller than 1 has low values.
+
+```{r binom-fit, eval = no_stored_data}
+binom_poisson_model <- inla(
+  binom ~ f(group_id, model = "iid"), 
+  data = dataset, 
+  family = "nbinomial",
+  control.predictor = list(compute = TRUE)
+)
+binom_poisson_disp <- dispersion_check(binom_poisson_model)
+binom_poisson_fdc <- fast_distribution_check(binom_poisson_model)
+```
+```{r binom-poisson-disp, fig.cap = "Dispersion check on a binomial response which is modelled using a Poisson distribution."}
+plot(binom_poisson_disp)
+```
+```{r binom-poisson-fdc, fig.cap = "Fast distribution check on a binomial response which is modelled using a negative binomial distribution"}
+plot(binom_poisson_fdc)
+```
+
 ```{r eval = no_stored_data, echo = FALSE}
 save(
-  summary_fixed, summary_hyper, sigma_random, intercept, nb_size,
+  dataset, summary_fixed, summary_hyper, sigma_random, intercept, nb_size,
   negbin_negbin_fdc, negbin_negbin_disp,
   negbin_poisson_dc, negbin_poisson_fdc, negbin_poisson_disp,
+  summary_zip_fixed, summary_zip_hyper, zip_fdc,
+  zip_poisson_disp, zip_negbin_disp, zip_zipoisson_disp, zip_zinegbin_disp, 
+  binom_poisson_fdc, binom_poisson_disp,
   file = "distribution.Rda")
 ```
