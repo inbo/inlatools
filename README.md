@@ -24,8 +24,8 @@ The `inlatools` package provides a set of function which can be useful to diagno
 
 ```r
 ip <- rownames(installed.packages())
-if (!"devtools" %in% ip) {
-  install.packages("devtools")
+if (!"remotes" %in% ip) {
+  install.packages("remotes")
 }
 if (!"INLA" %in% ip) {
   install.packages(
@@ -33,7 +33,7 @@ if (!"INLA" %in% ip) {
     repos = c(getOption("repos"), "https://inla.r-inla-download.org/R/stable")
   )
 }
-devtools::install_github("inbo/inlatools")
+remotes::install_github("inbo/inlatools")
 ```
 
 ## Documentation
