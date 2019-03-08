@@ -3,9 +3,11 @@
 #' `\link{fast_distribution_check}`
 #' @param y currently ignored
 #' @param ... currently ignored
+#' @param n display the number of observations
+#' @inheritParams ggplot2::facet_wrap
 #' @return a ggplot2 object
-#' @importFrom assertthat assert_that has_name
-#' @importFrom dplyr %>% mutate filter
+#' @importFrom assertthat assert_that has_name is.flag is.string
+#' @importFrom dplyr %>% mutate slice
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline
 #' geom_text geom_blank scale_y_continuous
 #' @importFrom graphics plot
@@ -26,7 +28,7 @@
 #' )
 #' fdc <- fast_distribution_check(model)
 #' plot(fdc)
-plot.distribution_check <- function(x, y, ...) {
+plot.distribution_check <- function(x, y, ..., n = FALSE, scales = "fixed") {
   assert_that(
     inherits(x, "data.frame"),
     has_name(x, "x"),
@@ -34,10 +36,17 @@ plot.distribution_check <- function(x, y, ...) {
     has_name(x, "n"),
     has_name(x, "median"),
     has_name(x, "lcl"),
-    has_name(x, "ucl")
+    has_name(x, "ucl"),
+    assert_that(is.flag(n)),
+    assert_that(is.string(scales))
   )
-  x %>%
-    filter(.data$lcl <= 0.999) %>%
+  relevant <- x$lcl <= 0.999 & 0 < pmax(x$ucl, x$ecdf)
+  if (any(x$ucl < 1)) {
+    relevant <- relevant & x$ucl < 1
+  }
+  relevant <- range(which(relevant))
+  p <- x %>%
+    slice(relevant[1]:(relevant[2] + 1)) %>%
     mutate(
       median = .data$ecdf / .data$median,
       lcl = .data$ecdf / .data$lcl,
@@ -50,8 +59,14 @@ plot.distribution_check <- function(x, y, ...) {
     geom_line(aes_string(y = "ucl"), linetype = 3, alpha = 0.5) +
     geom_ribbon(alpha = 0.1, aes_string(ymin = "lcl", ymax = "ucl")) +
     geom_line() +
-    geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5) +
     scale_y_continuous("observed / expected", labels = percent)
+  if (isTRUE(n)) {
+    p <- p + geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5)
+  }
+  if (!has_name(x, "model")) {
+    return(p)
+  }
+  p + facet_wrap(~model, scales = scales)
 }
 
 #' Plot the results from a dispersion check

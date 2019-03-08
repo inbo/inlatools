@@ -53,7 +53,8 @@ setMethod(
     }
 
     observed <- get_observed(object)
-    mu <- fitted(object)
+    mu <- fitted(object)[!is.na(observed)]
+    observed <- observed[!is.na(observed)]
     n_mu <- length(mu)
     n_sampled <- switch(
       object$.args$family,
@@ -88,6 +89,22 @@ setMethod(
         data.frame(
           run = rep(seq_len(nsim), each = n_mu),
           x = rpois(n = n_mu * nsim, lambda = mu) *
+            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
+        ) %>%
+          count(.data$run, .data$x)
+      },
+      zeroinflatedpoisson0 = {
+        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
+        if (length(relevant) == 1) {
+          zero <- object$summary.hyperpar[relevant, "mean"]
+        } else {
+          zero <- object$all.hyper$family[[1]]$hyper$theta$from.theta(
+            object$all.hyper$family[[1]]$hyper$theta$initial
+          )
+        }
+        data.frame(
+          run = rep(seq_len(nsim), each = n_mu),
+          x = rtpois(n = n_mu * nsim, lambda = mu) *
             rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
         ) %>%
           count(.data$run, .data$x)
@@ -137,6 +154,25 @@ setMethod(
   }
 )
 
+#' @rdname fast_distribution_check
+#' @importFrom methods setMethod new
+#' @importFrom purrr map map2
+setMethod(
+  f = "fast_distribution_check",
+  signature = signature(object = "list"),
+  definition = function(object, nsim = 1000) {
+    ecdf <- map(object, fast_distribution_check)
+    if (is.null(names(object))) {
+      ecdf <- map2(ecdf, seq_along(object), ~mutate(.x, model = .y))
+    } else {
+      ecdf <- map2(ecdf, names(object), ~mutate(.x, model = .y))
+    }
+    ecdf <- bind_rows(ecdf)
+    class(ecdf) <- c("distribution_check", class(ecdf))
+    return(ecdf)
+  }
+)
+
 #' The generalised Poisson distribution
 #' @param y a vector of positive integers for which to calculate the density
 #' @param mu a vector of averages for which to calculate the density
@@ -161,11 +197,10 @@ dgpoisson <- function(y, mu, phi) {
 
   a <- outer(phi * y, mu, "+")
   b <- 1 + phi
-  d <- exp(
+  exp(
     matrix(log(mu), nrow = length(y), ncol = length(mu), byrow = TRUE) +
     (y - 1) * log(a) - y * log(b) - lfactorial(y) - a / b
   )
-  return(d)
 }
 
 #' @noRd
@@ -188,5 +223,16 @@ rgpoisson <- function(n, mu, phi) {
   high <- as.integer(max(mu) + 20 * s)
   prob <- dgpoisson(y = low:high, mu, phi)
   y <- apply(prob, 2, sample, x = low:high, replace = TRUE, size = n)
+  return(y)
+}
+
+rtpois <- function(n, lambda) {
+  if (length(lambda) < n) {
+    lambda <- head(rep(lambda, ceiling(n / length(lambda))), n)
+  }
+  y <- rpois(n = n, lambda = lambda)
+  while (any(y == 0)) {
+    y[y == 0] <- rpois(sum(y == 0), lambda = lambda[y == 0])
+  }
   return(y)
 }

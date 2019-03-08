@@ -1,7 +1,7 @@
 Package: inlatools
-Title: Diagnostic tools for INLA models
+Title: Diagnostic Tools for INLA Models
 Description: Several functions which can be useful to choose sensible priors and diagnose the fitted model.
-Version: 0.0.0.9000
+Version: 0.0.1.9000
 Authors@R: c(
   person(
     "Thierry", "Onkelinx", role = c("aut", "cre"), 
@@ -20,6 +20,7 @@ Imports:
   purrr,
   rlang,
   scales,
+  tibble,
   tidyr
 Remotes:
   github::inbo/INLA

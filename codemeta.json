@@ -6,18 +6,18 @@
   "@type": "SoftwareSourceCode",
   "identifier": "inlatools",
   "description": "Several functions which can be useful to choose sensible priors and diagnose the fitted model.",
-  "name": "inlatools: Diagnostic tools for INLA models",
+  "name": "inlatools: Diagnostic Tools for INLA Models",
   "codeRepository": "https://github.com/inbo/inlatools",
   "issueTracker": "https://github.com/inbo/inlatools/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.0.0.9000",
+  "version": "0.0.1.9000",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
-    "version": "3.5.1",
+    "version": "3.5.2",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 3.5.1 (2018-07-02)",
+  "runtimePlatform": "R version 3.5.2 (2018-12-20)",
   "author": [
     {
       "@type": "Person",
@@ -180,6 +180,18 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "tibble",
+      "name": "tibble",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=tibble"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "tidyr",
       "name": "tidyr",
       "provider": {
@@ -192,7 +204,7 @@
     }
   ],
   "readme": "https://github.com/inbo/inlatools/blob/master/README.md",
-  "fileSize": "29.211KB",
+  "fileSize": "402.995KB",
   "contIntegration": "https://ci.appveyor.com/project/inbo/inlatools",
   "developmentStatus": "https://www.repostatus.org/#wip"
 }

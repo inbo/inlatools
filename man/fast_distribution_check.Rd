@@ -4,12 +4,15 @@
 \name{fast_distribution_check}
 \alias{fast_distribution_check}
 \alias{fast_distribution_check,inla-method}
+\alias{fast_distribution_check,list-method}
 \title{Use simulations to compare the observed distribution with the modelled
 distribution}
 \usage{
 fast_distribution_check(object, nsim = 1000)
 
 \S4method{fast_distribution_check}{inla}(object, nsim = 1000)
+
+\S4method{fast_distribution_check}{list}(object, nsim = 1000)
 }
 \arguments{
 \item{object}{the INLA model}

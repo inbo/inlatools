@@ -24,8 +24,8 @@ The `inlatools` package provides a set of function which can be useful to diagno
 
 ```r
 ip <- rownames(installed.packages())
-if (!"devtools" %in% ip) {
-  install.packages("devtools")
+if (!"remotes" %in% ip) {
+  install.packages("remotes")
 }
 if (!"INLA" %in% ip) {
   install.packages(
@@ -33,12 +33,12 @@ if (!"INLA" %in% ip) {
     repos = c(getOption("repos"), "https://inla.r-inla-download.org/R/stable")
   )
 }
-devtools::install_github("inbo/inlatools")
+remotes::install_github("inbo/inlatools")
 ```
 
 ## Documentation
 
-All documentation is available at the package website: https://inbo.github.io/inlatools. This website contains an [overview](https://inbo.github.io/inlatools/reference/index.html) of all available functions. Click on the name the function to open the corresponding help file. The [vignettes](https://inbo.github.io/inlatools/articles/index.html) illustrate how to [check the dispersion](https://inbo.github.io/inlatools/articles/dispersion.html), how to [check the distribution](https://inbo.github.io/inlatools/articles/distribution.html) and how to visualise [random effects](https://inbo.github.io/inlatools/articles/prior.html) for a given variance or precision.
+All documentation is available at the package website: https://inlatools.netlify.com. This website contains an [overview](https://inlatools.netlify.com/reference/index.html) of all available functions. Click on the name the function to open the corresponding help file. The [vignettes](https://inlatools.netlify.com/articles/index.html) illustrate how to [check the dispersion](https://inlatools.netlify.com/articles/dispersion.html), how to [check the distribution](https://inlatools.netlify.com/articles/distribution.html) and how to visualise [random effects](https://inlatools.netlify.com/articles/prior.html) for a given variance or precision.
 
 ## Folder structure
 

@@ -38,21 +38,22 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
   simulated <- rnorm(n_sim, mean = 0, sd = sigma)
   class(simulated) <- c("sim_iid", class(simulated))
   attr(simulated, "sigma") <- sigma
-  attr(simulated, "tau") <- tau
   return(simulated)
 }
 
 #' Plot simulated random intercepts
 #' @param x a `sim_iid` object. Which is the output of `\link{simulate_iid}`
 #' @inheritParams plot.sim_rw
+#' @param quantiles which quantiles are shown on the plot
 #' @return a ggplot2 object
 #' @family priors
-#' @importFrom assertthat assert_that
+#' @importFrom assertthat assert_that noNA
 #' @importFrom dplyr tibble %>% mutate
 #' @importFrom rlang .data
-#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous
+#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous labs
 #' @importFrom scales percent
 #' @importFrom tidyr crossing
+#' @importFrom stats quantile plogis qlogis
 #' @export
 #' @examples
 #' set.seed(20181202)
@@ -60,83 +61,132 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
 #' plot(x)
 #' plot(x, link = "log")
 #' plot(x, link = "logit")
-plot.sim_iid <- function(x, y, ..., link = c("identity", "log", "logit")) {
-  assert_that(is.numeric(x))
-  quants <- c(0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975)
-  quant <- quantile(x, quants)
-  link <- match.arg(link)
-  title <- ggtitle(
-    bquote(
-      sigma == .(signif(attr(x, "sigma"), 4)) ~
-        sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
-        tau == .(signif(attr(x, "sigma") ^ -2, 4))
-    )
+plot.sim_iid <- function(
+  x, y, ..., link = c("identity", "log", "logit"), baseline,
+  center = c("mean", "bottom", "top"),
+  quantiles = c(0.025, 0.1, 0.5, 0.9, 0.975)
+) {
+  assert_that(
+    is.numeric(x),
+    is.numeric(quantiles),
+    length(quantiles) > 0,
+    noNA(quantiles)
   )
+  link <- match.arg(link)
+  center <- match.arg(center)
+  if (missing(baseline)) {
+    baseline <- switch(
+      link,
+      identity = 0,
+      log = 1,
+      logit = seq(0, 0.5, length = 21)
+    )
+  } else {
+    assert_that(
+      is.numeric(baseline),
+      length(baseline) >= 1
+    )
+  }
+
+  quantiles <- sort(quantiles, decreasing = TRUE)
+  quant <- quantile(x, quantiles)
+
+  x_c <- switch(
+    center,
+    mean = x - mean(x),
+    bottom = x - min(quant),
+    top = x - max(quant)
+  )
+  quant_c <- switch(
+    center,
+    mean = quant - mean(x),
+    bottom = quant - min(quant),
+    top = quant - max(quant)
+  )
+  z <- crossing(re = x_c, bl = baseline)
+  z <- switch(
+    link,
+    identity = mutate(z, y = .data$re + .data$bl),
+    log = mutate(z, y = exp(.data$re + log(.data$bl))),
+    logit = mutate(z, y = plogis(.data$re + qlogis(.data$bl)))
+  )
+  if (length(baseline) == 1) {
+    quant_c <- switch(
+      link,
+      identity = quant_c + baseline,
+      log = exp(quant_c + log(baseline)),
+      logit = plogis(quant_c + qlogis(baseline))
+    )
+    p <- ggplot(z, aes_string(x = "y")) +
+      geom_density() +
+      geom_vline(xintercept = quant_c, linetype = 3) +
+      annotate(
+        "text",
+        x = quant_c,
+        y = Inf,
+        label = names(quant),
+        vjust = -0.5,
+        hjust = 1.5,
+        angle = 90
+      ) +
+      geom_vline(xintercept = baseline, colour = "red", linetype = 2) +
+      labs(
+        title = bquote(
+          sigma == .(signif(attr(x, "sigma"), 4)) ~
+            sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+            tau == .(signif(attr(x, "sigma") ^ -2, 4))
+        )
+      )
+    p <- switch(
+      link,
+      identity = p + scale_x_continuous("effect"),
+      log = if (isTRUE(all.equal(baseline, 1))) {
+        p + scale_x_continuous("relative effect", labels = percent)
+      } else {
+        p + scale_x_continuous("effect")
+      },
+      logit = p + scale_x_continuous("proportion", labels = percent)
+    )
+    return(p)
+  }
+
+  alpha <- sqrt(10) / sqrt(pmax(10, length(x)))
+  tibble(
+    re = quant_c,
+    quantile = factor(
+      names(quant),
+      levels = names(quant)
+    )
+  ) %>%
+    crossing(bl = baseline) -> quant_bl
+  quant_bl <- switch(
+    link,
+    identity = mutate(quant_bl, y = .data$re + .data$bl),
+    log = mutate(quant_bl, y = exp(.data$re + log(.data$bl))),
+    logit = mutate(quant_bl, y = plogis(.data$re + qlogis(.data$bl)))
+  )
+  p <- ggplot(z, aes_string(x = "bl", y = "y", group = "re")) +
+    geom_line(alpha = alpha) +
+    geom_line(data = quant_bl, aes_string(colour = "quantile"), size = 1) +
+    geom_abline(linetype = 2, colour = "red") +
+    labs(
+      title = bquote(
+        sigma == .(signif(attr(x, "sigma"), 4)) ~
+          sigma ^ 2 == .(signif(attr(x, "sigma") ^ 2, 4)) ~
+          tau == .(signif(attr(x, "sigma") ^ -2, 4))
+      )
+    )
 
   switch(
     link,
-    identity = {
-      tibble(effect = x) %>%
-        ggplot(aes_string(x = "effect")) +
-        geom_density() +
-        geom_vline(xintercept = quant, linetype = 3) +
-        geom_vline(xintercept = 0, linetype = 2, colour = "red") +
-        annotate(
-          "text",
-          x = quant,
-          y = Inf,
-          label = sprintf("%.1f%%", 100 * quants),
-          vjust = -0.5,
-          hjust = 1.5,
-          angle = 90
-        ) +
-        title
-    },
-    log = {
-      tibble(effect = exp(x)) %>%
-        ggplot(aes_string(x = "effect")) +
-        geom_density() +
-        geom_vline(xintercept = exp(quant), linetype = 3) +
-        geom_vline(xintercept = 1, linetype = 2, colour = "red") +
-        scale_x_log10("relative effect", labels = percent) +
-        annotate(
-          "text",
-          x = exp(quant),
-          y = Inf,
-          label = sprintf("%.1f%%", 100 * quants),
-          vjust = -0.5,
-          hjust = 1.5,
-          angle = 90
-        ) +
-        title
-    },
-    logit = {
-      x_range <- seq(0, 1, length = 41)
-      tibble(
-        quantile = factor(
-          rev(quants),
-          labels = sprintf("%.1f%%", 100 * rev(quants))
-        ),
-        replicate = quant
-      ) %>%
-        crossing(x = x_range) %>%
-        mutate(
-          y = .data$replicate + qlogis(.data$x),
-          y = plogis(.data$y)
-      ) -> quantiles
-      tibble(replicate = x) %>%
-        crossing(x = x_range) %>%
-        mutate(
-          y = .data$replicate + qlogis(.data$x),
-          y = plogis(.data$y)
-        ) %>%
-        ggplot(aes_string(x = "x", y = "y", group = "replicate")) +
-        geom_line(alpha = 0.1) +
-        geom_abline(linetype = 2, colour = "red") +
-        geom_line(data = quantiles, aes_string(colour = "quantile"), size = 1) +
-        scale_x_continuous("base proportion", labels = percent) +
-        scale_y_continuous("proportion", labels = percent) +
-        title
-    }
-  )
+    identity = p +
+      scale_x_continuous("baseline") +
+      scale_y_continuous("effect"),
+    log = p +
+      scale_x_continuous("baseline") +
+      scale_y_continuous("relative effect"),
+    logit = p +
+      scale_x_continuous("baseline", labels = percent) +
+      scale_y_continuous("proportion", labels = percent)
+    )
 }

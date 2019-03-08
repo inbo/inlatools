@@ -35,6 +35,9 @@ head(y)
 }
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}}, \code{\link{simulate_iid}}
+  \code{\link{plot.sim_rw}}, \code{\link{select_change}},
+  \code{\link{select_divergence}},
+  \code{\link{select_poly}}, \code{\link{select_quantile}},
+  \code{\link{simulate_iid}}
 }
 \concept{priors}

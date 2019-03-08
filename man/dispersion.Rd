@@ -2,8 +2,7 @@
 % Please edit documentation in R/dispersion_check.R
 \name{dispersion}
 \alias{dispersion}
-\title{Calculate a measure for dispersion
-The measure is calculated as the average of the squared Pearson residuals}
+\title{Calculate a measure for dispersion}
 \usage{
 dispersion(observed, fitted, variance)
 }
@@ -15,7 +14,6 @@ dispersion(observed, fitted, variance)
 \item{variance}{the variance of the fitted values}
 }
 \description{
-Calculate a measure for dispersion
 The measure is calculated as the average of the squared Pearson residuals
 }
 \examples{

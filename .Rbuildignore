@@ -1,8 +1,10 @@
+^\.travis\.yml$
 ^codemeta\.json$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^wercker\.yml$
 ^appveyor\.yml$
-^_pkgdown.yml$
+^_pkgdown\.yml$
 ^pkgdown$
 ^docs$
+^tic\.R$

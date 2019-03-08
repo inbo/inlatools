@@ -1,10 +1,11 @@
 context("dispersion test")
+set.seed(20181209)
 test_that("basic functionality works", {
   nsim <- 10L
   ds <- generate_data(n_random = 10, n_replicate = 3)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "poisson", data = ds,
+    poisson ~ f(group_id, model = "iid"), family = "poisson", data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
   )
@@ -19,7 +20,7 @@ test_that("basic functionality works", {
   expect_is(plot(dc), c("gg", "ggplot"))
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "nbinomial", data = ds,
+    poisson ~ f(group_id, model = "iid"), family = "nbinomial", data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
   )
@@ -33,7 +34,7 @@ test_that("basic functionality works", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1",
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatednbinomial1",
     data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
@@ -48,7 +49,7 @@ test_that("basic functionality works", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatedpoisson1",
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatedpoisson1",
     data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
@@ -69,7 +70,7 @@ test_that("handles missing responses", {
   ds$poisson[sample(nrow(ds), ceiling(nrow(ds) / 10))] <- NA
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "poisson", data = ds,
+    poisson ~ f(group_id, model = "iid"), family = "poisson", data = ds,
     control.predictor = list(compute = TRUE, link = 1),
     control.compute = list(config = TRUE),
   )
@@ -83,7 +84,8 @@ test_that("handles missing responses", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatedpoisson1", data = ds,
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatedpoisson1",
+    data = ds,
     control.predictor = list(compute = TRUE, link = 1),
     control.compute = list(config = TRUE),
   )
@@ -97,7 +99,7 @@ test_that("handles missing responses", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "nbinomial", data = ds,
+    poisson ~ f(group_id, model = "iid"), family = "nbinomial", data = ds,
     control.predictor = list(compute = TRUE, link = 1),
     control.compute = list(config = TRUE),
   )
@@ -111,7 +113,7 @@ test_that("handles missing responses", {
   expect_identical(sum(is.na(dc$model)), 0L)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), family = "zeroinflatednbinomial1",
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatednbinomial1",
     data = ds,
     control.predictor = list(compute = TRUE, link = 1),
     control.compute = list(config = TRUE),
@@ -130,7 +132,7 @@ test_that("error handling", {
   ds <- generate_data(n_random = 10, n_replicate = 3)
 
   object <- INLA::inla(
-    poisson ~ f(id, model = "iid"), data = ds,
+    poisson ~ f(group_id, model = "iid"), data = ds,
     control.predictor = list(compute = TRUE),
     control.compute = list(config = TRUE)
   )
@@ -140,7 +142,7 @@ test_that("error handling", {
   ds$poisson[selected] <- NA
   ds$zipoisson[-selected] <- NA
   model <- INLA::inla(
-    cbind(poisson, zipoisson) ~ f(id, model = "iid"),
+    cbind(poisson, zipoisson) ~ f(group_id, model = "iid"),
     family = c("poisson", "poisson"),
     data = ds
   )
