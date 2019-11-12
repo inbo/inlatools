@@ -15,7 +15,7 @@ Imports:
   assertthat,
   dplyr,
   ggplot2,
-  INLA,
+  INLA (>= 19.09.03),
   methods,
   purrr,
   rlang,
@@ -30,7 +30,6 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Collate:
-    's3_classes.R'
     'dispersion_check.R'
     'distribution_check.R'
     'fast_distribution_check.R'
