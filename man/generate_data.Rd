@@ -17,10 +17,10 @@ generate_data(a = 0, sigma_random = 0.5, n_random = 20,
 \item{n_replicate}{the number of observation per random effect level}
 
 \item{nb_size}{the size parameter of the negative binomial distribution.
-Passed to the \code{size} parameter of \code{\link[stats]{rnbinom}}}
+Passed to the \code{size} parameter of \code{\link[stats]{NegBinomial}}}
 
 \item{b_size}{the size parameter of the binomial distribution. Passed to the
-\code{size} parameter of \code{\link[stats]{rbinom}}}
+\code{size} parameter of \code{\link[stats]{Binomial}}}
 
 \item{zero_inflation}{the probability the the observed value stems for the a
 point mass in zero}

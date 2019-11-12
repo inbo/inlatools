@@ -12,9 +12,9 @@
 #' @param n_random the number of random effect levels (groups)
 #' @param n_replicate the number of observation per random effect level
 #' @param nb_size the size parameter of the negative binomial distribution.
-#' Passed to the `size` parameter of \code{\link[stats]{rnbinom}}
+#' Passed to the `size` parameter of \code{\link[stats]{NegBinomial}}
 #' @param b_size the size parameter of the binomial distribution. Passed to the
-#' `size` parameter of `\link[stats]{rbinom}`
+#' `size` parameter of `\link[stats]{Binomial}`
 #' @param zero_inflation the probability the the observed value stems for the a
 #' point mass in zero
 #' @return A `data.frame`
