@@ -5,7 +5,6 @@
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export
-#' @include s3_classes.R
 #' @family statistics
 #' @examples
 #' library(INLA)

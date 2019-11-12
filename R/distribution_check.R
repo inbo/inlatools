@@ -27,7 +27,6 @@ setGeneric(
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
-#' @include s3_classes.R
 #' @examples
 #' \donttest{
 #' library(INLA)

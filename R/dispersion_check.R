@@ -19,7 +19,6 @@ setGeneric(
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
-#' @include s3_classes.R
 #' @examples
 #' library(INLA)
 #' set.seed(20181202)
