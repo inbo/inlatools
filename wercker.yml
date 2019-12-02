@@ -6,7 +6,7 @@ build:
     - jimhester/r-lint
 
 build-dev:
-  box: rocker/verse:devel
+  box: inbobmk/inlatools:devel
   steps:
     - jimhester/r-check
 

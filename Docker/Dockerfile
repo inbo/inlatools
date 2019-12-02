@@ -51,7 +51,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     r-base-dev
 
-## Install devtolls
+## Install devtools
 RUN apt-get update \
 &&  apt-get install -y --no-install-recommends \
       libxml2-dev \
@@ -64,3 +64,6 @@ RUN apt-get update \
 ## Install dependencies
 RUN Rscript -e 'install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown", "sp", "tidyr"))' \
 &&  Rscript -e 'install.packages("INLA", repos = c(getOption("repos"), INLA = "https://inla.r-inla-download.org/R/stable"))'
+
+## Install lintr
+RUN Rscript -e 'install.packages("lintr")' \
