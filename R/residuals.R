@@ -1,7 +1,9 @@
-#' Calculate the residuals from an INLA model
-#' @param object an `inla` object
-#' @param type currently only Pearson residuals are available. Other types are only listed for compatibility with the default `residuals` function.
-#' @param ... currently ignored
+#' Calculate the Residuals From an INLA Model
+#' @param object An `inla` object.
+#' @param type Currently only Pearson residuals are available.
+#' Other types are only listed for compatibility with the default `residuals`
+#' function.
+#' @param ... Currently ignored.
 #' @rdname residuals
 #' @importFrom methods setMethod
 #' @export

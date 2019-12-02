@@ -2,19 +2,22 @@
 % Please edit documentation in R/simulate_rw.R
 \name{select_poly}
 \alias{select_poly}
-\title{Select random walks best matching some polygon coefficients}
+\title{Select Random Walks Best Matching Some Polygon Coefficients}
 \usage{
 select_poly(x, coefs = c(0, -1), n = 10)
 }
 \arguments{
-\item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
+\item{x}{An \code{sim_rw} object.
+Which is the output of  \code{\link{simulate_rw}}}
 
-\item{coefs}{the polynomial coefficients}
+\item{coefs}{The polynomial coefficients.}
 
-\item{n}{the number of simulations to plot when only a subset is shown.}
+\item{n}{The number of simulations to plot when only a subset is shown.}
 }
 \description{
-The target coefficients will be rescaled to have norm 1. The coefficients of the simulations will be rescaled by the largest norm over all simulations.
+The target coefficients will be rescaled to have norm 1.
+The coefficients of the simulations will be rescaled by the largest norm over
+all simulations.
 }
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},

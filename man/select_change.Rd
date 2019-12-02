@@ -2,17 +2,19 @@
 % Please edit documentation in R/simulate_rw.R
 \name{select_change}
 \alias{select_change}
-\title{select fast changing simulations from an 'sim_rw' object}
+\title{Select Fast Changing Simulations from an 'sim_rw' Object}
 \usage{
 select_change(x, n = 10)
 }
 \arguments{
-\item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
+\item{x}{An \code{sim_rw} object.
+Which is the output of  \code{\link{simulate_rw}}}
 
-\item{n}{the number of simulations to plot when only a subset is shown.}
+\item{n}{The number of simulations to plot when only a subset is shown.}
 }
 \description{
-This functions count the number of changes in direction in each simulation. It returns the subset with the highest number of direction changes
+This functions count the number of changes in direction in each simulation.
+It returns the subset with the highest number of direction changes
 }
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},
