@@ -1,10 +1,10 @@
 ---
-title: "Setting a prior for the random intercept variance and fixed effects"
+title: "Setting a Prior for the Random Intercept Variance and Fixed Effects"
 author: "Thierry Onkelinx"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Setting a prior}
+  %\VignetteIndexEntry{Setting a Prior for the Random Intercept Variance and Fixed Effects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

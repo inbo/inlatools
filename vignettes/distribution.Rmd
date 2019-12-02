@@ -1,12 +1,12 @@
 ---
-title: "Checking the distribution and dispersion of a model"
+title: "Checking the Distribution and Dispersion of a Model"
 author: "Thierry Onkelinx"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{Check the distribution of a model}
+  %\VignetteIndexEntry{Checking the Distribution and Dispersion of a Model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -4,7 +4,7 @@ author: "Thierry Onkelinx"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Setting a prior}
+  %\VignetteIndexEntry{Getting a Grasp on the Random Walk Hyperparameter}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
