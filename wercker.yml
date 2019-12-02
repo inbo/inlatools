@@ -1,6 +1,9 @@
 box: rocker/verse:latest
 build:
   steps:
+    - script:
+      code: |
+        Rscript -e 'install.packages("rlang")'
     - jimhester/r-dependencies
     - jimhester/r-check
     - jimhester/r-coverage
