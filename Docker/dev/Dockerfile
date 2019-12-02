@@ -71,4 +71,4 @@ RUN Rscript -e 'install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown", "sp
 
 ## Install lintr
 RUN echo 'options(repos = c(CRAN = "https://cran.rstudio.com"))' >.Rprofile \
-&&  Rscript -e 'install.packages("lintr")' \
+&&  Rscript -e 'install.packages(c("codetools", "cyclocomp", "xmlparsedata", "lintr"))' \

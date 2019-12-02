@@ -59,11 +59,12 @@ RUN apt-get update \
       libcurl4-openssl-dev \
       git \
       qpdf \
-&&  Rscript -e 'install.packages(c("devtools", "dplyr", "ggplot2", "knitr", "rmarkdown", "sp", "tidyr"))'
+&&  echo 'options(repos = c(CRAN = "https://cran.rstudio.com"))' >.Rprofile \
+&&  Rscript -e 'install.packages("devtools")'
 
 ## Install dependencies
 RUN Rscript -e 'install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown", "sp", "tidyr"))' \
 &&  Rscript -e 'install.packages("INLA", repos = c(getOption("repos"), INLA = "https://inla.r-inla-download.org/R/stable"))'
 
 ## Install lintr
-RUN Rscript -e 'install.packages("lintr")' \
+RUN Rscript -e 'install.packages(c("codetools", "cyclocomp", "xmlparsedata", "lintr"))' \
