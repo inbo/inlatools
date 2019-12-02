@@ -1,25 +1,6 @@
-box: ubuntu:latest
+box: inbobmk/inlatools:latest
 build:
   steps:
-    - script:
-      code: |
-        export DEBIAN_FRONTEND=noninteractive
-        export DEBCONF_NONINTERACTIVE_SEEN=true
-        apt-get update
-        apt-get install -y  --no-install-recommends locales gnupg ca-certificates
-        echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-        locale-gen en_US.utf8
-        /usr/sbin/update-locale LANG=en_US.UTF-8
-        export LC_ALL=en_US.UTF-8
-        export LANG=en_US.UTF-8
-        export LANGUAGE=en_US.UTF-8
-        sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/" >> /etc/apt/sources.list'
-        gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-        gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
-        apt-get update
-        apt-get install -y --no-install-recommends r-base-dev libxml2-dev libssl-dev libcurl4-openssl-dev git qpdf
-        Rscript -e 'install.packages(c("devtools", "dplyr", "ggplot2", "knitr", "rmarkdown", "sp", "tidyr"))'
-        Rscript -e 'install.packages("INLA", repos = c(getOption("repos"), INLA = "https://inla.r-inla-download.org/R/stable"))'
     - jimhester/r-check
     - jimhester/r-coverage
     - jimhester/r-lint
@@ -27,25 +8,6 @@ build:
 build-dev:
   box: rocker/verse:devel
   steps:
-    - script:
-      code: |
-        export DEBIAN_FRONTEND=noninteractive
-        export DEBCONF_NONINTERACTIVE_SEEN=true
-        apt-get update
-        apt-get install -y  --no-install-recommends locales gnupg ca-certificates
-        echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-        locale-gen en_US.utf8
-        /usr/sbin/update-locale LANG=en_US.UTF-8
-        export LC_ALL=en_US.UTF-8
-        export LANG=en_US.UTF-8
-        export LANGUAGE=en_US.UTF-8
-        sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/" >> /etc/apt/sources.list'
-        gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-        gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
-        apt-get update
-        apt-get install -y --no-install-recommends r-base-dev libxml2-dev libssl-dev libcurl4-openssl-dev git qpdf
-        Rscript -e 'install.packages(c("devtools", "dplyr", "ggplot2", "knitr", "rmarkdown", "sp", "tidyr"))'
-        Rscript -e 'install.packages("INLA", repos = c(getOption("repos"), INLA = "https://inla.r-inla-download.org/R/stable"))'
     - jimhester/r-check
 
 deploy:
