@@ -267,7 +267,7 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
         map(rownames_to_column)
     ) %>%
     select(-.data$data) %>%
-    unnest() %>%
+    unnest(cols = "coef") %>%
     filter(grepl("poly", .data$rowname)) %>%
     group_by(.data$replicate) %>%
     transmute(
@@ -329,7 +329,7 @@ select_quantile <- function(
         )
       )
     ) %>%
-    unnest() %>%
+    unnest(cols = "data") %>%
     mutate(
       replicate = factor(
         replicate,
