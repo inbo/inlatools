@@ -10,6 +10,9 @@ build:
         echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen en_US.utf8
         /usr/sbin/update-locale LANG=en_US.UTF-8
+        export LC_ALL=en_US.UTF-8
+        export LANG=en_US.UTF-8
+        export LANGUAGE=en_US.UTF-8
         sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/" >> /etc/apt/sources.list'
         gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
         gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
@@ -33,6 +36,9 @@ build-dev:
         echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
         locale-gen en_US.utf8
         /usr/sbin/update-locale LANG=en_US.UTF-8
+        export LC_ALL=en_US.UTF-8
+        export LANG=en_US.UTF-8
+        export LANGUAGE=en_US.UTF-8
         sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/" >> /etc/apt/sources.list'
         gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
         gpg -a --export E298A3A825C0D65DFD57CBB651716619E084DAB9 | apt-key add -
