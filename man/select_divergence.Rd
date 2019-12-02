@@ -2,17 +2,19 @@
 % Please edit documentation in R/simulate_rw.R
 \name{select_divergence}
 \alias{select_divergence}
-\title{select diverging simulations from an 'sim_rw' object}
+\title{Select Diverging Simulations from an 'sim_rw' Object}
 \usage{
 select_divergence(x, n = 10)
 }
 \arguments{
-\item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
+\item{x}{An \code{sim_rw} object.
+Which is the output of  \code{\link{simulate_rw}}}
 
-\item{n}{the number of simulations to plot when only a subset is shown.}
+\item{n}{The number of simulations to plot when only a subset is shown.}
 }
 \description{
-The selection will contain the most extreme simulations base on either the minimum effect or the maximum effect within the simulation.
+The selection will contain the most extreme simulations base on either the
+minimum effect or the maximum effect within the simulation.
 }
 \seealso{
 Other priors: \code{\link{plot.sim_iid}},

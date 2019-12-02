@@ -2,32 +2,36 @@
 % Please edit documentation in R/simulate_idd.R
 \name{plot.sim_iid}
 \alias{plot.sim_iid}
-\title{Plot simulated random intercepts}
+\title{Plot Simulated Random Intercepts}
 \usage{
 \method{plot}{sim_iid}(x, y, ..., link = c("identity", "log", "logit"),
   baseline, center = c("mean", "bottom", "top"), quantiles = c(0.025,
   0.1, 0.5, 0.9, 0.975))
 }
 \arguments{
-\item{x}{a \code{sim_iid} object. Which is the output of \code{\link{simulate_iid}}}
+\item{x}{A \code{sim_iid} object. Which is the output of \code{\link{simulate_iid}}.}
 
-\item{y}{currently ignored}
+\item{y}{Currently ignored.}
 
-\item{...}{currently ignored}
+\item{...}{Currently ignored.}
 
-\item{link}{which link to use for back transformation}
+\item{link}{Which link to use for back transformation.}
 
-\item{baseline}{optional baseline for the time series}
+\item{baseline}{Optional baseline for the time series.}
 
-\item{center}{defines how to center the time series to the baseline. Options are: \code{start} all time series start at the baseline; \code{mean} the average of the time series is the baseline; \code{bottom} the lowest value of the time series equals the baseline; \code{top} the highest value of the time series equals the baseline}
+\item{center}{Defines how to center the time series to the baseline.
+Options are: \code{start} all time series start at the baseline;
+\code{mean} the average of the time series is the baseline;
+\code{bottom} the lowest value of the time series equals the baseline;
+\code{top} the highest value of the time series equals the baseline.}
 
-\item{quantiles}{which quantiles are shown on the plot}
+\item{quantiles}{Which quantiles are shown on the plot.}
 }
 \value{
-a ggplot2 object
+A \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Plot simulated random intercepts
+Plot Simulated Random Intercepts
 }
 \examples{
 set.seed(20181202)

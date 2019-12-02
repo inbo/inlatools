@@ -9,7 +9,7 @@
 #' @family checks
 setGeneric(
   name = "dispersion_check",
-  def = function(object, nsim = 1000){
+  def = function(object, nsim = 1000) {
     standardGeneric("dispersion_check") # nocov
   }
 )

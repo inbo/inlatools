@@ -7,7 +7,8 @@
 select_quantile(x, quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975))
 }
 \arguments{
-\item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
+\item{x}{An \code{sim_rw} object.
+Which is the output of  \code{\link{simulate_rw}}}
 
 \item{quantiles}{a vector of quantiles}
 }

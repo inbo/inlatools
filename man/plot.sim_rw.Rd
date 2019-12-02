@@ -2,29 +2,34 @@
 % Please edit documentation in R/simulate_rw.R
 \name{plot.sim_rw}
 \alias{plot.sim_rw}
-\title{Plot simulated random walks}
+\title{Plot Simulated Random Walks}
 \usage{
 \method{plot}{sim_rw}(x, y, ..., link = c("identity", "log", "logit"),
   baseline, center = c("start", "mean", "bottom", "top"))
 }
 \arguments{
-\item{x}{a \code{sim_rw} object. Which is the output of  \code{\link{simulate_rw}}}
+\item{x}{An \code{sim_rw} object.
+Which is the output of  \code{\link{simulate_rw}}}
 
-\item{y}{currently ignored}
+\item{y}{Currently ignored.}
 
-\item{...}{currently ignored}
+\item{...}{Currently ignored.}
 
-\item{link}{which link to use for back transformation}
+\item{link}{Which link to use for back transformation.}
 
-\item{baseline}{optional baseline for the time series}
+\item{baseline}{Optional baseline for the time series.}
 
-\item{center}{defines how to center the time series to the baseline. Options are: \code{start} all time series start at the baseline; \code{mean} the average of the time series is the baseline; \code{bottom} the lowest value of the time series equals the baseline; \code{top} the highest value of the time series equals the baseline}
+\item{center}{Defines how to center the time series to the baseline.
+Options are: \code{start} all time series start at the baseline;
+\code{mean} the average of the time series is the baseline;
+\code{bottom} the lowest value of the time series equals the baseline;
+\code{top} the highest value of the time series equals the baseline.}
 }
 \value{
-a \code{\link[ggplot2]{ggplot}} object
+A \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Plot simulated random walks
+Plot Simulated Random Walks
 }
 \examples{
 \donttest{

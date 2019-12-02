@@ -3,20 +3,22 @@
 \docType{methods}
 \name{residuals,inla-method}
 \alias{residuals,inla-method}
-\title{Calculate the residuals from an INLA model}
+\title{Calculate the Residuals From an INLA Model}
 \usage{
 \S4method{residuals}{inla}(object, type = c("pearson", "deviance",
   "working", "response", "partial"), ...)
 }
 \arguments{
-\item{object}{an \code{inla} object}
+\item{object}{An \code{inla} object.}
 
-\item{type}{currently only Pearson residuals are available. Other types are only listed for compatibility with the default \code{residuals} function.}
+\item{type}{Currently only Pearson residuals are available.
+Other types are only listed for compatibility with the default \code{residuals}
+function.}
 
-\item{...}{currently ignored}
+\item{...}{Currently ignored.}
 }
 \description{
-Calculate the residuals from an INLA model
+Calculate the Residuals From an INLA Model
 }
 \examples{
 library(INLA)

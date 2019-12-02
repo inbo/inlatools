@@ -41,16 +41,17 @@ simulate_iid <- function(sigma = NULL, tau = NULL, n_sim = 1e3) {
   return(simulated)
 }
 
-#' Plot simulated random intercepts
-#' @param x a `sim_iid` object. Which is the output of `\link{simulate_iid}`
+#' Plot Simulated Random Intercepts
+#' @param x A `sim_iid` object. Which is the output of `\link{simulate_iid}`.
 #' @inheritParams plot.sim_rw
-#' @param quantiles which quantiles are shown on the plot
-#' @return a ggplot2 object
+#' @param quantiles Which quantiles are shown on the plot.
+#' @return A `\link[ggplot2]{ggplot}` object.
 #' @family priors
 #' @importFrom assertthat assert_that noNA
 #' @importFrom dplyr tibble %>% mutate
 #' @importFrom rlang .data
-#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous labs
+#' @importFrom ggplot2 ggplot aes_string geom_density geom_vline geom_line
+#' geom_abline annotate scale_x_log10 scale_x_continuous scale_y_continuous labs
 #' @importFrom scales percent
 #' @importFrom tidyr crossing
 #' @importFrom stats quantile plogis qlogis

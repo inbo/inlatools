@@ -77,14 +77,19 @@ simulate_rw <- function(
   return(simulated)
 }
 
-#' Plot simulated random walks
-#' @param x a `sim_rw` object. Which is the output of  `\link{simulate_rw}`
-#' @param y currently ignored
-#' @param ... currently ignored
-#' @param link which link to use for back transformation
-#' @param baseline optional baseline for the time series
-#' @param center defines how to center the time series to the baseline. Options are: `start` all time series start at the baseline; `mean` the average of the time series is the baseline; `bottom` the lowest value of the time series equals the baseline; `top` the highest value of the time series equals the baseline
-#' @return a `\link[ggplot2]{ggplot}` object
+#' Plot Simulated Random Walks
+#' @param x An `sim_rw` object.
+#' Which is the output of  `\link{simulate_rw}`
+#' @param y Currently ignored.
+#' @param ... Currently ignored.
+#' @param link Which link to use for back transformation.
+#' @param baseline Optional baseline for the time series.
+#' @param center Defines how to center the time series to the baseline.
+#' Options are: `start` all time series start at the baseline;
+#' `mean` the average of the time series is the baseline;
+#' `bottom` the lowest value of the time series equals the baseline;
+#' `top` the highest value of the time series equals the baseline.
+#' @return A `\link[ggplot2]{ggplot}` object.
 #' @family priors
 #' @importFrom assertthat assert_that has_name
 #' @importFrom ggplot2 ggplot aes_string geom_hline geom_line facet_wrap labs
@@ -218,16 +223,19 @@ plot.sim_rw <- function(
   )
 }
 
-#' Select random walks best matching some polygon coefficients
+#' Select Random Walks Best Matching Some Polygon Coefficients
 #'
-#' The target coefficients will be rescaled to have norm 1. The coefficients of the simulations will be rescaled by the largest norm over all simulations.
+#' The target coefficients will be rescaled to have norm 1.
+#' The coefficients of the simulations will be rescaled by the largest norm over
+#' all simulations.
 #' @inheritParams plot.sim_rw
-#' @param coefs the polynomial coefficients
-#' @param n the number of simulations to plot when only a subset is shown.
+#' @param coefs The polynomial coefficients.
+#' @param n The number of simulations to plot when only a subset is shown.
 #' @family priors
 #' @export
 #' @importFrom assertthat assert_that has_name is.count noNA
-#' @importFrom dplyr %>% group_by transmute ungroup mutate summarise arrange select
+#' @importFrom dplyr %>% group_by transmute ungroup mutate summarise arrange
+#' select
 #' @importFrom rlang .data
 #' @importFrom tidyr nest unnest
 #' @importFrom purrr map
@@ -342,9 +350,10 @@ select_quantile <- function(
   return(selection)
 }
 
-#' select fast changing simulations from an 'sim_rw' object
+#' Select Fast Changing Simulations from an 'sim_rw' Object
 #'
-#' This functions count the number of changes in direction in each simulation. It returns the subset with the highest number of direction changes
+#' This functions count the number of changes in direction in each simulation.
+#' It returns the subset with the highest number of direction changes
 #' @inheritParams plot.sim_rw
 #' @inheritParams select_poly
 #' @family priors
@@ -377,9 +386,10 @@ select_change <- function(x, n = 10) {
   return(selection)
 }
 
-#' select diverging simulations from an 'sim_rw' object
+#' Select Diverging Simulations from an 'sim_rw' Object
 #'
-#' The selection will contain the most extreme simulations base on either the minimum effect or the maximum effect within the simulation.
+#' The selection will contain the most extreme simulations base on either the
+#' minimum effect or the maximum effect within the simulation.
 #' @inheritParams plot.sim_rw
 #' @inheritParams select_poly
 #' @family priors
