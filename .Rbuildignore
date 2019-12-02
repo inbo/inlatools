@@ -8,3 +8,4 @@
 ^pkgdown$
 ^docs$
 ^tic\.R$
+^Dockerfile$
