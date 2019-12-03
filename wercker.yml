@@ -14,6 +14,7 @@ deploy:
   steps:
     - script:
         code: |
+          Rscript -e "pkgdown::build_site()"
           zip -r website.zip docs
           curl -H "Content-Type: application/zip" \
                -H "Authorization: Bearer $NETLIFY_KEY" \

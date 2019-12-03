@@ -67,4 +67,7 @@ RUN Rscript -e 'install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown", "sp
 &&  Rscript -e 'install.packages("INLA", repos = c(getOption("repos"), INLA = "https://inla.r-inla-download.org/R/stable"))'
 
 ## Install lintr
-RUN Rscript -e 'install.packages(c("codetools", "cyclocomp", "xmlparsedata", "lintr"))' \
+RUN Rscript -e 'install.packages(c("codetools", "cyclocomp", "xmlparsedata", "lintr"))'
+
+## Install pkgdown
+RUN Rscript -e 'install.packages("pkgdown")'
