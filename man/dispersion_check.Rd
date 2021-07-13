@@ -34,7 +34,8 @@ dc <- dispersion_check(model)
 str(dc)
 }
 \seealso{
-Other checks: \code{\link{distribution_check}},
-  \code{\link{fast_distribution_check}}
+Other checks: 
+\code{\link{distribution_check}()},
+\code{\link{fast_distribution_check}()}
 }
 \concept{checks}

@@ -35,8 +35,9 @@ dispersion(
 )
 }
 \seealso{
-Other statistics: \code{\link{fitted,inla-method}},
-  \code{\link{get_observed}},
-  \code{\link{residuals,inla-method}}
+Other statistics: 
+\code{\link{fitted,inla-method}},
+\code{\link{get_observed}()},
+\code{\link{residuals,inla-method}}
 }
 \concept{statistics}

@@ -8,7 +8,7 @@
 }
 \arguments{
 \item{x}{a dispersion_check object. Which is the output of
-\code{\link{dispersion_check}}}
+\verb{\link{dispersion_check}}}
 
 \item{y}{currently ignored}
 
@@ -36,7 +36,8 @@ dc <- dispersion_check(model)
 plot(dc)
 }
 \seealso{
-Other utils: \code{\link{generate_data}},
-  \code{\link{plot.distribution_check}}
+Other utils: 
+\code{\link{generate_data}()},
+\code{\link{plot.distribution_check}()}
 }
 \concept{utils}

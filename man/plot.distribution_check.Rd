@@ -4,12 +4,11 @@
 \alias{plot.distribution_check}
 \title{Plot the results from a distribution check}
 \usage{
-\method{plot}{distribution_check}(x, y, ..., n = FALSE,
-  scales = "fixed")
+\method{plot}{distribution_check}(x, y, ..., n = FALSE, scales = "fixed")
 }
 \arguments{
 \item{x}{a distribution_check object. Which is the output of
-\code{\link{fast_distribution_check}}}
+\verb{\link{fast_distribution_check}}}
 
 \item{y}{currently ignored}
 
@@ -43,7 +42,8 @@ fdc <- fast_distribution_check(model)
 plot(fdc)
 }
 \seealso{
-Other utils: \code{\link{generate_data}},
-  \code{\link{plot.dispersion_check}}
+Other utils: 
+\code{\link{generate_data}()},
+\code{\link{plot.dispersion_check}()}
 }
 \concept{utils}

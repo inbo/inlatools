@@ -8,7 +8,7 @@ select_change(x, n = 10)
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \code{\link{simulate_rw}}}
+Which is the output of  \verb{\link{simulate_rw}}}
 
 \item{n}{The number of simulations to plot when only a subset is shown.}
 }
@@ -17,10 +17,13 @@ This functions count the number of changes in direction in each simulation.
 It returns the subset with the highest number of direction changes
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{select_quantile}},
-  \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{plot.sim_rw}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_iid}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}

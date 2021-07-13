@@ -38,7 +38,8 @@ distribution_check(model)
 }
 }
 \seealso{
-Other checks: \code{\link{dispersion_check}},
-  \code{\link{fast_distribution_check}}
+Other checks: 
+\code{\link{dispersion_check}()},
+\code{\link{fast_distribution_check}()}
 }
 \concept{checks}

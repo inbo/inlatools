@@ -4,8 +4,15 @@
 \alias{generate_data}
 \title{Generate dummy data with several distributions}
 \usage{
-generate_data(a = 0, sigma_random = 0.5, n_random = 20,
-  n_replicate = 10, nb_size = 1, b_size = 5, zero_inflation = 0.5)
+generate_data(
+  a = 0,
+  sigma_random = 0.5,
+  n_random = 20,
+  n_replicate = 10,
+  nb_size = 1,
+  b_size = 5,
+  zero_inflation = 0.5
+)
 }
 \arguments{
 \item{a}{the intercept of the latent variable}
@@ -20,7 +27,7 @@ generate_data(a = 0, sigma_random = 0.5, n_random = 20,
 Passed to the \code{size} parameter of \code{\link[stats]{NegBinomial}}}
 
 \item{b_size}{the size parameter of the binomial distribution. Passed to the
-\code{size} parameter of \code{\link[stats]{Binomial}}}
+\code{size} parameter of \verb{\link[stats]\{Binomial\}}}
 
 \item{zero_inflation}{the probability the the observed value stems for the a
 point mass in zero}
@@ -55,7 +62,8 @@ set.seed(20181202)
 head(generate_data())
 }
 \seealso{
-Other utils: \code{\link{plot.dispersion_check}},
-  \code{\link{plot.distribution_check}}
+Other utils: 
+\code{\link{plot.dispersion_check}()},
+\code{\link{plot.distribution_check}()}
 }
 \concept{utils}

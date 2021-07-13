@@ -4,12 +4,18 @@
 \alias{plot.sim_rw}
 \title{Plot Simulated Random Walks}
 \usage{
-\method{plot}{sim_rw}(x, y, ..., link = c("identity", "log", "logit"),
-  baseline, center = c("start", "mean", "bottom", "top"))
+\method{plot}{sim_rw}(
+  x,
+  y,
+  ...,
+  link = c("identity", "log", "logit"),
+  baseline,
+  center = c("start", "mean", "bottom", "top")
+)
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \code{\link{simulate_rw}}}
+Which is the output of  \verb{\link{simulate_rw}}}
 
 \item{y}{Currently ignored.}
 
@@ -26,7 +32,7 @@ Options are: \code{start} all time series start at the baseline;
 \code{top} the highest value of the time series equals the baseline.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object.
+A \verb{\link[ggplot2]\{ggplot\}} object.
 }
 \description{
 Plot Simulated Random Walks
@@ -47,10 +53,13 @@ plot(select_quantile(x), link = "logit")
 }
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{select_quantile}},
-  \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_iid}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}
