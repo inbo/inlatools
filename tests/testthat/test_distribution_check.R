@@ -76,7 +76,7 @@ test_that("checks the model properties", {
   )
   expect_error(
     distribution_check(model),
-    "You need an inla-object computed with option 'control.compute=list\\(config = TRUE\\)'" # nolint
+    regexp = "'control.compute=list\\(config = TRUE\\)'"
   )
 
   model <- INLA::inla(
