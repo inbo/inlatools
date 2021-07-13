@@ -1,6 +1,6 @@
 Package: inlatools
 Title: Diagnostic Tools for INLA Models
-Version: 0.0.1.9001
+Version: 0.0.2
 Authors@R: 
     c(person(given = "Thierry",
              family = "Onkelinx",
