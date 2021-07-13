@@ -1,5 +1,8 @@
-.Rproj.user
-.Rhistory
+.httr-oauth
 .RData
-inst/doc
+.Rhistory
+.Rproj.user
+.Ruserdata
+*.html
 docs
+inst/doc
