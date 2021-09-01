@@ -5,6 +5,7 @@
 #' function.
 #' @param ... Currently ignored.
 #' @rdname residuals
+#' @importFrom assertthat assert_that
 #' @importFrom methods setMethod
 #' @export
 #' @family statistics
@@ -30,18 +31,17 @@ setMethod(
     ...
   ) {
     type <- match.arg(type)
-    if (type != "pearson") {
-      stop("only Pearson residuals are available")
-    }
-    if (length(object$.args$family) > 1) {
-      stop("Only single responses are handled")
-    }
+    assert_that(type == "pearson", msg = "only Pearson residuals are available")
+    assert_that(
+      length(object$.args$family) == 1,
+      msg = "Only single responses are handled"
+    )
+    assert_that(
+      object$.args$family %in% "poisson",
+      msg = paste(object$.args$family, "distribution not handled")
+    )
     observed <- get_observed(object)
     fitted <- fitted(object)
-    if (object$.args$family == "poisson") {
-      (observed - fitted) / sqrt(fitted)
-    } else {
-      stop(object$.args$family, " distribution not handled")
-    }
+    (observed - fitted) / sqrt(fitted) # poisson
   }
 )
