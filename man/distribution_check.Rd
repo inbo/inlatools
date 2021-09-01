@@ -7,14 +7,22 @@
 \title{Use simulations to compare the observed distribution with the modelled
 distribution}
 \usage{
-distribution_check(object, nsim = 1000)
+distribution_check(object, nsim = 1000, seed = 0L)
 
-\S4method{distribution_check}{inla}(object, nsim = 1000)
+\S4method{distribution_check}{inla}(object, nsim = 1000, seed = 0L)
 }
 \arguments{
 \item{object}{the INLA model}
 
 \item{nsim}{the number of simulation}
+
+\item{seed}{See the same argument in \code{?inla.qsample} for further
+               information. In order to produce reproducible results,  you
+               ALSO need to make sure the RNG in R is in the same state,
+               see example below.  When \code{seed} is non-zero,
+               \code{num.threads} is forced to "1:1" and parallel.configs is
+               set to \code{FALSE}, since parallel sampling would not produce
+               a reproducible sequence of pseudo-random numbers.}
 }
 \description{
 Use simulations to compare the observed distribution with the modelled
@@ -23,7 +31,6 @@ distribution
 \examples{
 \donttest{
 library(INLA)
-set.seed(20181202)
 model <- inla(
   poisson ~ 1,
   family = "poisson",
@@ -34,7 +41,7 @@ model <- inla(
   control.predictor = list(compute = TRUE),
   control.compute = list(config = TRUE)
 )
-distribution_check(model)
+distribution_check(model, seed = 20181202)
 }
 }
 \seealso{

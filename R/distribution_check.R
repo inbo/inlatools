@@ -2,6 +2,7 @@
 #' distribution
 #' @inheritParams get_observed
 #' @inheritParams dispersion_check
+#' @inheritParams INLA::inla.posterior.sample
 #' @name distribution_check
 #' @rdname distribution_check
 #' @exportMethod distribution_check
@@ -10,7 +11,7 @@
 #' @family checks
 setGeneric(
   name = "distribution_check",
-  def = function(object, nsim = 1000) {
+  def = function(object, nsim = 1000, seed = 0L) {
     standardGeneric("distribution_check") # nocov
   }
 )
@@ -18,7 +19,6 @@ setGeneric(
 #' @rdname distribution_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
-#' @importFrom INLA inla.posterior.sample inla.hyperpar.sample
 #' @importFrom purrr map_dfc
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
 #' geom_text
@@ -30,7 +30,6 @@ setGeneric(
 #' @examples
 #' \donttest{
 #' library(INLA)
-#' set.seed(20181202)
 #' model <- inla(
 #'   poisson ~ 1,
 #'   family = "poisson",
@@ -41,12 +40,13 @@ setGeneric(
 #'   control.predictor = list(compute = TRUE),
 #'   control.compute = list(config = TRUE)
 #' )
-#' distribution_check(model)
+#' distribution_check(model, seed = 20181202)
 #' }
 setMethod(
   f = "distribution_check",
   signature = signature(object = "inla"),
-  definition = function(object, nsim = 1000) {
+  definition = function(object, nsim = 1000, seed = 0L) {
+    assert_that(requireNamespace("INLA", quietly = TRUE))
     assert_that(is.count(nsim))
 
     if (length(object$.args$family) > 1) {
@@ -54,7 +54,9 @@ setMethod(
     }
 
     observed <- get_observed(object)
-    samples <- inla.posterior.sample(n = nsim, result = object) #nolint
+    samples <- INLA::inla.posterior.sample(
+      n = nsim, result = object, seed = seed
+    )
     relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
     eta <- map_dfc(samples, "latent")[relevant, , drop = FALSE]
     n_sampled <- switch(
@@ -69,7 +71,7 @@ setMethod(
           "size for the nbinomial observations",
           names(samples[[1]]$hyperpar)
         )
-        size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        size <- INLA::inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
         mutate_all(
           exp(eta),
           function(mu) {
@@ -84,7 +86,7 @@ setMethod(
           "Overdispersion",
           names(samples[[1]]$hyperpar)
         )
-        phi <- inla.hyperpar.sample(n = nsim, result = object)[
+        phi <- INLA::inla.hyperpar.sample(n = nsim, result = object)[
           , relevant, drop = TRUE
         ] #nolint
         mu <- exp(eta)
@@ -112,7 +114,9 @@ setMethod(
             rbinom(n = n, size = 1, prob = 1 - prob_zero) *
               rpois(n = n, lambda = lambda)
           },
-          prob_zero = inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+          prob_zero = INLA::inla.hyperpar.sample(
+            n = nsim, result = object
+          )[, relevant] #nolint
         ) %>%
           gather("run", "x") %>%
           count(.data$run, .data$x)

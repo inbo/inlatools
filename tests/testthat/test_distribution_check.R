@@ -1,5 +1,6 @@
 context("distribution_check")
-set.seed(20181209)
+seed <- 20181209L
+set.seed(seed)
 ds <- generate_data(n_random = 10, n_replicate = 2)
 test_that("handles poisson", {
   model <- INLA::inla(
@@ -9,7 +10,7 @@ test_that("handles poisson", {
     control.compute = list(config = TRUE)
   )
   expect_is(
-    dc <- distribution_check(model, nsim = 10),
+    suppressWarnings(dc <- distribution_check(model, nsim = 10, seed = seed)),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
   expect_named(dc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
@@ -28,7 +29,7 @@ test_that("handles gpoisson", {
     )
   )
   expect_is(
-    dc <- distribution_check(model, nsim = 10),
+    suppressWarnings(dc <- distribution_check(model, nsim = 10, seed = seed)),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
   expect_named(dc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
@@ -44,7 +45,7 @@ test_that("handles nbinomial", {
     control.compute = list(config = TRUE)
   )
   expect_is(
-    dc <- distribution_check(model, nsim = 10),
+    suppressWarnings(dc <- distribution_check(model, nsim = 10, seed = seed)),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
   expect_named(dc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
@@ -60,7 +61,7 @@ test_that("handles zeroinflatedpoisson1", {
     control.compute = list(config = TRUE)
   )
   expect_is(
-    dc <- distribution_check(model, nsim = 10),
+    suppressWarnings(dc <- distribution_check(model, nsim = 10, seed = seed)),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
   )
   expect_named(dc, c("x", "median", "lcl", "ucl", "n", "ecdf"))
@@ -75,7 +76,7 @@ test_that("checks the model properties", {
     data = ds
   )
   expect_error(
-    distribution_check(model),
+    suppressWarnings(distribution_check(model, nsim = 1, seed = seed)),
     regexp = "'control.compute=list\\(config = TRUE\\)'"
   )
 
@@ -86,7 +87,7 @@ test_that("checks the model properties", {
     control.compute = list(config = TRUE)
   )
   expect_error(
-    distribution_check(model),
+    suppressWarnings(distribution_check(model, nsim = 1, seed = seed)),
     "gaussian is not yet handled"
   )
 
@@ -99,7 +100,7 @@ test_that("checks the model properties", {
     data = ds
   )
   expect_error(
-    distribution_check(model),
+    suppressWarnings(distribution_check(model, nsim = 1, seed = seed)),
     "Only single responses are handled"
   )
 })

@@ -21,7 +21,6 @@ setGeneric(
 #' @rdname fast_distribution_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.count
-#' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
 #' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise
 #' inner_join

@@ -1,3 +1,6 @@
+#' @importFrom methods setOldClass
+setOldClass("inla")
+
 #' Use simulations to check for overdispersion or underdispersion
 #' @inheritParams get_observed
 #' @param nsim the number of simulation
@@ -17,7 +20,6 @@ setGeneric(
 #' @rdname dispersion_check
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
-#' @importFrom INLA inla.posterior.sample
 #' @importFrom purrr map_dfc
 #' @examples
 #' library(INLA)
