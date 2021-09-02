@@ -38,11 +38,28 @@ setMethod(
       msg = "Only single responses are handled"
     )
     assert_that(
-      object$.args$family %in% "poisson",
+      object$.args$family %in% c("nbinomial", "poisson"),
       msg = paste(object$.args$family, "distribution not handled")
     )
     observed <- get_observed(object)
     fitted <- fitted(object)
-    (observed - fitted) / sqrt(fitted) # poisson
+    variance <- switch(
+      object$.args$family,
+      nbinomial = fitted + (1 + fitted / get_mean_size(object)),
+      poisson = fitted
+    )
+    (observed - fitted) / sqrt(variance)
   }
 )
+
+#' @importFrom assertthat assert_that
+get_mean_size <- function(object) {
+  which_size <- grep(
+    "size for the nbinomial observations",
+    rownames(object$summary.hyperpar)
+  )
+  assert_that(
+    length(which_size) == 1, msg = "Can't find size for nbinomial observations"
+  )
+  object$summary.hyperpar$mean[which_size]
+}
