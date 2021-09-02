@@ -26,6 +26,7 @@ get_observed <- function(object) {
 #' Calculate the residuals from an INLA model
 #' @inheritParams stats::fitted
 #' @rdname fitted
+#' @importFrom assertthat assert_that noNA
 #' @importFrom methods setMethod
 #' @export
 #' @family statistics
@@ -53,6 +54,11 @@ setMethod(
       nrow(object$summary.fitted.values) > 0,
       msg = "no fitted values in object.
 Refit the object with 'control.predictor = list(compute = TRUE)'"
+    )
+    assert_that(
+      noNA(object$misc$family),
+      msg = "Missing response variables found.
+Refit the object with `control.predictor=list(link = 1)`"
     )
     object$summary.fitted.values[, "mean"] #nolint
   }
