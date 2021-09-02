@@ -49,10 +49,11 @@ setMethod(
     object,
     ...
   ) {
-    if (nrow(object$summary.fitted.values) == 0) { #nolint
-      stop("no fitted values in object.
-Refit the object with 'control.predictor = list(compute = TRUE)'")
-    }
+    assert_that(
+      nrow(object$summary.fitted.values) > 0,
+      msg = "no fitted values in object.
+Refit the object with 'control.predictor = list(compute = TRUE)'"
+    )
     object$summary.fitted.values[, "mean"] #nolint
   }
 )
