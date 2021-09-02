@@ -27,6 +27,7 @@ setGeneric(
 #' @importFrom rlang .data
 #' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
+#' @importClassesFrom INLA inla
 #' @examples
 #' library(INLA)
 #' set.seed(20181202)

@@ -30,6 +30,7 @@ setGeneric(
 #' @importFrom assertthat assert_that is.count
 #' @importFrom purrr map
 #' @importFrom utils tail
+#' @importClassesFrom INLA inla
 #' @examples
 #' library(INLA)
 #' set.seed(20181202)

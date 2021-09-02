@@ -7,6 +7,7 @@
 #' @rdname residuals
 #' @importFrom assertthat assert_that
 #' @importFrom methods setMethod
+#' @importClassesFrom INLA inla
 #' @export
 #' @family statistics
 #' @examples

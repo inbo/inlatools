@@ -1,6 +1,3 @@
-#' @importFrom methods setOldClass
-setOldClass("inla")
-
 #' Use simulations to check for overdispersion or underdispersion
 #' @inheritParams get_observed
 #' @param nsim the number of simulation
@@ -21,6 +18,7 @@ setGeneric(
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom purrr map_dfc
+#' @importClassesFrom INLA inla
 #' @examples
 #' library(INLA)
 #' set.seed(20181202)

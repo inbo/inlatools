@@ -17,16 +17,18 @@ setGeneric(
 )
 
 #' @rdname distribution_check
-#' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
-#' @importFrom purrr map_dfc
-#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
-#' geom_text
 #' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise
 #' inner_join filter
+#' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline ylab
+#' geom_text
+#' @importFrom INLA inla.hyperpar.sample inla.posterior.sample
+#' @importClassesFrom INLA inla
+#' @importFrom methods setMethod new
+#' @importFrom purrr map_dfc
 #' @importFrom rlang .data
-#' @importFrom tidyr gather complete
 #' @importFrom stats quantile rpois rnbinom
+#' @importFrom tidyr gather complete
 #' @examples
 #' \donttest{
 #' library(INLA)
@@ -46,7 +48,6 @@ setMethod(
   f = "distribution_check",
   signature = signature(object = "inla"),
   definition = function(object, nsim = 1000, seed = 0L) {
-    assert_that(requireNamespace("INLA", quietly = TRUE))
     assert_that(is.count(nsim))
 
     if (length(object$.args$family) > 1) {
@@ -54,7 +55,7 @@ setMethod(
     }
 
     observed <- get_observed(object)
-    samples <- INLA::inla.posterior.sample(
+    samples <- inla.posterior.sample(
       n = nsim, result = object, seed = seed
     )
     relevant <- grep("^Predictor:", rownames(samples[[1]]$latent))
@@ -71,7 +72,7 @@ setMethod(
           "size for the nbinomial observations",
           names(samples[[1]]$hyperpar)
         )
-        size <- INLA::inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
+        size <- inla.hyperpar.sample(n = nsim, result = object)[, relevant] #nolint
         mutate_all(
           exp(eta),
           function(mu) {
@@ -86,7 +87,7 @@ setMethod(
           "Overdispersion",
           names(samples[[1]]$hyperpar)
         )
-        phi <- INLA::inla.hyperpar.sample(n = nsim, result = object)[
+        phi <- inla.hyperpar.sample(n = nsim, result = object)[
           , relevant, drop = TRUE
         ] #nolint
         mu <- exp(eta)
@@ -114,7 +115,7 @@ setMethod(
             rbinom(n = n, size = 1, prob = 1 - prob_zero) *
               rpois(n = n, lambda = lambda)
           },
-          prob_zero = INLA::inla.hyperpar.sample(
+          prob_zero = inla.hyperpar.sample(
             n = nsim, result = object
           )[, relevant] #nolint
         ) %>%

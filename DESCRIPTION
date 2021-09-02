@@ -18,6 +18,7 @@ BugReports: https://github.com/inbo/inlatools/issues
 Depends: 
     R (>= 3.5.0)
 Imports:
+    INLA (>= 19.09.03),
     assertthat,
     dplyr,
     ggplot2,
@@ -28,7 +29,6 @@ Imports:
     tibble,
     tidyr
 Suggests: 
-    INLA (>= 19.09.03),
     knitr,
     rmarkdown,
     sn,
@@ -40,14 +40,3 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Collate:
-    'dispersion_check.R'
-    'distribution_check.R'
-    'fast_distribution_check.R'
-    'generate_data.R'
-    'get_anomaly.R'
-    'get_observed.R'
-    'plot_distribution_check.R'
-    'residuals.R'
-    'simulate_idd.R'
-    'simulate_rw.R'
