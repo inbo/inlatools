@@ -1,6 +1,7 @@
 # inlatools 0.0.2
 
 * Use [`checklist`](https://inbo.github.io/checklist/) CI infrastructure.
+* Add `get_anomaly()` to return a set of anomalies.
 
 # inlatools 0.0.1.9000
 

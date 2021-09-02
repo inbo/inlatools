@@ -45,6 +45,7 @@ Collate:
     'distribution_check.R'
     'fast_distribution_check.R'
     'generate_data.R'
+    'get_anomaly.R'
     'get_observed.R'
     'plot_distribution_check.R'
     'residuals.R'
