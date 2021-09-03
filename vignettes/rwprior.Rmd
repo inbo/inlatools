@@ -1,5 +1,5 @@
 ---
-title: "Getting a grasp on the random walk hyperparameter"
+title: "Getting a Grasp on the Random Walk Hyperparameter"
 author: "Thierry Onkelinx"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
