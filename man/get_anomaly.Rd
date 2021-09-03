@@ -6,7 +6,7 @@
 \alias{get_anomaly,inla-method}
 \title{Get a set of anomalies of the model}
 \usage{
-get_anomaly(object, n = 20)
+get_anomaly(object, n = 10)
 
 \S4method{get_anomaly}{inla}(object, n = 20)
 }
@@ -14,7 +14,7 @@ get_anomaly(object, n = 20)
 \item{object}{the INLA model}
 
 \item{n}{the number of anomalies per criterion.
-Defaults to \code{20}.}
+Defaults to \code{10}.}
 }
 \description{
 Returns a named list with an element called \code{observations} and one element
@@ -23,10 +23,11 @@ The random effect components use the name of the random effect.
 }
 \details{
 \code{observations} is a subset of the original data.frame.
-It contains the rows with the \code{n} largest absolute value of the Pearson
-residuals.
+It contains the rows with the \code{n} largest and \code{n} smallest values of the
+Pearson residuals.
 The random effect components contain a subset of the random effects.
-Here we select the \code{n} rows with the largest absolute values of the mean.
+Here we select the rows with the \code{n} largest and \code{n} lowest values of the
+mean.
 }
 \examples{
 library(INLA)

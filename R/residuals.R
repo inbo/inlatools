@@ -94,8 +94,6 @@ var_nbinom <- function(mu, size) {
 #'
 #' The type 1 zero-inflated negative binomial distribution is a standard
 #' negative binomial distribution with an additional point mass at zero.
-#' @inheritParams var_nbinom
-#' @inheritParams var_zipois1
 #' @rdname variance
 #' @family variance
 #' @export
@@ -108,7 +106,6 @@ var_zinbinom1 <- function(mu, size, zero) {
 #'
 #' The type 1 zero-inflated poisson is a standard Poisson distribution with an
 #' additional point mass at zero.
-#' @inheritParams var_nbinom
 #' @param zero Probability of the point mass at zero.
 #' @rdname variance
 #' @family variance

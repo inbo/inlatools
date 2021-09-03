@@ -20,7 +20,10 @@ test_that("checks the model properties", {
     data = ds,
     control.predictor = list(compute = TRUE)
   )
-  expect_error(residuals(model), "gaussian distribution not handled")
+  expect_error(
+    residuals(model),
+    "`gaussian` distribution not \\(yet\\) handled by `residuals\\(\\)`"
+  )
 
   selected <- sample(nrow(ds), ceiling(0.5 * nrow(ds)))
   ds$poisson[selected] <- NA
