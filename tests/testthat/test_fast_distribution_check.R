@@ -115,16 +115,6 @@ test_that("handles zeroinflated", {
 test_that("checks the model properties", {
   model <- INLA::inla(
     poisson ~ f(group_id, model = "iid"),
-    family = "poisson",
-    data = ds
-  )
-  expect_error(
-    fast_distribution_check(model),
-    "Refit the object with 'control.predictor = list\\(compute = TRUE\\)'"
-  )
-
-  model <- INLA::inla(
-    poisson ~ f(group_id, model = "iid"),
     family = "gaussian",
     data = ds,
     control.predictor = list(compute = TRUE)
