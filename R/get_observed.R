@@ -23,7 +23,7 @@ get_observed <- function(object) {
   object$.args$data[, response, drop = TRUE]
 }
 
-#' Calculate the residuals from an INLA model
+#' Extract the fitted values from an INLA model
 #' @inheritParams stats::fitted
 #' @rdname fitted
 #' @importFrom assertthat assert_that noNA
