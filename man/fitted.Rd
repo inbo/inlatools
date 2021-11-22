@@ -3,7 +3,7 @@
 \docType{methods}
 \name{fitted,inla-method}
 \alias{fitted,inla-method}
-\title{Calculate the residuals from an INLA model}
+\title{Extract the fitted values from an INLA model}
 \usage{
 \S4method{fitted}{inla}(object, ...)
 }
@@ -14,7 +14,7 @@
 \item{...}{other arguments.}
 }
 \description{
-Calculate the residuals from an INLA model
+Extract the fitted values from an INLA model
 }
 \examples{
 library(INLA)
