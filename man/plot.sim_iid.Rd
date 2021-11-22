@@ -4,12 +4,18 @@
 \alias{plot.sim_iid}
 \title{Plot Simulated Random Intercepts}
 \usage{
-\method{plot}{sim_iid}(x, y, ..., link = c("identity", "log", "logit"),
-  baseline, center = c("mean", "bottom", "top"), quantiles = c(0.025,
-  0.1, 0.5, 0.9, 0.975))
+\method{plot}{sim_iid}(
+  x,
+  y,
+  ...,
+  link = c("identity", "log", "logit"),
+  baseline,
+  center = c("mean", "bottom", "top"),
+  quantiles = c(0.025, 0.1, 0.5, 0.9, 0.975)
+)
 }
 \arguments{
-\item{x}{A \code{sim_iid} object. Which is the output of \code{\link{simulate_iid}}.}
+\item{x}{A \code{sim_iid} object. Which is the output of \verb{\link{simulate_iid}}.}
 
 \item{y}{Currently ignored.}
 
@@ -28,7 +34,7 @@ Options are: \code{start} all time series start at the baseline;
 \item{quantiles}{Which quantiles are shown on the plot.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object.
+A \verb{\link[ggplot2]\{ggplot\}} object.
 }
 \description{
 Plot Simulated Random Intercepts
@@ -41,10 +47,13 @@ plot(x, link = "log")
 plot(x, link = "logit")
 }
 \seealso{
-Other priors: \code{\link{plot.sim_rw}},
-  \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{select_quantile}},
-  \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_rw}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_iid}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}

@@ -8,7 +8,7 @@ select_quantile(x, quantiles = c(0.025, 0.1, 0.25, 0.5, 0.75, 0.975))
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \code{\link{simulate_rw}}}
+Which is the output of  \verb{\link{simulate_rw}}}
 
 \item{quantiles}{a vector of quantiles}
 }
@@ -16,10 +16,13 @@ Which is the output of  \code{\link{simulate_rw}}}
 select the quantiles from an 'sim_rw' object
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}}, \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{simulate_iid}},
-  \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{plot.sim_rw}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{simulate_iid}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}

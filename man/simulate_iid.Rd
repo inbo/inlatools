@@ -25,10 +25,13 @@ x <- simulate_iid(sigma = 0.25)
 head(x)
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}}, \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{select_quantile}},
-  \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{plot.sim_rw}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}

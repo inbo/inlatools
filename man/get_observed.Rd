@@ -27,8 +27,9 @@ model <- inla(
 get_observed(model)
 }
 \seealso{
-Other statistics: \code{\link{dispersion}},
-  \code{\link{fitted,inla-method}},
-  \code{\link{residuals,inla-method}}
+Other statistics: 
+\code{\link{dispersion}()},
+\code{\link{fitted,inla-method}},
+\code{\link{residuals,inla-method}}
 }
 \concept{statistics}

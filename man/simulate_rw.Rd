@@ -4,8 +4,14 @@
 \alias{simulate_rw}
 \title{simulate data from a second order random walk}
 \usage{
-simulate_rw(sigma = NULL, tau = NULL, length = 10, start = 1,
-  order = 1, n_sim = 1000)
+simulate_rw(
+  sigma = NULL,
+  tau = NULL,
+  length = 10,
+  start = 1,
+  order = 1,
+  n_sim = 1000
+)
 }
 \arguments{
 \item{sigma}{the standard deviation of the random walk process}
@@ -34,10 +40,13 @@ y <- simulate_rw(sigma = 0.001, start = -10, length = 40, order = 2)
 head(y)
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}}, \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_poly}}, \code{\link{select_quantile}},
-  \code{\link{simulate_iid}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{plot.sim_rw}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_poly}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_iid}()}
 }
 \concept{priors}

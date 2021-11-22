@@ -38,7 +38,8 @@ model <- inla(
 fast_distribution_check(model)
 }
 \seealso{
-Other checks: \code{\link{dispersion_check}},
-  \code{\link{distribution_check}}
+Other checks: 
+\code{\link{dispersion_check}()},
+\code{\link{distribution_check}()}
 }
 \concept{checks}

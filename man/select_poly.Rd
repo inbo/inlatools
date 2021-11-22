@@ -8,7 +8,7 @@ select_poly(x, coefs = c(0, -1), n = 10)
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \code{\link{simulate_rw}}}
+Which is the output of  \verb{\link{simulate_rw}}}
 
 \item{coefs}{The polynomial coefficients.}
 
@@ -20,10 +20,13 @@ The coefficients of the simulations will be rescaled by the largest norm over
 all simulations.
 }
 \seealso{
-Other priors: \code{\link{plot.sim_iid}},
-  \code{\link{plot.sim_rw}}, \code{\link{select_change}},
-  \code{\link{select_divergence}},
-  \code{\link{select_quantile}},
-  \code{\link{simulate_iid}}, \code{\link{simulate_rw}}
+Other priors: 
+\code{\link{plot.sim_iid}()},
+\code{\link{plot.sim_rw}()},
+\code{\link{select_change}()},
+\code{\link{select_divergence}()},
+\code{\link{select_quantile}()},
+\code{\link{simulate_iid}()},
+\code{\link{simulate_rw}()}
 }
 \concept{priors}
