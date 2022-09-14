@@ -14,6 +14,9 @@ reference:
 - title: Statistics
   contents:
   - has_concept("statistics")
+- title: Variance functions
+  contents:
+  - has_concept("variance")
 - title: Utils
   contents:
   - has_concept("utils")

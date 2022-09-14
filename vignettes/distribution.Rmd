@@ -19,8 +19,8 @@ opts_chunk$set(
   comment = "#>"
 )
 set.seed(20181011)
-no_stored_data <- interactive() || 
-  Sys.getenv("WERCKER") == "true" || 
+no_stored_data <- interactive() ||
+  Sys.getenv("WERCKER") == "true" ||
   !file.exists("distribution.Rda")
 if (!no_stored_data) {
   load("distribution.Rda")
@@ -29,7 +29,9 @@ if (!no_stored_data) {
 
 ## Generate data
 
-We created `generate_data()` to manufacture a basic data set with variables from different distributions: Poisson, negative binomial, binomial, zero inflated Poisson and zero inflated negative binomial. All variables share the common latent variable `eta` which is defined as $\eta_{ij} = a + b_i$ where $b_i \sim \mathcal{N}(0, \sigma_r ^ 2)$. 
+We created `generate_data()` to manufacture a basic data set with variables from different distributions: Poisson, negative binomial, binomial, zero inflated Poisson and zero inflated negative binomial.
+All variables share the common latent variable `eta` which is defined as $\eta_{ij} = a + b_i$ where $b_i \sim \mathcal{N}(0, \sigma_r ^ 2)$.
+
 
 ```{r load-packages, message = FALSE}
 library(tibble)
@@ -58,20 +60,27 @@ summary(dataset)
 
 ### Fitting the models
 
-Data sets in ecology often exhibit overdispersion. Let's take the `negbin` variable from the simulate data. This one has a negative binomial distribution. First we fit the models. Each model has the same covariate structure and the covariate structure is a perfect match with the data generating process. Note that we have to add `control.compute = list(config = TRUE)` to the `inla()` call for `distribution_check()` and `control.predictor = list(compute = TRUE)` for the `fast_distribution_check()`. More details on the distinction between those functions will be in the following section.
+Data sets in ecology often exhibit overdispersion.
+Let's take the `negbin` variable from the simulate data.
+This one has a negative binomial distribution.
+First we fit the models.
+Each model has the same covariate structure and the covariate structure is a perfect match with the data generating process.
+Note that we have to add `control.compute = list(config = TRUE)` to the `inla()` call for `distribution_check()` and `control.predictor = list(compute = TRUE)` for the `fast_distribution_check()`.
+More details on the distinction between those functions will be in the following section.
 
-We fit the model with three different distributions: 1) a negative binomial distribution, 2) a Poisson distribution, and 3) a Poisson distribution and a so called "observation level random effect" (OLRE). 
+We fit the model with three different distributions: 1) a negative binomial distribution, 2) a Poisson distribution, and 3) a Poisson distribution and a so called "observation level random effect" (`OLRE`).
+
 
 ```{r negbin-fit, eval = no_stored_data}
 negbin_negbin_model <- inla(
-  negbin ~ f(group_id, model = "iid"), 
-  data = dataset, 
+  negbin ~ f(group_id, model = "iid"),
+  data = dataset,
   family = "nbinomial",
   control.predictor = list(compute = TRUE)
 )
 negbin_poisson_model <- inla(
-  negbin ~ f(group_id, model = "iid"), 
-  data = dataset, 
+  negbin ~ f(group_id, model = "iid"),
+  data = dataset,
   family = "poisson",
   control.compute = list(config = TRUE),
   control.predictor = list(compute = TRUE)
@@ -100,29 +109,36 @@ bind_rows(
   ) -> summary_hyper
 ```
 
-Once a model is fit, we can look at the summary. Both the negative binomial and the Poisson model do a good job when we look at the fixed effects estimates. Note that the true intercept is `r intercept`. Adding an observation level random effect to the Poisson model to compensate for overdispersion badly affects the fixed effects estimates.
+Once a model is fit, we can look at the summary.
+Both the negative binomial and the Poisson model do a good job when we look at the fixed effects estimates.
+Note that the true intercept is `r intercept`.
+Adding an observation level random effect to the Poisson model to compensate for overdispersion badly affects the fixed effects estimates.
 
 ```{r negbin-print-fixed, echo = FALSE}
 kable(
   summary_fixed,
-  digits = 2, 
+  digits = 2,
   caption = "Estimates of the fixed effect for the different models"
 )
 ```
 
-We have set $\sigma_r = `r sigma_random`$. This is equivalent with a precision of `r signif(sigma_random ^ -2, 4)`. All models seem to recover this precision reasonably well.
+We have set $\sigma_r = `r sigma_random`$.
+This is equivalent with a precision of `r signif(sigma_random ^ -2, 4)`.
+All models seem to recover this precision reasonably well.
 
 ```{r negbin-print-hyperpar, echo = FALSE}
 kable(
   summary_hyper,
-  digits = 2, 
+  digits = 2,
   caption = "Hyperparameters of the different models"
 )
 ```
 
 ### Distribution checks
 
-The main difference between `distribution_check()` and `fast_distribution_check()` is that the latter is based on the fitted values while the former takes the marginal distribution of the fitted values into account. Hence, `distribution_check()` is more accurate but takes about 10 to 20 times slower. Often the output of `fast_distribution_check()` is sufficient to highlight the worst problems.
+The main difference between `distribution_check()` and `fast_distribution_check()` is that the latter is based on the fitted values while the former takes the marginal distribution of the fitted values into account.
+Hence, `distribution_check()` is more accurate but takes about 10 to 20 times slower.
+Often the output of `fast_distribution_check()` is sufficient to highlight the worst problems.
 
 ```{r negbin-cal-fdc1, eval = no_stored_data}
 system.time(
@@ -133,25 +149,33 @@ system.time(
 )
 ```
 
-Both `distribution_check()` and `fast_distribution_check` return a data.frame with the empirical cumulative distribution of the raw data (`ecdf`) and the enveloppe of empirical cumalative distribution from data simulated from the model (`mean`, `lcl` and `ucl`). `n` is the number of observations with response `x`.
+Both `distribution_check()` and `fast_distribution_check` return a data.frame with the empirical cumulative distribution of the raw data (`ecdf`) and the envelope of empirical cumulative distribution from data simulated from the model (`mean`, `lcl` and `ucl`).
+`n` is the number of observations with response `x`.
 
 ```{r glimpse-fdc}
 glimpse(negbin_poisson_fdc)
 ```
 
-There is a `plot()` method for the distribution check data. It shows the ratio of the ecdf of the raw data devided by the ecdf of the simulated data based on the model. If the model makes sense, then the observed ecdf is within the enveloppe of the simulated ecdf. Hence the ratio observed / expected would be near to 1. This is the reference line depicted in the plot.
+There is a `plot()` method for the distribution check data.
+It shows the ratio of the `ecdf` of the raw data divided by the `ecdf` of the simulated data based on the model.
+If the model makes sense, then the observed `ecdf` is within the envelope of the simulated `ecdf`.
+Hence the ratio observed / expected would be near to 1.
+This is the reference line depicted in the plot.
 
 ```{r negbin-poisson-dc, fig.cap = "Distribution check on a negative binomial response which is modelled using a Poisson distribution"}
 plot(negbin_poisson_dc)
 ```
 
-The plot from the `distribution_check()` is very similar to that of the `fast_distribution_check()`. Notice that the ratio observed / expected is (much) larger than 1 for low values of `x`. The model with Poisson distribution doesn't capture the low response values very well.
+The plot from the `distribution_check()` is very similar to that of the `fast_distribution_check()`.
+Notice that the ratio observed / expected is (much) larger than 1 for low values of `x`.
+The model with Poisson distribution doesn't capture the low response values very well.
 
 ```{r negbin-poisson-fdc, fig.cap = "Fast distribution check on a negative binomial response which is modelled using a Poisson distribution"}
 plot(negbin_poisson_fdc)
 ```
 
-Let's see what happens if we apply `fast_distribution_check()` on the model with negative binomial distribution and Poisson distribution with OLRE. The distribution check of the model with negative binomial distribution yields a plot where the enveloppe of the ratio observed vs expected is always very close to the reference (1).
+Let's see what happens if we apply `fast_distribution_check()` on the model with negative binomial distribution and Poisson distribution with `OLRE`.
+The distribution check of the model with negative binomial distribution yields a plot where the envelope of the ratio observed versus expected is always very close to the reference (1).
 
 ```{r negbin-calc-fdc2, eval = no_stored_data}
 negbin_negbin_fdc <- fast_distribution_check(negbin_negbin_model)
@@ -163,18 +187,33 @@ plot(negbin_negbin_fdc)
 
 ### Dispersion checks
 
-The classics dispersion measure is to sum the squared Pearson residuals and devide them by the number of observations minus the degrees of freedom. This value should ideally be close to one. Values above one indicate overdispersion, while values below one indicate underdispersion.
+The classics dispersion measure is to sum the squared Pearson residuals and divide them by the number of observations minus the degrees of freedom.
+This value should ideally be close to one.
+Values above one indicate overdispersion, while values below one indicate underdispersion.
 
-The only aggreement there is on number the degrees of freedom of mixed models, is that is hard to define them in a generic way. Therefore we take the simulation approach. Suppose we calculate the dispersion $D$ as the sum of the squared Pearson residuals $r_i$ devided by the number of observations $N$ and some degrees of freedom $x$. We calculate this value for the observed data ($D|data$).
+The only agreement there is on number the degrees of freedom of mixed models, is that is hard to define them in a generic way.
+Therefore we take the simulation approach.
+Suppose we calculate the dispersion $D$ as the sum of the squared Pearson residuals $r_i$ divided by the number of observations $N$ and some degrees of freedom $x$.
+We calculate this value for the observed data ($D|data$).
 
 $$D = \frac{\sum r_i^2}{N - x}$$
 
-Instead of comparing $D|data$ with some value, we simulate data from the model and for each of the simulated data sets we calculate the dispersion $(D|model)$. Next we compare the value $D|data$ with the distribution of $D|model$. If there is no over- or underdispersion, $P(D|data < D|model) \approx 0.5$. When $P(D|data > D|model) \approx 0$ indicates underdispersion, while $P(D|data > D|model) \approx 1$ overdispersion.
+Instead of comparing $D|data$ with some value, we simulate data from the model and for each of the simulated data sets we calculate the dispersion $(D|model)$.
+Next we compare the value $D|data$ with the distribution of $D|model$.
+If there is no over- or underdispersion, $P(D|data < D|model) \approx 0.5$.
+When $P(D|data > D|model) \approx 0$ indicates underdispersion, while $P(D|data > D|model) \approx 1$ overdispersion.
 
-Both $D|data$ and $D|model$ use the same values for $N$ and $x$. Redefining $D$ as the average squared Pearson residuals $D = \sum r_i^2/N$, has no effect on the value of $P(D|data > D|model)$. Hence can omit $x$ from the formula and no longer need to worry about its "true" value. 
+Both $D|data$ and $D|model$ use the same values for $N$ and $x$.
+Redefining $D$ as the average squared Pearson residuals $D = \sum r_i^2/N$, has no effect on the value of $P(D|data > D|model)$.
+Hence can omit $x$ from the formula and no longer need to worry about its "true" value.
 
 
-`dispersion_check()` returns a list with two items: the dispersion value based on the data (a single value in `data`) and a vector of dispersion values for a number of simulated data sets (`model`). The `plot()` function as a method to handle this dispersion check object. It displays the density of the dispersion of the simulated data sets. The vertical dashed line shows the dispersion of the original data. The title contains $P(D|data > D|model)$.
+
+`dispersion_check()` returns a list with two items: the dispersion value based on the data (a single value in `data`) and a vector of dispersion values for a number of simulated data sets (`model`).
+The `plot()` function as a method to handle this dispersion check object.
+It displays the density of the dispersion of the simulated data sets.
+The vertical dashed line shows the dispersion of the original data.
+The title contains $P(D|data > D|model)$.
 
 ```{r negbin-negbin-disp-c, eval = no_stored_data}
 negbin_negbin_disp <- dispersion_check(negbin_negbin_model)
@@ -184,7 +223,8 @@ glimpse(negbin_negbin_disp)
 plot(negbin_negbin_disp)
 ```
 
-The dispersion check of the model with the negative binomial distribution indicates no over- or underdispersion. The model with the Poisson distribution has clearly overdispersion.
+The dispersion check of the model with the negative binomial distribution indicates no over- or underdispersion.
+The model with the Poisson distribution has clearly overdispersion.
 
 ```{r negbin-poisson-disp-c, eval = no_stored_data}
 negbin_poisson_disp <- dispersion_check(negbin_poisson_model)
@@ -195,31 +235,32 @@ plot(negbin_poisson_disp)
 
 ## Zero inflation
 
-Let's see what happens if we do the same things for a zero inflated Poisson variable. We'll fit the variable using a Poisson, negative binomial, zero inflated Poisson and zero inflated negative binomial distribution.
+Let's see what happens if we do the same things for a zero inflated Poisson variable.
+We'll fit the variable using a Poisson, negative binomial, zero inflated Poisson and zero inflated negative binomial distribution.
 
 ```{r zip-fit, eval = no_stored_data}
 pcprior <- list(theta = list(prior = "pc.prec", param = c(1, 0.01)))
 zip_poisson_model <- inla(
-  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
-  data = dataset, 
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior),
+  data = dataset,
   family = "poisson",
   control.predictor = list(compute = TRUE)
 )
 zip_negbin_model <- inla(
-  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
-  data = dataset, 
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior),
+  data = dataset,
   family = "nbinomial",
   control.predictor = list(compute = TRUE)
 )
 zip_zipoisson_model <- inla(
-  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
-  data = dataset, 
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior),
+  data = dataset,
   family = "zeroinflatedpoisson1",
   control.predictor = list(compute = TRUE)
 )
 zip_zinegbin_model <- inla(
-  zipoisson ~ f(group_id, model = "iid", hyper = pcprior), 
-  data = dataset, 
+  zipoisson ~ f(group_id, model = "iid", hyper = pcprior),
+  data = dataset,
   family = "zeroinflatednbinomial1",
   control.predictor = list(compute = TRUE)
 )
@@ -250,7 +291,7 @@ bind_rows(
     )
 ) %>%
   select(
-    distribution, zeroinflation, parameter, 
+    distribution, zeroinflation, parameter,
     mean, lcl = `0.025quant`, ucl = `0.975quant`
   ) -> summary_zip_fixed
 bind_rows(
@@ -280,7 +321,7 @@ bind_rows(
     )
 ) %>%
   select(
-    distribution, zeroinflation, parameter, 
+    distribution, zeroinflation, parameter,
     mean, lcl = `0.025quant`, ucl = `0.975quant`
   ) %>%
   arrange(parameter, distribution, zeroinflation) -> summary_zip_hyper
@@ -291,17 +332,25 @@ Using a distribution without zero inflation adds a downward bias to the intercep
 ```{r zip-print-fixed, echo = FALSE}
 kable(
   summary_zip_fixed,
-  digits = 2, 
+  digits = 2,
   caption = "Estimates of the fixed effect for the different models"
 )
 ```
 
-We have set $\sigma_r = `r sigma_random`$. This is equivalent with a precision of `r signif(sigma_random ^ -2, 4)`. All distributions lead to a large precision, so they all shrink the group effects. Note that the analyses are based on a very small dataset of only 200 observations and about half of them stem from the zero inflation part. The zero inflation probability is recorved very well. The size parameter of the negative binomial is very small when assuming no zero inflation. This indicates that it handles the zero inflation by increasing the variance. The zero inflated negative binomial has a very large size indicating that there is no overdispersion. Which is the case with a zero inflated Poisson response.
+We have set $\sigma_r = `r sigma_random`$.
+This is equivalent with a precision of `r signif(sigma_random ^ -2, 4)`.
+All distributions lead to a large precision, so they all shrink the group effects.
+Note that the analyses are based on a very small dataset of only 200 observations and about half of them stem from the zero inflation part.
+The zero inflation probability is recovered very well.
+The size parameter of the negative binomial is very small when assuming no zero inflation.
+This indicates that it handles the zero inflation by increasing the variance.
+The zero inflated negative binomial has a very large size indicating that there is no overdispersion.
+Which is the case with a zero inflated Poisson response.
 
 ```{r zip-print-hyperpar, echo = FALSE}
 kable(
   summary_zip_hyper,
-  digits = 2, 
+  digits = 2,
   caption = "Hyperparameters of the different models"
 )
 ```
@@ -360,12 +409,14 @@ plot(zip_fdc, scales = "free")
 
 ## Underdispersion
 
-`generate_data()` has a binomial variable. We use this as an example for underdispersed data. The dispersion check clearly indicates underdispersion. The distribution check has a ratio smaller than 1 has low values.
+`generate_data()` has a binomial variable. We use this as an example for underdispersed data.
+The dispersion check clearly indicates underdispersion.
+The distribution check has a ratio smaller than 1 has low values.
 
 ```{r binom-fit, eval = no_stored_data}
 binom_poisson_model <- inla(
-  binom ~ f(group_id, model = "iid"), 
-  data = dataset, 
+  binom ~ f(group_id, model = "iid"),
+  data = dataset,
   family = "nbinomial",
   control.predictor = list(compute = TRUE)
 )
@@ -385,7 +436,7 @@ save(
   negbin_negbin_fdc, negbin_negbin_disp,
   negbin_poisson_dc, negbin_poisson_fdc, negbin_poisson_disp,
   summary_zip_fixed, summary_zip_hyper, zip_fdc,
-  zip_poisson_disp, zip_negbin_disp, zip_zipoisson_disp, zip_zinegbin_disp, 
+  zip_poisson_disp, zip_negbin_disp, zip_zipoisson_disp, zip_zinegbin_disp,
   binom_poisson_fdc, binom_poisson_disp,
   file = "distribution.Rda")
 ```

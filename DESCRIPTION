@@ -1,15 +1,11 @@
 Package: inlatools
 Title: Diagnostic Tools for INLA Models
 Version: 0.0.2
-Authors@R: 
-    c(person(given = "Thierry",
-             family = "Onkelinx",
-             role = c("aut", "cre"),
-             email = "thierry.onkelinx@inbo.be",
-             comment = c(ORCID = "0000-0001-8804-4216")),
-      person(given = "Research Institute for Nature and Forest",
-             role = c("cph", "fnd"),
-             email = "info@inbo.be"))
+Authors@R: c(
+    person("Thierry", "Onkelinx", , "thierry.onkelinx@inbo.be", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-8804-4216")),
+    person("Research Institute for Nature and Forest", , , "info@inbo.be", role = c("cph", "fnd"))
+  )
 Description: Several functions which can be useful to choose sensible
     priors and diagnose the fitted model.
 License: GPL-3
@@ -18,10 +14,10 @@ BugReports: https://github.com/inbo/inlatools/issues
 Depends: 
     R (>= 3.5.0)
 Imports:
-    INLA (>= 19.09.03),
     assertthat,
     dplyr,
     ggplot2,
+    INLA (>= 19.09.03),
     methods,
     purrr,
     rlang,
@@ -37,6 +33,7 @@ VignetteBuilder:
     knitr
 Additional_repositories: https://inla.r-inla-download.org/R/testing
 Encoding: UTF-8
+Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

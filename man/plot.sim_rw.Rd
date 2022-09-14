@@ -15,7 +15,7 @@
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \verb{\link{simulate_rw}}}
+Which is the output of \verb{\link{simulate_rw}}}
 
 \item{y}{Currently ignored.}
 
@@ -25,7 +25,7 @@ Which is the output of  \verb{\link{simulate_rw}}}
 
 \item{baseline}{Optional baseline for the time series.}
 
-\item{center}{Defines how to center the time series to the baseline.
+\item{center}{Defines how to centre the time series to the baseline.
 Options are: \code{start} all time series start at the baseline;
 \code{mean} the average of the time series is the baseline;
 \code{bottom} the lowest value of the time series equals the baseline;

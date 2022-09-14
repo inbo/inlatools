@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+authors:
+- family-names: Onkelinx
+  given-names: Thierry
+  orcid: https://orcid.org/0000-0001-8804-4216
+contact:
+- email: thierry.onkelinx@inbo.be
+  family-names: Onkelinx
+  given-names: Thierry
+- email: info@inbo.be
+  name: Research Institute for Nature and Forest
+title: 'inlatools: Diagnostic Tools for INLA Models'
+version: 0.0.2
+abstract: Several functions which can be useful to choose sensible priors and diagnose
+  the fitted model.
+license: GPL-3.0
+type: software
+repository-code: https://github.com/inbo/inlatools
+identifiers: []
+keywords: R package

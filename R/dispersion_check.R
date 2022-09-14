@@ -66,7 +66,9 @@ setMethod(
       )
     } else if (object$.args$family == "nbinomial") {
       size <- object$summary.hyperpar[
-        "size for the nbinomial observations (1/overdispersion)",
+        paste(
+          "size for the nbinomial observations (1", "overdispersion)", sep = "/"
+        ),
         "mean"
       ]
       dispersion_data <- dispersion(

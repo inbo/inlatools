@@ -2,13 +2,13 @@
 % Please edit documentation in R/simulate_rw.R
 \name{select_divergence}
 \alias{select_divergence}
-\title{Select Diverging Simulations from an 'sim_rw' Object}
+\title{Select Diverging Simulations from an \code{sim_rw} Object}
 \usage{
 select_divergence(x, n = 10)
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \verb{\link{simulate_rw}}}
+Which is the output of \verb{\link{simulate_rw}}}
 
 \item{n}{The number of simulations to plot when only a subset is shown.}
 }

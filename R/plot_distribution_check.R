@@ -5,7 +5,7 @@
 #' @param ... currently ignored
 #' @param n display the number of observations
 #' @inheritParams ggplot2::facet_wrap
-#' @return a ggplot2 object
+#' @return A `\link[ggplot2]{ggplot}` object.
 #' @importFrom assertthat assert_that has_name is.flag is.string
 #' @importFrom dplyr %>% mutate slice
 #' @importFrom ggplot2 ggplot aes_string geom_ribbon geom_line geom_hline
@@ -59,7 +59,9 @@ plot.distribution_check <- function(x, y, ..., n = FALSE, scales = "fixed") {
     geom_line(aes_string(y = "ucl"), linetype = 3, alpha = 0.5) +
     geom_ribbon(alpha = 0.1, aes_string(ymin = "lcl", ymax = "ucl")) +
     geom_line() +
-    scale_y_continuous("observed / expected", labels = percent)
+    scale_y_continuous(
+      paste("observed", "expected", sep = "/"), labels = percent
+    )
   if (isTRUE(n)) {
     p <- p + geom_text(aes_string(label = "n"), angle = 90, hjust = 1.5)
   }
@@ -74,7 +76,7 @@ plot.distribution_check <- function(x, y, ..., n = FALSE, scales = "fixed") {
 #' `\link{dispersion_check}`
 #' @param y currently ignored
 #' @param ... currently ignored
-#' @return a ggplot2 object
+#' @return A `\link[ggplot2]{ggplot}` object.
 #' @importFrom assertthat assert_that has_name is.number
 #' @importFrom ggplot2 ggplot aes_string geom_density geom_vline ggtitle
 #' @importFrom graphics plot

@@ -79,12 +79,12 @@ simulate_rw <- function(
 
 #' Plot Simulated Random Walks
 #' @param x An `sim_rw` object.
-#' Which is the output of  `\link{simulate_rw}`
+#' Which is the output of `\link{simulate_rw}`
 #' @param y Currently ignored.
 #' @param ... Currently ignored.
 #' @param link Which link to use for back transformation.
 #' @param baseline Optional baseline for the time series.
-#' @param center Defines how to center the time series to the baseline.
+#' @param center Defines how to centre the time series to the baseline.
 #' Options are: `start` all time series start at the baseline;
 #' `mean` the average of the time series is the baseline;
 #' `bottom` the lowest value of the time series equals the baseline;
@@ -304,7 +304,7 @@ select_poly <- function(x, coefs = c(0, -1), n = 10) {
   return(selection)
 }
 
-#' select the quantiles from an 'sim_rw' object
+#' select the quantiles from an `sim_rw` object
 #' @inheritParams plot.sim_rw
 #' @param quantiles a vector of quantiles
 #' @family priors
@@ -350,7 +350,7 @@ select_quantile <- function(
   return(selection)
 }
 
-#' Select Fast Changing Simulations from an 'sim_rw' Object
+#' Select Fast Changing Simulations from an `sim_rw` Object
 #'
 #' This functions count the number of changes in direction in each simulation.
 #' It returns the subset with the highest number of direction changes
@@ -386,7 +386,7 @@ select_change <- function(x, n = 10) {
   return(selection)
 }
 
-#' Select Diverging Simulations from an 'sim_rw' Object
+#' Select Diverging Simulations from an `sim_rw` Object
 #'
 #' The selection will contain the most extreme simulations base on either the
 #' minimum effect or the maximum effect within the simulation.

@@ -21,7 +21,7 @@ free (\code{"free"}), or free in one dimension (\code{"free_x"},
 \code{"free_y"})?}
 }
 \value{
-a ggplot2 object
+A \verb{\link[ggplot2]\{ggplot\}} object.
 }
 \description{
 Plot the results from a distribution check

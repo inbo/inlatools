@@ -15,7 +15,7 @@
 \item{...}{currently ignored}
 }
 \value{
-a ggplot2 object
+A \verb{\link[ggplot2]\{ggplot\}} object.
 }
 \description{
 Plot the results from a dispersion check

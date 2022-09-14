@@ -8,7 +8,7 @@ select_poly(x, coefs = c(0, -1), n = 10)
 }
 \arguments{
 \item{x}{An \code{sim_rw} object.
-Which is the output of  \verb{\link{simulate_rw}}}
+Which is the output of \verb{\link{simulate_rw}}}
 
 \item{coefs}{The polynomial coefficients.}
 

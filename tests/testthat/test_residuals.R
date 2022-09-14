@@ -22,7 +22,7 @@ test_that("checks the model properties", {
   )
   expect_error(
     residuals(model),
-    "`gaussian` distribution not \\(yet\\) handled by `residuals\\(\\)`"
+    "`gaussian` distribution not .* handled by `residuals"
   )
 
   selected <- sample(nrow(ds), ceiling(0.5 * nrow(ds)))

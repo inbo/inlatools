@@ -4,9 +4,10 @@ citEntry(
   entry = "Manual",
   title = "inlatools: Diagnostic Tools for INLA Models. Version 0.0.2",
   author = c(person(given = "Thierry", family = "Onkelinx")),
-  year = 2021,
+  year = 2022,
   url = "https://github.com/inbo/inlatools",
   abstract = "Several functions which can be useful to choose sensible priors and diagnose the fitted model.",
-  textVersion = "Onkelinx, Thierry (2021) inlatools: Diagnostic Tools for INLA Models. Version 0.0.2. https://github.com/inbo/inlatools",
+  textVersion = "Onkelinx, Thierry (2022) inlatools: Diagnostic Tools for INLA Models. Version 0.0.2. https://github.com/inbo/inlatools",
+  keywords = "R package",
 )
 # end checklist entry
