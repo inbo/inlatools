@@ -4,7 +4,7 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
-[![codecov](https://codecov.io/gh/inbo/inlatools/branch/master/graph/badge.svg)](https://codecov.io/gh/inbo/inlatools)
+[![codecov](https://app.codecov.io/gh/inbo/inlatools/branch/master/graph/badge.svg)](https://app.codecov.io/gh/inbo/inlatools)
 
 ## Rationale
 

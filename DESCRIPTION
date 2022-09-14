@@ -31,7 +31,7 @@ Suggests:
     testthat
 VignetteBuilder: 
     knitr
-Additional_repositories: https://inla.r-inla-download.org/R/testing
+Additional_repositories: https://inla.r-inla-download.org/R/stable
 Encoding: UTF-8
 Language: en-GB
 LazyData: true

@@ -2,7 +2,7 @@ description: Configuration file for checklist::check_pkg()
 package: yes
 allowed:
   warnings:
-  - motivation: Package not on CRAN.
+  - motivation: INLA is not on CRAN
     value: |-
       checking CRAN incoming feasibility ... WARNING
       Maintainer: 'Thierry Onkelinx <thierry.onkelinx@inbo.be>'
@@ -12,13 +12,8 @@ allowed:
       Strong dependencies not in mainstream repositories:
         INLA
       Availability using Additional_repositories specification:
-        INLA   yes   https://inla.r-inla-download.org/R/testing
-  notes:
-  - motivation: Legacy package. Moving from master to main in a later stage.
-    value: |-
-      Branch master detected. From Oct. 1, 2020, any new repositories you create uses
-      main as the default branch, instead of master. You can rename the default branch
-      from the web. More info on https://github.com/github/renaming
+        INLA   yes   https://inla.r-inla-download.org/R/stable
+  notes: []
 citation_roles:
 - aut
 - cre
