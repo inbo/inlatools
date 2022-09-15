@@ -225,13 +225,17 @@ rgpoisson <- function(n, mu, phi) {
   return(y)
 }
 
+#' @importFrom assertthat assert_that is.count
 rtpois <- function(n, lambda) {
+  assert_that(is.count(n))
+  assert_that(inherits(lambda, "numeric"))
+  assert_that(all(lambda >= 0))
   if (length(lambda) < n) {
     lambda <- head(rep(lambda, ceiling(n / length(lambda))), n)
   }
   y <- rpois(n = n, lambda = lambda)
-  while (any(y == 0)) {
-    y[y == 0] <- rpois(sum(y == 0), lambda = lambda[y == 0])
+  while (any(y < 1)) {
+    y[y < 1] <- rpois(sum(y < 1), lambda = lambda[y < 1])
   }
   return(y)
 }

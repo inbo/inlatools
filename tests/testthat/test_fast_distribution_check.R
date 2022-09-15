@@ -1,6 +1,6 @@
 context("fast_distribution_check")
 set.seed(20181209)
-ds <- generate_data(n_random = 10, n_replicate = 2)
+ds <- generate_data(n_random = 10, n_replicate = 4)
 test_that("handles poisson", {
   model <- INLA::inla(
     poisson ~ f(group_id, model = "iid"),
@@ -33,12 +33,14 @@ test_that("handles nbinomial", {
 })
 
 test_that("handles gpoisson", {
-  model <- INLA::inla(
-    poisson ~ f(group_id, model = "iid"),
-    family = "gpoisson",
-    data = ds,
-    control.predictor = list(compute = TRUE)
-  )
+  suppressWarnings({
+    model <- INLA::inla(
+      poisson ~ f(group_id, model = "iid"),
+      family = "gpoisson",
+      data = ds,
+      control.predictor = list(compute = TRUE)
+    )
+  })
   expect_is(
     fdc <- fast_distribution_check(model, nsim = 10),
     c("distribution_check", "tbl_df", "tbl", "data.frame")
