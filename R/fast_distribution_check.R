@@ -178,8 +178,10 @@ setMethod(
 #' @param phi a single overdispersion parameter
 #' @return a matrix with the density for each combination of `y` (rows) and `mu`
 #' (cols)
-#' @noRd
+#' @export
 #' @importFrom assertthat assert_that is.number
+#' @rdname gpoisson
+#' @family statistics
 dgpoisson <- function(y, mu, phi) {
   assert_that(
     is.integer(y),
@@ -202,10 +204,11 @@ dgpoisson <- function(y, mu, phi) {
   )
 }
 
-#' @noRd
-#' @inheritParams dgpoisson
 #' @param n the number of simulated values
 #' @importFrom assertthat assert_that is.number is.count
+#' @rdname gpoisson
+#' @export
+#' @family statistics
 rgpoisson <- function(n, mu, phi) {
   assert_that(is.count(n))
   assert_that(

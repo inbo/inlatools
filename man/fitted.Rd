@@ -31,6 +31,7 @@ fitted(model)
 }
 \seealso{
 Other statistics: 
+\code{\link{dgpoisson}()},
 \code{\link{dispersion}()},
 \code{\link{get_observed}()},
 \code{\link{residuals,inla-method}}
