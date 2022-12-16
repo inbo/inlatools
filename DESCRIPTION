@@ -1,6 +1,6 @@
 Package: inlatools
 Title: Diagnostic Tools for INLA Models
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
     person("Thierry", "Onkelinx", , "thierry.onkelinx@inbo.be", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8804-4216")),
@@ -32,8 +32,10 @@ Suggests:
 VignetteBuilder: 
     knitr
 Additional_repositories: https://inla.r-inla-download.org/R/stable
+Config/checklist/communities: inbo
+Config/checklist/keywords: INLA; dispersion; distribution; prior; anomaly; residuals
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
