@@ -1,6 +1,20 @@
-template:
-  params:
-    bootswatch: sandstone
+navbar:
+  title: ~
+  type: default
+  left:
+  - text: NEWS
+    href: news/index.html
+  - text: Functions
+    href: reference/index.html
+  - text: Contributing
+    href: CONTRIBUTING.html
+  right:
+  - icon: "fa fa-github"
+    href: https://github.com/inbo/inlatools
+  - icon: "fa fa-twitter"
+    href: https://twitter.com/INBOVlaanderen
+  - icon: "fa fa-facebook"
+    href: https://www.facebook.com/pg/INBOVlaanderen
 
 reference:
 - title: Checks
@@ -21,10 +35,9 @@ reference:
   contents:
   - has_concept("utils")
 
-
 authors:
   Thierry Onkelinx:
     href: "https://www.muscardinus.be"
   Research Institute for Nature and Forest:
-    href: "https://www.inbo.be/en"
-    html: "<img src='https://inbo.github.io/inlatools/reference/figures/logo-en.png' height=24 alt='Research Institute for Nature and Forest'>"
+    href: "https://www.vlaanderen.be/inbo/en-gb"
+    html: "<img src='https://inbo.github.io/checklist/reference/figures/logo-en.png' height=24>"

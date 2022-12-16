@@ -33,7 +33,8 @@ VignetteBuilder:
     knitr
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Config/checklist/communities: inbo
-Config/checklist/keywords: INLA; dispersion; distribution; prior; anomaly; residuals
+Config/checklist/keywords: INLA; dispersion; distribution; prior; anomaly;
+    residuals
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
