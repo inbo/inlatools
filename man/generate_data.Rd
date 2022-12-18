@@ -17,44 +17,44 @@ generate_data(
 \arguments{
 \item{a}{the intercept of the latent variable}
 
-\item{sigma_random}{The standard error for the random effect \eqn{\sigma_r}}
+\item{sigma_random}{The standard error for the random effect \eqn{\sigma_r}.}
 
-\item{n_random}{the number of random effect levels (groups)}
+\item{n_random}{the number of random effect levels (groups).}
 
-\item{n_replicate}{the number of observation per random effect level}
+\item{n_replicate}{the number of observation per random effect level.}
 
 \item{nb_size}{the size parameter of the negative binomial distribution.
-Passed to the \code{size} parameter of \code{\link[stats]{NegBinomial}}}
+Passed to the \code{size} parameter of \code{stats::rnbinom()}.}
 
 \item{b_size}{the size parameter of the binomial distribution. Passed to the
-\code{size} parameter of \verb{\link[stats]\{Binomial\}}}
+\code{size} parameter of \code{stats::rbinom()}.}
 
 \item{zero_inflation}{the probability the the observed value stems for the a
-point mass in zero}
+point mass in zero.}
 }
 \value{
 A \code{data.frame}
 \itemize{
-\item \code{ìd} the id of the random effect
-\item \code{eta} the latent variable
-\item \code{zero_inflation} use the point mass in zero
-\item \code{poisson} the Poisson distributed variable
-\item \code{zipoisson} the zero-inflated Poisson distributed variable
-\item \code{negbin} the negative binomial distributed variable
-\item \code{zinegbin} the zero-inflated negative binomial distributed variable
-\item \code{binom} the binomial distributed variable
+\item \code{ìd} the id of the random effect.
+\item \code{eta} the latent variable.
+\item \code{zero_inflation} use the point mass in zero.
+\item \code{poisson} the Poisson distributed variable.
+\item \code{zipoisson} the zero-inflated Poisson distributed variable.
+\item \code{negbin} the negative binomial distributed variable.
+\item \code{zinegbin} the zero-inflated negative binomial distributed variable.
+\item \code{binom} the binomial distributed variable.
 }
 }
 \description{
 All distributions share the same latent variable \eqn{\eta_{ij} = a + b_i}
-with \eqn{b_i = N(0, \sigma_r)}
+with \eqn{b_i = N(0, \sigma_r)}.
 }
 \details{
 \itemize{
-\item The Poisson distribution uses \eqn{\lambda = e^{\eta_{ij}}}
-\item The negation binomial distribution uses \eqn{\mu = e^{\eta_{ij}}}
-\item The binomial distribution uses \eqn{\pi_{ij} =
-e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}
+\item The Poisson distribution uses \eqn{\lambda = e^{\eta_{ij}}}.
+\item The negation binomial distribution uses \eqn{\mu = e^{\eta_{ij}}}.
+\item The binomial distribution uses
+\eqn{\pi_{ij} = e^{\eta_{ij}}/(e^{\eta_{ij}}+ 1)}.
 }
 }
 \examples{
