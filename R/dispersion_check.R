@@ -114,27 +114,38 @@ setMethod(
           dispersion(observed = x, fitted = zi_mu, variance = zi_var)
         }
       )
+    } else if (object$.args$family == "zeroinflatedpoisson0") {
+      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
+      zi <- object$summary.hyperpar[1, "0.5quant"]
+      zi_mu <- (1 - zi) * exp(lambda) * lambda / (exp(lambda) - 1)
+      zi_var <- zi_mu * (lambda + 1 - zi_mu)
+      dispersion_data <- dispersion(
+        observed = observed, fitted = zi_mu, variance = zi_var
+      )
+      rzapois(nsim * length(lambda), prob = zi) |>
+        matrix(ncol = nsim) |>
+        apply(
+          2,
+          function(x) {
+            dispersion(observed = x, fitted = zi_mu, variance = zi_var)
+          }
+        ) -> dispersion_model
     } else if (object$.args$family == "zeroinflatedpoisson1") {
       lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
       zi <- object$summary.hyperpar[1, "0.5quant"]
       zi_mu  <- (1 - zi) * lambda
-      zi_var <- (1 - zi) * (lambda ^ 2 + lambda) - zi_mu ^ 2
+      zi_var <- zi_mu * (lambda + 1 - zi_mu)
       dispersion_data <- dispersion(
-        observed = observed,
-        fitted = zi_mu,
-        variance = zi_var
+        observed = observed, fitted = zi_mu, variance = zi_var
       )
-      dispersion_model <- apply(
-        matrix(
-          rbinom(nsim * length(lambda), size = 1, prob = 1 - zi) *
-            rpois(nsim * length(lambda), lambda = lambda),
-          ncol = nsim
-        ),
-        2,
-        function(x) {
-          dispersion(observed = x, fitted = zi_mu, variance = zi_var)
-        }
-      )
+      rzipois(nsim * length(lambda), lambda = lambda, prob = zi) |>
+        matrix(ncol = nsim) |>
+        apply(
+          2,
+          function(x) {
+            dispersion(observed = x, fitted = zi_mu, variance = zi_var)
+          }
+        ) -> dispersion_model
     } else {
       stop(object$.args$family, " is not yet handled")
     }
