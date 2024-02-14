@@ -17,6 +17,7 @@
 ^data-raw$
 ^docs$
 ^man-roxygen$
+^organisation.yml$
 ^pkgdown$
 ^tic\.R$
 ^wercker\.yml$
