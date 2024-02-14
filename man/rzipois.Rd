@@ -7,9 +7,9 @@
 rzipois(n, lambda, prob)
 }
 \arguments{
-\item{n}{number of samples}
+\item{n}{number of random values to return.}
 
-\item{lambda}{mean of the Poisson distribution}
+\item{lambda}{vector of (non-negative) means.}
 
 \item{prob}{the mass of extra zero's}
 }

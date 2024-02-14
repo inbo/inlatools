@@ -1,7 +1,7 @@
 #' Zero-altered Poisson
 #'
 #' Generate random numbers from a zero-altered Poisson distribution
-#' @inheritParams rzip
+#' @inheritParams stats::rpois
 #' @param prob the point mass of zero
 #' @param tol the tolerance for low numbers
 #' @export
@@ -37,8 +37,7 @@ rzapois <- function(n, lambda, prob, tol = 2e-10) {
 #' Zero-inflated Poisson
 #'
 #' Generate random numbers from a zero-inflated Poisson distribution
-#' @param n number of samples
-#' @param lambda mean of the Poisson distribution
+#' @inheritParams stats::rpois
 #' @param prob the mass of extra zero's
 #' @importFrom stats rbinom rpois
 #' @export

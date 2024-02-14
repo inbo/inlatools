@@ -7,6 +7,10 @@
 rzapois(n, lambda, prob, tol = 2e-10)
 }
 \arguments{
+\item{n}{number of random values to return.}
+
+\item{lambda}{vector of (non-negative) means.}
+
 \item{prob}{the point mass of zero}
 
 \item{tol}{the tolerance for low numbers}
