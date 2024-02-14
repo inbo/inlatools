@@ -10,25 +10,35 @@ rzanbinom <- function(n, mu, size, prob, tol = 2e-10) {
     noNA(size), is.numeric(prob), noNA(prob), is.number(tol)
   )
   assert_that(
-    tol > 0, tol < 1e-5, length(mu) %in% c(1, n), length(size) %in% c(1, n),
-    length(prob) %in% c(1, n), all(prob >= 0), all(prob <= 1), all(size > 0)
+    tol > 0, tol < 1e-5, length(mu) <= n, length(prob) <= n, all(mu >= 0),
+    all(prob >= 0), all(prob <= 1), all(size > 0)
   )
+  if (length(mu) < n) {
+    stopifnot(
+      "n is not a multiple of length(mu)" = n %% length(mu) == 0
+    )
+    mu <- rep(mu, n %/% length(mu))
+  }
+  if (length(size) < n) {
+    stopifnot(
+      "n is not a multiple of length(size)" = n %% length(size) == 0
+    )
+    size <- rep(size, n %/% length(size))
+  }
+  if (length(prob) < n) {
+    stopifnot(
+      "n is not a multiple of length(prob)" = n %% length(prob) == 0
+    )
+    prob <- rep(prob, n %/% length(prob))
+  }
   count <- rbinom(n = n, size = 1, prob = 1 - prob)
   non_zero <- which(count == 1)
   n <- length(non_zero)
   if (n == 0) {
     return(count)
   }
-  if (length(mu) == 1) {
-    mu <- rep(mu, n)
-  } else {
-    mu <- mu[non_zero]
-  }
-  if (length(size) == 1) {
-    size <- rep(size, n)
-  } else {
-    size <- size[non_zero]
-  }
+  mu <- mu[non_zero]
+  size <- size[non_zero]
   low <- which(mu < tol)
   if (length(low) == 0) {
     dnbinom(x = 0, mu = mu, size = size) |>
