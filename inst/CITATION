@@ -1,13 +1,13 @@
 citHeader("To cite `inlatools` in publications please use:")
 # begin checklist entry
-citEntry(
-  entry = "Manual",
+bibentry(
+  bibtype = "Manual",
   title = "inlatools: Diagnostic Tools for INLA Models. Version 0.0.3",
   author = c( author = c(person(given = "Thierry", family = "Onkelinx"))),
-  year = 2022,
+  year = 2024,
   url = "https://github.com/inbo/inlatools/",
   abstract = "Several functions which can be useful to choose sensible priors and diagnose the fitted model.",
-  textVersion = "Onkelinx, Thierry (2022) inlatools: Diagnostic Tools for INLA Models. Version 0.0.3. https://github.com/inbo/inlatools/",
+  textVersion = "Onkelinx, Thierry (2024) inlatools: Diagnostic Tools for INLA Models. Version 0.0.3. https://github.com/inbo/inlatools/",
   keywords = "INLA; dispersion; distribution; prior; anomaly; residuals",
 )
 # end checklist entry

@@ -1,9 +1,10 @@
 cff-version: 1.2.0
 message: If you use this software, please cite it using these metadata.
-title: 'inlatools: Diagnostic Tools for INLA Models'
+title: "inlatools: Diagnostic Tools for INLA Models"
 authors:
 - given-names: Thierry
   family-names: Onkelinx
+  affiliation: Research Institute for Nature and Forest (INBO)
   orcid: 0000-0001-8804-4216
 keywords:
 - INLA
@@ -15,14 +16,12 @@ keywords:
 contact:
 - given-names: Thierry
   family-names: Onkelinx
+  affiliation: Research Institute for Nature and Forest (INBO)
   orcid: 0000-0001-8804-4216
 doi: ~
 license: GPL-3.0
 repository-code: https://github.com/inbo/inlatools/
 type: software
-abstract: Several functions which can be useful to choose sensible priors and diagnose
-  the fitted model.
-identifiers:
-- type: url
-  value: []
+abstract: "Several functions which can be useful to choose sensible priors and diagnose
+  the fitted model."
 version: 0.0.3
