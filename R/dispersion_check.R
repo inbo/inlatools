@@ -39,117 +39,79 @@ setMethod(
   definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
 
-    if (length(object$.args$family) > 1) {
-      stop("Only single responses are handled")
-    }
+    stopifnot(
+      "Only single responses are handled" = length(object$.args$family) == 1
+    )
 
     observed <- get_observed(object)
-    mu <- fitted(object)
     which_na <- is.na(observed)
-    mu <- mu[!which_na]
     observed <- observed[!which_na]
-    if (object$.args$family == "poisson") {
-      dispersion_data <- dispersion(
-        observed = observed,
-        fitted = mu,
-        variance = mu
-      )
-      dispersion_model <- apply(
-        matrix(
-          rpois(nsim * length(mu), lambda = mu),
-          ncol = nsim
-        ),
-        2,
-        function(x) {
-          dispersion(observed = x, fitted = mu, variance = mu)
-        }
-      )
-    } else if (object$.args$family == "nbinomial") {
-      size <- object$summary.hyperpar[
-        paste(
-          "size for the nbinomial observations (1", "overdispersion)", sep = "/"
-        ),
-        "mean"
-      ]
-      dispersion_data <- dispersion(
-        observed = observed,
-        fitted = mu,
-        variance = mu + mu ^ 2 / size
-      )
-      dispersion_model <- apply(
-        matrix(
-          rnbinom(nsim * length(mu), mu = mu, size = size),
-          ncol = nsim
-        ),
-        2,
-        function(x) {
-          dispersion(observed = x, fitted = mu, variance = mu + mu ^ 2 / size)
-        }
-      )
-    } else if (object$.args$family == "zeroinflatednbinomial1") {
-      mu <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
-      size <- object$summary.hyperpar[
-        "size for nbinomial zero-inflated observations",
-        "0.5quant"
-      ]
-      zi <- object$summary.hyperpar[
+    size <- switch(
+      object$.args$family,
+      nbinomial = "size for the nbinomial observations (1/overdispersion)",
+      zeroinflatednbinomial0 =
+        "size for nbinomial_0 zero-inflated observations",
+      zeroinflatednbinomial1 =
+        "size for nbinomial_1 zero-inflated observations",
+      integer(0)
+    )
+    size <- object$summary.hyperpar[size, "0.5quant"]
+    zero_prob <- switch(
+      object$.args$family,
+      zeroinflatednbinomial0 =
+        "zero-probability parameter for zero-inflated nbinomial_0",
+      zeroinflatednbinomial1 =
         "zero-probability parameter for zero-inflated nbinomial_1",
-        "0.5quant"
-      ]
-      zi_mu <- (1 - zi) * mu
-      zi_var <- (1 - zi) * mu * (1 + mu * (zi + 1 / size))
-      dispersion_data <- dispersion(
-        observed = observed,
-        fitted = zi_mu,
-        variance = zi_var
-      )
-      dispersion_model <- apply(
-        matrix(
-          rbinom(nsim * length(mu), size = 1, prob = 1 - zi) *
-            rnbinom(nsim * length(mu), mu = mu, size = size),
-          ncol = nsim
-        ),
-        2,
-        function(x) {
-          dispersion(observed = x, fitted = zi_mu, variance = zi_var)
-        }
-      )
-    } else if (object$.args$family == "zeroinflatedpoisson0") {
-      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
-      zi <- object$summary.hyperpar[1, "0.5quant"]
-      zi_mu <- (1 - zi) * exp(lambda) * lambda / (exp(lambda) - 1)
-      zi_var <- zi_mu * (lambda + 1 - zi_mu)
-      dispersion_data <- dispersion(
-        observed = observed, fitted = zi_mu, variance = zi_var
-      )
-      rzapois(nsim * length(lambda), prob = zi) |>
-        matrix(ncol = nsim) |>
-        apply(
-          2,
-          function(x) {
-            dispersion(observed = x, fitted = zi_mu, variance = zi_var)
-          }
-        ) -> dispersion_model
-    } else if (object$.args$family == "zeroinflatedpoisson1") {
-      lambda <- exp(object$summary.linear.predictor[!which_na, "0.5quant"]) # nolint
-      zi <- object$summary.hyperpar[1, "0.5quant"]
-      zi_mu  <- (1 - zi) * lambda
-      zi_var <- zi_mu * (lambda + 1 - zi_mu)
-      dispersion_data <- dispersion(
-        observed = observed, fitted = zi_mu, variance = zi_var
-      )
-      rzipois(nsim * length(lambda), lambda = lambda, prob = zi) |>
-        matrix(ncol = nsim) |>
-        apply(
-          2,
-          function(x) {
-            dispersion(observed = x, fitted = zi_mu, variance = zi_var)
-          }
-        ) -> dispersion_model
-    } else {
+      zeroinflatedpoisson0 =
+        "zero-probability parameter for zero-inflated poisson_0",
+      zeroinflatedpoisson1 =
+        "zero-probability parameter for zero-inflated poisson_1",
+      integer(0)
+    )
+    zero_prob <- object$summary.hyperpar[zero_prob, "0.5quant"]
+    eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+    mu <- switch(
+      object$.args$family,
+      poisson = exp(eta),
+      nbinomial = exp(eta),
+      zeroinflatednbinomial0 = (1 - zero_prob) * exp(eta),
+      zeroinflatednbinomial1 = (1 - zero_prob) * exp(eta),
+      zeroinflatedpoisson0 = (1 - zero_prob) * exp(exp(eta)) * exp(eta) /
+        (exp(exp(eta)) - 1),
+      zeroinflatedpoisson1 = (1 - zero_prob) * exp(eta),
       stop(object$.args$family, " is not yet handled")
-    }
-
+    )
+    variance <- switch(
+      object$.args$family,
+      poisson = mu,
+      nbinomial = mu + mu ^ 2 / size,
+      zeroinflatednbinomial0 = mu * (1 + exp(eta) * (zero_prob + 1 / size)),
+      zeroinflatednbinomial1 = mu * (1 + exp(eta) * (zero_prob + 1 / size)),
+      zeroinflatedpoisson0 = mu * (exp(eta) + 1 - mu),
+      zeroinflatedpoisson1 = mu * (exp(eta) + 1 - mu)
+    )
+    dispersion_data <- dispersion(
+      observed = observed, fitted = mu, variance = variance
+    )
+    switch(
+      object$.args$family,
+      poisson = rpois(nsim * length(mu), lambda = mu),
+      nbinomial = rnbinom(nsim * length(mu), mu = mu, size = size),
+      zeroinflatednbinomial0 = rzanbinom(
+        n = nsim * length(mu), mu = mu, size = size, prob = zero_prob
+      ),
+      zeroinflatednbinomial1 = rzinbinom(
+        n = nsim * length(mu), mu = mu, size = size, prob = zero_prob
+      ),
+      zeroinflatedpoisson0 = rzapois(
+        n = nsim * length(mu), lambda = mu, prob = zero_prob
+      ),
+      zeroinflatedpoisson1 = rzipois(
+        n = nsim * length(mu), lambda = mu, prob = zero_prob
+      )
+    ) |>
+      matrix(ncol = nsim) |>
+      apply(2, dispersion, fitted = mu, variance = variance) -> dispersion_model
     output <- list(data = dispersion_data, model = dispersion_model)
     class(output) <- "dispersion_check"
     return(output)
