@@ -95,19 +95,19 @@ setMethod(
     )
     switch(
       object$.args$family,
-      poisson = rpois(nsim * length(mu), lambda = mu),
-      nbinomial = rnbinom(nsim * length(mu), mu = mu, size = size),
+      poisson = rpois(nsim * length(mu), lambda = exp(eta)),
+      nbinomial = rnbinom(nsim * length(mu), mu = exp(eta), size = size),
       zeroinflatednbinomial0 = rzanbinom(
-        n = nsim * length(mu), mu = mu, size = size, prob = zero_prob
+        n = nsim * length(mu), mu = exp(eta), size = size, prob = zero_prob
       ),
       zeroinflatednbinomial1 = rzinbinom(
-        n = nsim * length(mu), mu = mu, size = size, prob = zero_prob
+        n = nsim * length(mu), mu = exp(eta), size = size, prob = zero_prob
       ),
       zeroinflatedpoisson0 = rzapois(
-        n = nsim * length(mu), lambda = mu, prob = zero_prob
+        n = nsim * length(mu), lambda = exp(eta), prob = zero_prob
       ),
       zeroinflatedpoisson1 = rzipois(
-        n = nsim * length(mu), lambda = mu, prob = zero_prob
+        n = nsim * length(mu), lambda = exp(eta), prob = zero_prob
       )
     ) |>
       matrix(ncol = nsim) |>
