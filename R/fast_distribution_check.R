@@ -19,13 +19,13 @@ setGeneric(
 )
 
 #' @rdname fast_distribution_check
-#' @importFrom methods setMethod new
+#' @importFrom methods new setMethod
 #' @importFrom assertthat assert_that is.count
 #' @importFrom purrr map_dfc
-#' @importFrom dplyr %>% count mutate_all group_by arrange mutate summarise
-#' inner_join
+#' @importFrom dplyr arrange count group_by inner_join mutate mutate_all
+#' summarise
 #' @importFrom rlang .data
-#' @importFrom tidyr gather complete
+#' @importFrom tidyr complete
 #' @importFrom stats quantile rpois rnbinom
 #' @importClassesFrom INLA inla
 #' @examples
@@ -47,105 +47,88 @@ setMethod(
   definition = function(object, nsim = 1000) {
     assert_that(is.count(nsim))
 
-    if (length(object$.args$family) > 1) {
-      stop("Only single responses are handled")
-    }
-
-    observed <- get_observed(object)
-    mu <- fitted(object)[!is.na(observed)]
-    observed <- observed[!is.na(observed)]
-    n_mu <- length(mu)
-    n_sampled <- switch(
-      object$.args$family,
-      poisson = {
-        data.frame(
-          run = rep(seq_len(nsim), each = n_mu),
-          x = rpois(n = n_mu * nsim, lambda = mu)
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      nbinomial = {
-        relevant <- grep("overdispersion", rownames(object$summary.hyperpar))
-        size <- object$summary.hyperpar[relevant, "mean"]
-        data.frame(
-          run = rep(seq_len(nsim), each = n_mu),
-          x = rnbinom(n = n_mu * nsim, mu = mu, size = size)
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      gpoisson = {
-        relevant <- grep("Overdispersion", rownames(object$summary.hyperpar))
-        phi <- object$summary.hyperpar[relevant, "mean"]
-        data.frame(
-          run = rep(seq_len(nsim), n_mu),
-          x = as.vector(rgpoisson(n = nsim, mu = mu, phi = phi))
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      zeroinflatedpoisson1 = {
-        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
-        zero <- object$summary.hyperpar[relevant, "mean"]
-        data.frame(
-          run = rep(seq_len(nsim), each = n_mu),
-          x = rpois(n = n_mu * nsim, lambda = mu) *
-            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      zeroinflatedpoisson0 = {
-        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
-        if (length(relevant) == 1) {
-          zero <- object$summary.hyperpar[relevant, "mean"]
-        } else {
-          zero <- object$all.hyper$family[[1]]$hyper$theta$from.theta(
-            object$all.hyper$family[[1]]$hyper$theta$initial
-          )
-        }
-        data.frame(
-          run = rep(seq_len(nsim), each = n_mu),
-          x = rtpois(n = n_mu * nsim, lambda = mu) *
-            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      zeroinflatednbinomial1 = {
-        relevant <- grep("zero-probability", rownames(object$summary.hyperpar))
-        zero <- object$summary.hyperpar[relevant, "mean"]
-        relevant <- grep(
-          "size for nbinomial",
-          rownames(object$summary.hyperpar)
-        )
-        size <- object$summary.hyperpar[relevant, "mean"]
-        data.frame(
-          run = rep(seq_len(nsim), each = n_mu),
-          x = rnbinom(n = n_mu * nsim, mu = mu, size = size) *
-            rbinom(n = n_mu * nsim, size = 1, prob = 1 - zero)
-        ) %>%
-          count(.data$run, .data$x)
-      },
-      stop(object$.args$family, " is not yet handled")
+    stopifnot(
+      "Only single responses are handled" = length(object$.args$family) == 1
     )
 
-    data.frame(x = observed) %>%
+    observed <- get_observed(object)
+    which_na <- is.na(observed)
+    observed <- observed[!which_na]
+    size <- switch(
+      object$.args$family,
+      gpoisson = "Overdispersion for gpoisson",
+      nbinomial = "size for the nbinomial observations (1/overdispersion)",
+      zeroinflatednbinomial0 =
+        "size for nbinomial_0 zero-inflated observations",
+      zeroinflatednbinomial1 =
+        "size for nbinomial_1 zero-inflated observations",
+      integer(0)
+    )
+    size <- object$summary.hyperpar[size, "0.5quant"]
+    zero_prob <- switch(
+      object$.args$family,
+      zeroinflatednbinomial0 =
+        "zero-probability parameter for zero-inflated nbinomial_0",
+      zeroinflatednbinomial1 =
+        "zero-probability parameter for zero-inflated nbinomial_1",
+      zeroinflatedpoisson0 =
+        "zero-probability parameter for zero-inflated poisson_0",
+      zeroinflatedpoisson1 =
+        "zero-probability parameter for zero-inflated poisson_1",
+      integer(0)
+    )
+    zero_prob <- object$summary.hyperpar[zero_prob, "0.5quant"]
+    if (is.na(zero_prob) && grepl("^zeroinflated.*0", object$.args$family)) {
+      object$all.hyper$family[[1]]$hyper$theta$initial |>
+        object$all.hyper$family[[1]]$hyper$theta$from.theta() -> zero_prob
+    }
+
+    eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+    n_mu <- length(eta)
+    x <- switch(
+      object$.args$family,
+      gpoisson = rgpoisson(n = n_mu * nsim, mu = exp(eta), phi = size) |>
+        as.vector(),
+      nbinomial = rnbinom(n = n_mu * nsim, mu = exp(eta), size = size),
+      poisson = rpois(n_mu * nsim, lambda = exp(eta)),
+      zeroinflatednbinomial0 = rzanbinom(
+        n = n_mu * nsim, mu = exp(eta), size = size, prob = zero_prob
+      ),
+      zeroinflatednbinomial1 = rzinbinom(
+        n = n_mu * nsim, mu = exp(eta), size = size, prob = zero_prob
+      ),
+      zeroinflatedpoisson0 = rzapois(
+        n = n_mu * nsim, lambda = exp(eta), prob = zero_prob
+      ),
+      zeroinflatedpoisson1 = rzipois(
+        n = n_mu * nsim, lambda = exp(eta), prob = zero_prob
+      ),
+      stop(object$.args$family, " is not yet handled")
+    )
+    data.frame(
+      run = rep(seq_len(nsim), each = n_mu),
+      x = x
+    ) |>
+      count(.data$run, .data$x) -> n_sampled
+    data.frame(x = observed) |>
       count(.data$x) -> n_observed
     n_count <- unique(c(n_observed$x, n_sampled$x))
-    n_sampled %>%
-      complete(run = .data$run, x = n_count, fill = list(n = 0)) %>%
-      group_by(.data$run) %>%
-      arrange(.data$x) %>%
-      mutate(ecdf = cumsum(.data$n) / sum(.data$n)) %>%
-      group_by(.data$x) %>%
+    n_sampled |>
+      complete(run = .data$run, x = n_count, fill = list(n = 0)) |>
+      group_by(.data$run) |>
+      arrange(.data$x) |>
+      mutate(ecdf = cumsum(.data$n) / sum(.data$n)) |>
+      group_by(.data$x) |>
       summarise(
         median = quantile(.data$ecdf, probs = 0.5),
         lcl = quantile(.data$ecdf, probs = 0.025),
         ucl = quantile(.data$ecdf, probs = 0.975)
-      ) %>%
+      ) |>
       inner_join(
-        n_observed %>%
-          complete(x = n_count, fill = list(n = 0)) %>%
-          arrange(.data$x) %>%
-          mutate(ecdf = cumsum(.data$n) / sum(.data$n))
-        ,
+        n_observed |>
+          complete(x = n_count, fill = list(n = 0)) |>
+          arrange(.data$x) |>
+          mutate(ecdf = cumsum(.data$n) / sum(.data$n)),
         by = "x"
       ) -> ecdf
     class(ecdf) <- c("distribution_check", class(ecdf))
