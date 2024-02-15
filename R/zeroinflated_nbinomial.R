@@ -49,9 +49,9 @@ rzanbinom <- function(n, mu, size, prob, tol = 2e-10) {
   if (length(low) == n) {
     return(count)
   }
-  dnbinom(x = 0, mu = mu[-low], size = size) |>
+  dnbinom(x = 0, mu = mu[-low], size = size[-low]) |>
     runif(n = n - length(low), max = 1) |>
-    qnbinom(mu = mu[-low], size = size) -> count[non_zero][-low]
+    qnbinom(mu = mu[-low], size = size[-low]) -> count[non_zero][-low]
   return(count)
 }
 
