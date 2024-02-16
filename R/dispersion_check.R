@@ -74,7 +74,8 @@ setMethod(
       object$.args$family,
       poisson = exp(eta),
       nbinomial = exp(eta),
-      zeroinflatednbinomial0 = (1 - zero_prob) * exp(eta),
+      zeroinflatednbinomial0 = (1 - zero_prob) * exp(eta) /
+        (1 - (size / (exp(eta) + size)) ^ size),
       zeroinflatednbinomial1 = (1 - zero_prob) * exp(eta),
       zeroinflatedpoisson0 = (1 - zero_prob) * exp(exp(eta)) * exp(eta) /
         (exp(exp(eta)) - 1),
@@ -85,7 +86,18 @@ setMethod(
       object$.args$family,
       poisson = mu,
       nbinomial = mu + mu ^ 2 / size,
-      zeroinflatednbinomial0 = mu * (1 + exp(eta) * (zero_prob + 1 / size)),
+      zeroinflatednbinomial0 =
+        (
+          (1 - zero_prob) *
+            exp(eta) *
+            ((size / (size + exp(eta))) ^ size) *
+            (exp(eta) + exp(eta) * size + size)
+        ) /
+        (
+          size *
+            (1 - (size / (size + exp(eta))) ^ size) *
+            (1 - (exp(eta) / (size + exp(eta))) ^ size)
+        ),
       zeroinflatednbinomial1 = mu * (1 + exp(eta) * (zero_prob + 1 / size)),
       zeroinflatedpoisson0 = mu * (exp(eta) + 1 - mu),
       zeroinflatedpoisson1 = mu * (exp(eta) + 1 - mu)
