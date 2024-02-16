@@ -98,7 +98,8 @@ setMethod(
             (1 - (size / (size + exp(eta))) ^ size) *
             (1 - (exp(eta) / (size + exp(eta))) ^ size)
         ),
-      zeroinflatednbinomial1 = mu * (1 + exp(eta) * (zero_prob + 1 / size)),
+      zeroinflatednbinomial1 = (1 - zero_prob) * exp(eta) *
+        (exp(eta) * (size + 1) / size + 1),
       zeroinflatedpoisson0 = mu * (exp(eta) + 1 - mu),
       zeroinflatedpoisson1 = mu * (exp(eta) + 1 - mu)
     )
