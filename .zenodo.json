@@ -3,7 +3,7 @@
   "version": "0.0.3",
   "license": "GPL-3.0",
   "upload_type": "software",
-  "description": "<p>Several functions which can be useful to choose sensible priors and\ndiagnose the fitted model.<\/p>",
+  "description": "<p>Several functions which can be useful to choose sensible priors and diagnose the fitted model.<\/p>",
   "keywords": [
     "INLA",
     "dispersion",
@@ -19,11 +19,11 @@
       "name": "Onkelinx, Thierry",
       "affiliation": "Research Institute for Nature and Forest (INBO)",
       "orcid": "0000-0001-8804-4216",
-      "type": "ContactPerson"
+      "type": "contactperson"
     },
     {
       "name": "Research Institute for Nature and Forest (INBO)",
-      "type": "RightsHolder"
+      "type": "rightsholder"
     }
   ],
   "creators": [
