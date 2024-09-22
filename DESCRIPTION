@@ -9,7 +9,7 @@ Authors@R: c(
 Description: Several functions which can be useful to choose sensible
     priors and diagnose the fitted model.
 License: GPL-3
-URL: https://inbo.github.io/inlatools, https://github.com/inbo/inlatools
+URL: https://inbo.github.io/inlatools/, https://github.com/inbo/inlatools
 BugReports: https://github.com/inbo/inlatools/issues
 Depends: 
     R (>= 3.5.0)

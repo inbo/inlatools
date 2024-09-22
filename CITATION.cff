@@ -24,4 +24,7 @@ repository-code: https://github.com/inbo/inlatools/
 type: software
 abstract: "Several functions which can be useful to choose sensible priors and diagnose
   the fitted model."
+identifiers:
+- type: url
+  value: https://inbo.github.io/inlatools/
 version: 0.0.3
