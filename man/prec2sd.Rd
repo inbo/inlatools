@@ -4,18 +4,11 @@
 \alias{prec2sd}
 \title{Convert the posterior marginal of a precision to a standard deviation}
 \usage{
-prec2sd(marg, threshold = 5e-04)
+prec2sd(marg)
 }
 \arguments{
 \item{marg}{A matrix with columns "y" and "x" where "y" is the marginal of
 the precision.}
-
-\item{threshold}{The threshold for the cumulative sum of the marginal to
-determine the range of the marginal to use.
-The function ignore the right side of the marginal where the cumulative sum
-is less than the threshold.
-This avoids numerical issues with the transformation.
-Defaults to \code{5e-4}.}
 }
 \value{
 A \code{data.frame} with the mean, standard deviation and 2.5\%, 25\%, 50\%,
@@ -28,4 +21,5 @@ Convert the posterior marginal of a precision to a standard deviation
 stopifnot(require(INLA))
 model <- inla(Sepal.Length ~ Species, data = iris, family = "gaussian")
 marg <- model$marginals.hyperpar[["Precision for the Gaussian observations"]]
+prec2sd(marg)
 }
