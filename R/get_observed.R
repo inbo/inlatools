@@ -20,7 +20,7 @@ get_observed <- function(object) {
   assert_that(inherits(object, "inla"))
   response <- as.character(object$.args$formula[2])
   assert_that(is.string(response))
-  object$.args$data[, response, drop = TRUE]
+  object$.args$data[[response]]
 }
 
 #' Extract the fitted values from an INLA model
