@@ -82,6 +82,9 @@ setMethod(
       covars <- covars[is.na(spde), , drop = FALSE]
       covars <- covars[!which_na, , drop = FALSE]
     }
+    to_rename <- grouping_vars %in% c("x", "type", "run")
+    colnames(covars)[to_rename] <- paste0("covar_", colnames(covars)[to_rename])
+    grouping_vars[to_rename] <- paste0("covar_", grouping_vars[to_rename])
 
     n_mu <- length(eta)
     x <- switch(
@@ -116,18 +119,14 @@ setMethod(
         by = "id"
       ) |>
       group_by(across(all_of(c(grouping_vars, "run")))) |>
-      summarise(x = fun(.data$x), .groups = "drop_last") |>
-      summarise(
-        mean = mean(.data$x),
-        lcl = quantile(.data$x, prob = 0.025),
-        ucl = quantile(.data$x, prob = 0.975), .groups = "drop"
-      ) |>
-      inner_join(
+      summarise(x = fun(.data$x), .groups = "drop") |>
+      mutate(type = "model") |>
+      bind_rows(
         covars |>
           mutate(observed = observed) |>
           group_by(across(all_of(grouping_vars))) |>
-          summarise(observed = fun(.data$observed), .groups = "drop"),
-        by = grouping_vars
+          summarise(x = fun(.data$observed), .groups = "drop") |>
+          mutate(type = "observations")
       )
   }
 )
