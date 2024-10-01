@@ -46,7 +46,8 @@ distribution_check(model, seed = 20181202)
 \seealso{
 Other checks: 
 \code{\link{dispersion_check}()},
-\code{\link{fast_distribution_check}()},
+\code{\link{fast_aggregation_check}()},
+\code{\link{fast_aggregation_check,inla-method}},
 \code{\link{get_anomaly}()}
 }
 \concept{checks}
