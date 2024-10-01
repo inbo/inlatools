@@ -83,7 +83,15 @@ setMethod(
         object$all.hyper$family[[1]]$hyper$theta$from.theta() -> zero_prob
     }
 
-    eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+    if (is.null(object$model.spde2.blc)) {
+      eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+    } else {
+      object$summary.linear.predictor[
+        grep("^APredictor", rownames(object$summary.linear.predictor)),
+        "0.5quant"
+      ] -> eta
+      eta <- eta[!which_na]
+    }
     n_mu <- length(eta)
     x <- switch(
       object$.args$family,
