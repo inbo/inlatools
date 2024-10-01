@@ -67,7 +67,22 @@ setMethod(
         object$all.hyper$family[[1]]$hyper$theta$from.theta() -> zero_prob
     }
 
-    eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+    if (is.null(object$model.spde2.blc)) {
+      eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
+      covars <- object$.args$data[!which_na, grouping_vars, drop = FALSE]
+    } else {
+      object$summary.linear.predictor[
+        grep("^APredictor", rownames(object$summary.linear.predictor)),
+        "0.5quant"
+      ] -> eta
+      eta <- eta[!which_na]
+      object$.args$data[grouping_vars] |>
+        as.data.frame() -> covars
+      spde <- object$.args$data[[grep("\\.group", names(object$.args$data))]]
+      covars <- covars[is.na(spde), , drop = FALSE]
+      covars <- covars[!which_na, , drop = FALSE]
+    }
+
     n_mu <- length(eta)
     x <- switch(
       object$.args$family,
@@ -90,7 +105,6 @@ setMethod(
       stop(object$.args$family, " is not yet handled")
     )
 
-    covars <- object$.args$data[!which_na, grouping_vars, drop = FALSE]
     data.frame(
       id = rep(seq_len(n_mu), nsim),
       run = rep(seq_len(nsim), each = n_mu),
