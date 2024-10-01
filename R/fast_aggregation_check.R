@@ -89,6 +89,7 @@ setMethod(
     n_mu <- length(eta)
     x <- switch(
       object$.args$family,
+      binomial = rbinom(n = n_mu * nsim, size = 1, prob = plogis(eta)),
       gpoisson = rgpoisson(n = n_mu * nsim, mu = exp(eta), phi = size) |>
         as.vector(),
       nbinomial = rnbinom(n = n_mu * nsim, mu = exp(eta), size = size),
