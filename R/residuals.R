@@ -37,20 +37,11 @@ setMethod(
       length(object$.args$family) == 1,
       msg = "Only single responses are handled"
     )
-    assert_that(
-      object$.args$family %in% c(
-        "nbinomial", "poisson", "zeroinflatednbinomial1", "zeroinflatedpoisson1"
-      ),
-      msg = sprintf(
-        "`%s` distribution not (yet) handled by `residuals()`.
-Please open an issue at https://github.com/inbo/inlatools.",
-        object$.args$family
-      )
-    )
     observed <- get_observed(object)
     fitted <- fitted(object)
     variance <- switch(
       object$.args$family,
+      binomial = fitted * (1 - fitted),
       nbinomial = var_nbinom(mu = fitted, size = get_mean_size(object)),
       poisson = fitted,
       zeroinflatednbinomial1 = var_zinbinom1(
@@ -59,6 +50,11 @@ Please open an issue at https://github.com/inbo/inlatools.",
       ),
       zeroinflatedpoisson1 = var_zipois1(
         mu = fitted, zero = get_mean_zero_prob(object)
+      ),
+      stop(
+        "`", object$.args$family,
+        "` distribution not (yet) handled by `residuals()`.
+  Please open an issue at https://github.com/inbo/inlatools."
       )
     )
     (observed - fitted) / sqrt(variance)
