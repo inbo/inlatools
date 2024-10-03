@@ -3,10 +3,25 @@
 \docType{methods}
 \name{fast_aggregation_check}
 \alias{fast_aggregation_check}
+\alias{fast_aggregation_check,inla-method}
 \title{Fast aggregation check
 Compare the observed and modelled aggregated values.}
 \usage{
-fast_aggregation_check(object, grouping_vars, fun = sum, nsim = 1000)
+fast_aggregation_check(
+  object,
+  grouping_vars,
+  fun = sum,
+  remove_na = TRUE,
+  nsim = 1000
+)
+
+\S4method{fast_aggregation_check}{inla}(
+  object,
+  grouping_vars,
+  fun = sum,
+  remove_na = TRUE,
+  nsim = 1000
+)
 }
 \arguments{
 \item{object}{the INLA model}
@@ -14,6 +29,9 @@ fast_aggregation_check(object, grouping_vars, fun = sum, nsim = 1000)
 \item{grouping_vars}{character vector of variable names to group by.}
 
 \item{fun}{function to apply to the aggregated values.}
+
+\item{remove_na}{logical. Indicated whether to remove observations where
+the response variable is a missing values.}
 
 \item{nsim}{the number of simulation}
 }
@@ -25,7 +43,7 @@ Compare the observed and modelled aggregated values.
 Other checks: 
 \code{\link{dispersion_check}()},
 \code{\link{distribution_check}()},
-\code{\link{fast_aggregation_check,inla-method}},
+\code{\link{fast_distribution_check}()},
 \code{\link{get_anomaly}()}
 }
 \concept{checks}

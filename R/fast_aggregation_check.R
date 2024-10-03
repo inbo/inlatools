@@ -4,6 +4,8 @@
 #' @inheritParams dispersion_check
 #' @param grouping_vars character vector of variable names to group by.
 #' @param fun function to apply to the aggregated values.
+#' @param remove_na logical. Indicated whether to remove observations where
+#' the response variable is a missing values.
 #' @name fast_aggregation_check
 #' @rdname fast_aggregation_check
 #' @exportMethod fast_aggregation_check
@@ -12,29 +14,43 @@
 #' @family checks
 setGeneric(
   name = "fast_aggregation_check",
-  def = function(object, grouping_vars, fun = sum, nsim = 1000) {
+  def = function(
+    object, grouping_vars, fun = sum, remove_na = TRUE, nsim = 1000
+  ) {
     standardGeneric("fast_aggregation_check") # nocov
   }
 )
 
-#' @rdname fast_distribution_check
+#' @rdname fast_aggregation_check
 #' @importFrom assertthat assert_that is.count
+#' @importFrom dplyr across all_of bind_rows group_by mutate summarise
 #' @importFrom methods new setMethod
 setMethod(
   f = "fast_aggregation_check",
   signature = signature(object = "inla"),
-  definition = function(object, grouping_vars, fun = sum, nsim = 1000) {
+  definition = function(
+    object, grouping_vars, fun = sum, remove_na = TRUE, nsim = 1000
+  ) {
     stopifnot(
       "Only single responses are handled" = length(object$.args$family) == 1
     )
     assert_that(
       is.count(nsim), is.character(grouping_vars), noNA(grouping_vars),
       length(grouping_vars) > 0, is.function(fun),
-      all(grouping_vars %in% names(object$.args$data))
+      all(grouping_vars %in% names(object$.args$data)), is.flag(remove_na),
+      noNA(remove_na)
+    )
+    stopifnot(
+      "one or more `grouping_vars` are not available in the `object`" =
+        all(grouping_vars %in% names(object$.args$data))
     )
 
     observed <- get_observed(object)
-    which_na <- is.na(observed)
+    if (remove_na) {
+      which_na <- is.na(observed)
+    } else {
+      which_na <- rep(FALSE, length(observed))
+    }
     observed <- observed[!which_na]
 
     size <- switch(
@@ -63,8 +79,12 @@ setMethod(
     )
     zero_prob <- object$summary.hyperpar[zero_prob, "0.5quant"]
     if (is.na(zero_prob) && grepl("^zeroinflated.*0", object$.args$family)) {
-      object$all.hyper$family[[1]]$hyper$theta$initial |>
-        object$all.hyper$family[[1]]$hyper$theta$from.theta() -> zero_prob
+      theta <- switch(
+        object$.args$family,
+        zeroinflatednbinomial0 = object$all.hyper$family[[1]]$hyper$theta2,
+        stop("fixed zero inflation to do for ", object$.args$family)
+      )
+      zero_prob <- theta$from.theta(theta$initial)
     }
 
     if (is.null(object$model.spde2.blc)) {

@@ -37,7 +37,7 @@ str(dc)
 Other checks: 
 \code{\link{distribution_check}()},
 \code{\link{fast_aggregation_check}()},
-\code{\link{fast_aggregation_check,inla-method}},
+\code{\link{fast_distribution_check}()},
 \code{\link{get_anomaly}()}
 }
 \concept{checks}
