@@ -18,6 +18,7 @@ setGeneric(
 #' @importFrom methods setMethod new
 #' @importFrom assertthat assert_that is.flag is.count
 #' @importFrom purrr map_dfc
+#' @importFrom stats plogis
 #' @importClassesFrom INLA inla
 #' @examples
 #' library(INLA)
@@ -72,6 +73,7 @@ setMethod(
     eta <- object$summary.linear.predictor[!which_na, "0.5quant"]
     mu <- switch(
       object$.args$family,
+      binomial = plogis(eta),
       poisson = exp(eta),
       nbinomial = exp(eta),
       zeroinflatednbinomial0 = (1 - zero_prob) * exp(eta) /
@@ -84,6 +86,7 @@ setMethod(
     )
     variance <- switch(
       object$.args$family,
+      binomial = mu * (1 - mu),
       poisson = mu,
       nbinomial = mu + mu ^ 2 / size,
       zeroinflatednbinomial0 =
@@ -108,6 +111,7 @@ setMethod(
     )
     switch(
       object$.args$family,
+      binomial = rbinom(n = nsim * length(mu), size = 1, prob = plogis(eta)),
       poisson = rpois(nsim * length(mu), lambda = exp(eta)),
       nbinomial = rnbinom(nsim * length(mu), mu = exp(eta), size = size),
       zeroinflatednbinomial0 = rzanbinom(
