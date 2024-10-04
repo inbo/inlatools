@@ -62,6 +62,36 @@ test_that("basic functionality works", {
   expect_identical(length(dc$model), nsim)
   expect_false(is.na(dc$data))
   expect_identical(sum(is.na(dc$model)), 0L)
+
+  object <- INLA::inla(
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatedpoisson0",
+    data = ds,
+    control.predictor = list(compute = TRUE),
+    control.compute = list(config = TRUE)
+  )
+  expect_is(dc <- dispersion_check(object, nsim = nsim), "dispersion_check")
+  expect_named(dc, c("data", "model"))
+  expect_is(dc$data, "numeric")
+  expect_is(dc$model, "numeric")
+  expect_identical(length(dc$data), 1L)
+  expect_identical(length(dc$model), nsim)
+  expect_false(is.na(dc$data))
+  expect_identical(sum(is.na(dc$model)), 0L)
+
+  object <- INLA::inla(
+    poisson ~ f(group_id, model = "iid"), family = "zeroinflatednbinomial0",
+    data = ds,
+    control.predictor = list(compute = TRUE),
+    control.compute = list(config = TRUE)
+  )
+  expect_is(dc <- dispersion_check(object, nsim = nsim), "dispersion_check")
+  expect_named(dc, c("data", "model"))
+  expect_is(dc$data, "numeric")
+  expect_is(dc$model, "numeric")
+  expect_identical(length(dc$data), 1L)
+  expect_identical(length(dc$model), nsim)
+  expect_false(is.na(dc$data))
+  expect_identical(sum(is.na(dc$model)), 0L)
 })
 
 test_that("handles missing responses", {

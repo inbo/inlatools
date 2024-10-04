@@ -38,6 +38,7 @@ residuals(model)
 }
 \seealso{
 Other statistics: 
+\code{\link{dgpoisson}()},
 \code{\link{dispersion}()},
 \code{\link{fitted,inla-method}},
 \code{\link{get_observed}()}

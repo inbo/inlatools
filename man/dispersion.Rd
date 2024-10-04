@@ -36,6 +36,7 @@ dispersion(
 }
 \seealso{
 Other statistics: 
+\code{\link{dgpoisson}()},
 \code{\link{fitted,inla-method}},
 \code{\link{get_observed}()},
 \code{\link{residuals,inla-method}}

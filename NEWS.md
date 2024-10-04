@@ -1,3 +1,7 @@
+# inlatools 0.0.3
+
+* Export `dgpoisson()` and `rgpoisson()`
+
 # inlatools 0.0.2
 
 * Use [`checklist`](https://inbo.github.io/checklist/) CI infrastructure.

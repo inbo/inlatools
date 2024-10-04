@@ -41,6 +41,7 @@ fast_distribution_check(model)
 Other checks: 
 \code{\link{dispersion_check}()},
 \code{\link{distribution_check}()},
+\code{\link{fast_aggregation_check}()},
 \code{\link{get_anomaly}()}
 }
 \concept{checks}

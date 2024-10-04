@@ -17,12 +17,11 @@ distribution_check(object, nsim = 1000, seed = 0L)
 \item{nsim}{the number of simulation}
 
 \item{seed}{See the same argument in \code{?inla.qsample} for further
-               information. In order to produce reproducible results,  you
-               ALSO need to make sure the RNG in R is in the same state,
-               see example below.  When \code{seed} is non-zero,
-               \code{num.threads} is forced to "1:1" and parallel.configs is
-               set to \code{FALSE}, since parallel sampling would not produce
-               a reproducible sequence of pseudo-random numbers.}
+information. In order to produce reproducible results, you ALSO need to make
+sure the RNG in R is in the same state, see example below.  When \code{seed}
+is non-zero, \code{num.threads} is forced to "1:1" and parallel.configs is
+set to \code{FALSE}, since parallel sampling would not produce a
+reproducible sequence of pseudo-random numbers.}
 }
 \description{
 Use simulations to compare the observed distribution with the modelled
@@ -47,6 +46,7 @@ distribution_check(model, seed = 20181202)
 \seealso{
 Other checks: 
 \code{\link{dispersion_check}()},
+\code{\link{fast_aggregation_check}()},
 \code{\link{fast_distribution_check}()},
 \code{\link{get_anomaly}()}
 }
