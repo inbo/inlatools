@@ -1,0 +1,11 @@
+pandoc: '3.2'
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles:
+  distribution: distribution.html
+  prior: prior.html
+  rwprior: rwprior.html
+last_built: 2024-10-04T10:31Z
+urls:
+  reference: https://inbo.github.io/inlatools/reference
+  article: https://inbo.github.io/inlatools/articles
